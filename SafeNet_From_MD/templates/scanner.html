@@ -1,0 +1,1 @@
+{% extends 'base.html' %}{% block content %}<h1>Scanner</h1><form method='post'><input name='url'><button>Scan</button></form>{% if result %}<div class='card'><h3>{{result[0]}}</h3><p>{{result[1]}}</p></div>{% endif %}{% endblock %}
