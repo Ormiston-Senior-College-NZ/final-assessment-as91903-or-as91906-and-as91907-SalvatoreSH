@@ -1,0 +1,26 @@
+body{
+    font-family:Arial;
+    background:#F8FAFC;
+}
+
+nav{
+    background:#3B82F6;
+    padding:15px;
+}
+
+nav a{
+    color:white;
+    margin-right:10px;
+}
+
+/* BUG 6 */
+
+.grid{
+    display:block;
+}
+
+.card{
+    background:white;
+    padding:15px;
+    margin:10px;
+}

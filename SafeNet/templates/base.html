@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>SafeNet</title>
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+<nav>
+
+    <a href="/">Dashboard</a>
+
+    <!-- BUG 1 -->
+
+    <a href="/scan">Scanner</a>
+
+    <a href="/report">Report Scam</a>
+
+    <a href="/reports">Reports</a>
+
+    <a href="/education">Education Hub</a>
+
+    <button onclick="toggleTheme()">
+        Dark Mode
+    </button>
+
+</nav>
+
+<div class="container">
+{% block content %}
+{% endblock %}
+</div>
+
+<script src="{{ url_for('static', filename='script.js') }}">
+</script>
+
+</body>
+</html>

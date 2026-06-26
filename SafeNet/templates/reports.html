@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h1>Community Reports</h1>
+
+{% for report in reports %}
+
+<div class="card">
+
+    {{ report }}
+
+</div>
+
+{% endfor %}
+
+<!-- {% endblock %} -->

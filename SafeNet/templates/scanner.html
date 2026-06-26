@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h1>Link Scanner</h1>
+
+<!-- BUG 2 -->
+
+<form action="/scanner">
+
+    <input
+        type="text"
+        name="url"
+        placeholder="Enter URL">
+
+    <button>
+        Scan
+    </button>
+
+</form>
+
+{% if result %}
+
+<p>{{ result }}</p>
+
+{% endif %}
+
+{% endblock %}

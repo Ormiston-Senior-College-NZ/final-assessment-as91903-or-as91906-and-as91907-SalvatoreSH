@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h1>Report Scam</h1>
+
+<form method="POST">
+
+    <input
+        type="text"
+        name="title"
+        placeholder="Scam title">
+
+    <textarea
+        name="description">
+    </textarea>
+
+    <button>
+        Submit
+    </button>
+
+</form>
+
+{% endblock %}
