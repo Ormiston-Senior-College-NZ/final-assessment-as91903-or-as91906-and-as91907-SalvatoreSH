@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>SafeNet - Browse Smarter. Stay Safer.</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-dim": "#d8d9e3",
+                        "outline": "#727785",
+                        "surface-container-lowest": "#ffffff",
+                        "on-tertiary-fixed-variant": "#723600",
+                        "secondary": "#006c49",
+                        "on-primary-fixed": "#001a42",
+                        "on-tertiary-container": "#fffbff",
+                        "tertiary-fixed-dim": "#ffb786",
+                        "surface": "#f9f9ff",
+                        "on-tertiary-fixed": "#311400",
+                        "inverse-primary": "#adc6ff",
+                        "on-background": "#191b23",
+                        "inverse-on-surface": "#eff0fa",
+                        "secondary-fixed-dim": "#4edea3",
+                        "primary-fixed-dim": "#adc6ff",
+                        "on-secondary-fixed-variant": "#005236",
+                        "on-secondary-container": "#00714d",
+                        "tertiary": "#924700",
+                        "on-tertiary": "#ffffff",
+                        "surface-variant": "#e1e2ec",
+                        "on-secondary-fixed": "#002113",
+                        "secondary-container": "#6cf8bb",
+                        "primary": "#0058be",
+                        "error": "#ba1a1a",
+                        "on-error-container": "#93000a",
+                        "on-secondary": "#ffffff",
+                        "surface-tint": "#005ac2",
+                        "on-primary-container": "#fefcff",
+                        "surface-container-highest": "#e1e2ec",
+                        "surface-container-high": "#e6e7f2",
+                        "primary-fixed": "#d8e2ff",
+                        "surface-container": "#ecedf7",
+                        "surface-bright": "#f9f9ff",
+                        "inverse-surface": "#2e3038",
+                        "on-primary-fixed-variant": "#004395",
+                        "primary-container": "#2170e4",
+                        "tertiary-container": "#b75b00",
+                        "outline-variant": "#c2c6d6",
+                        "on-error": "#ffffff",
+                        "surface-container-low": "#f2f3fd",
+                        "tertiary-fixed": "#ffdcc6",
+                        "background": "#f9f9ff",
+                        "on-surface": "#191b23",
+                        "secondary-fixed": "#6ffbbe",
+                        "error-container": "#ffdad6",
+                        "on-surface-variant": "#424754",
+                        "on-primary": "#ffffff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Inter", "sans-serif"],
+                        "display": ["Inter", "sans-serif"],
+                        "body": ["Inter", "sans-serif"],
+                        "label": ["Inter", "sans-serif"]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface text-on-surface min-h-screen flex flex-col pt-16 pb-16 md:pb-0">
+<!-- TopAppBar -->
+<header class="bg-surface dark:bg-inverse-surface fixed top-0 w-full z-50 border-b border-outline-variant dark:border-outline shadow-sm flex items-center justify-between px-4 h-16">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary dark:text-primary-fixed-dim" style="font-variation-settings: 'FILL' 1;">shield</span>
+<span class="text-xl font-bold text-primary dark:text-primary-fixed-dim font-headline">SafeNet</span>
+</div>
+<!-- Desktop Nav Items (hidden on mobile) -->
+<nav class="hidden md:flex gap-6 font-label text-label-sm">
+<a class="text-primary font-bold hover:bg-surface-container-low transition-colors px-3 py-2 rounded-md" href="#">Home</a>
+<a class="text-on-surface-variant hover:bg-surface-container-low transition-colors px-3 py-2 rounded-md" href="#">Dashboard</a>
+<a class="text-on-surface-variant hover:bg-surface-container-low transition-colors px-3 py-2 rounded-md" href="#">Scanner</a>
+<a class="text-on-surface-variant hover:bg-surface-container-low transition-colors px-3 py-2 rounded-md" href="#">Education</a>
+<a class="text-on-surface-variant hover:bg-surface-container-low transition-colors px-3 py-2 rounded-md" href="#">Settings</a>
+</nav>
+<div class="flex items-center">
+<div class="h-8 w-8 rounded-full bg-surface-container-high flex items-center justify-center text-on-surface-variant font-bold text-sm overflow-hidden" title="User profile">
+<span class="material-symbols-outlined">person</span>
+</div>
+</div>
+</header>
+<main class="flex-grow flex flex-col">
+<!-- Hero Section -->
+<section class="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-32 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+<div class="flex flex-col gap-6">
+<h1 class="text-5xl lg:text-6xl font-extrabold text-on-surface leading-tight font-display tracking-tight">
+                    Browse Smarter. <br/>
+<span class="text-primary">Stay Safer.</span>
+</h1>
+<p class="text-lg text-on-surface-variant max-w-xl leading-relaxed font-body">
+                    Protect yourself from malicious links, phishing scams, and digital threats in real-time. SafeNet is your composed guardian in an unpredictable digital world.
+                </p>
+<div class="mt-8 bg-surface-container-lowest p-2 rounded-xl border border-outline-variant shadow-sm flex flex-col sm:flex-row gap-2 max-w-2xl focus-within:border-primary focus-within:ring-4 focus-within:ring-primary/10 transition-all">
+<div class="flex-grow flex items-center px-3 gap-2 text-on-surface-variant">
+<span class="material-symbols-outlined">link</span>
+<input class="w-full bg-transparent border-none focus:ring-0 text-on-surface placeholder:text-outline p-2 font-body text-base" placeholder="Paste a link here to scan..." type="text"/>
+</div>
+<button class="bg-primary text-on-primary px-6 py-3 rounded-lg font-semibold hover:bg-surface-tint active:scale-95 transition-all shadow-md flex items-center justify-center gap-2 whitespace-nowrap">
+<span class="material-symbols-outlined">search</span>
+                        Scan Link
+                    </button>
+</div>
+<div class="flex items-center gap-4 text-sm text-on-surface-variant mt-2 font-label">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-secondary" style="font-variation-settings: 'FILL' 1;">check_circle</span> Fast</span>
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-secondary" style="font-variation-settings: 'FILL' 1;">check_circle</span> Private</span>
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-secondary" style="font-variation-settings: 'FILL' 1;">check_circle</span> Free to try</span>
+</div>
+</div>
+<div class="relative h-96 lg:h-[500px] w-full rounded-2xl overflow-hidden shadow-2xl border border-outline-variant bg-surface-container-low flex items-center justify-center">
+<!-- Abstract Shield/Safety Illustration Placeholder -->
+<div class="absolute inset-0 bg-gradient-to-br from-surface-container-low to-primary-fixed/30"></div>
+<div class="relative z-10 p-8 rounded-full bg-surface-container-lowest/80 backdrop-blur-md shadow-lg border border-outline-variant/50">
+<span class="material-symbols-outlined text-8xl text-primary" style="font-variation-settings: 'FILL' 1;">shield_lock</span>
+</div>
+<div class="absolute top-1/4 left-1/4 p-4 rounded-xl bg-surface-container-lowest shadow-md border border-outline-variant animate-pulse">
+<span class="material-symbols-outlined text-secondary" style="font-variation-settings: 'FILL' 1;">verified_user</span>
+</div>
+<div class="absolute bottom-1/3 right-1/4 p-4 rounded-xl bg-surface-container-lowest shadow-md border border-outline-variant">
+<span class="material-symbols-outlined text-tertiary" style="font-variation-settings: 'FILL' 1;">gpp_maybe</span>
+</div>
+</div>
+</section>
+<!-- Stats Section (Bento Grid Style) -->
+<section class="bg-surface-container-low py-16">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<div class="bg-surface-container-lowest p-8 rounded-2xl shadow-sm border border-outline-variant flex flex-col items-center justify-center text-center">
+<span class="material-symbols-outlined text-4xl text-primary mb-4" style="font-variation-settings: 'FILL' 1;">block</span>
+<h3 class="text-4xl font-extrabold text-on-surface mb-2 font-display">1M+</h3>
+<p class="text-on-surface-variant font-medium">Scams Blocked</p>
+</div>
+<div class="bg-primary text-on-primary p-8 rounded-2xl shadow-md flex flex-col items-center justify-center text-center transform md:-translate-y-4">
+<span class="material-symbols-outlined text-4xl mb-4" style="font-variation-settings: 'FILL' 1;">my_location</span>
+<h3 class="text-4xl font-extrabold mb-2 font-display">99.9%</h3>
+<p class="text-primary-fixed-dim font-medium">Detection Accuracy</p>
+</div>
+<div class="bg-surface-container-lowest p-8 rounded-2xl shadow-sm border border-outline-variant flex flex-col items-center justify-center text-center">
+<span class="material-symbols-outlined text-4xl text-secondary mb-4" style="font-variation-settings: 'FILL' 1;">bolt</span>
+<h3 class="text-4xl font-extrabold text-on-surface mb-2 font-display">&lt; 1s</h3>
+<p class="text-on-surface-variant font-medium">Average Scan Time</p>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="bg-surface-container-lowest dark:bg-background w-full py-8 border-t border-outline-variant">
+<div class="flex flex-col md:flex-row justify-between items-center px-8 max-w-7xl mx-auto font-label text-label-sm">
+<div class="mb-4 md:mb-0">
+<span class="font-bold text-on-surface">© 2024 SafeNet Digital Safety</span>
+</div>
+<div class="flex gap-6">
+<a class="text-on-surface-variant hover:text-primary transition-colors opacity-80 hover:opacity-100" href="#">Privacy Policy</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors opacity-80 hover:opacity-100" href="#">Contact Support</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors opacity-80 hover:opacity-100" href="#">Terms of Service</a>
+</div>
+</div>
+</footer>
+<!-- BottomNavBar (Mobile Only) -->
+<nav class="md:hidden bg-surface dark:bg-inverse-surface fixed bottom-0 w-full z-50 border-t border-outline-variant dark:border-outline shadow-lg flex justify-around items-center h-16 px-2 pb-safe font-label text-label-sm">
+<a class="flex flex-col items-center justify-center bg-primary-container dark:bg-on-primary-fixed-variant text-on-primary-container dark:text-primary-fixed rounded-xl px-3 py-1 active:scale-90 transition-transform" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">home</span>
+<span class="mt-1">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline p-2 hover:bg-surface-container-high transition-colors active:scale-90 transition-transform" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="mt-1">Dashboard</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline p-2 hover:bg-surface-container-high transition-colors active:scale-90 transition-transform" href="#">
+<span class="material-symbols-outlined">security_update_good</span>
+<span class="mt-1">Scanner</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline p-2 hover:bg-surface-container-high transition-colors active:scale-90 transition-transform" href="#">
+<span class="material-symbols-outlined">school</span>
+<span class="mt-1">Education</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline p-2 hover:bg-surface-container-high transition-colors active:scale-90 transition-transform" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="mt-1">Settings</span>
+</a>
+</nav>
+</body></html>

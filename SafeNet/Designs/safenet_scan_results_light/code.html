@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>SafeNet - Link Scanner Results</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-dim": "#d8d9e3",
+                    "outline": "#727785",
+                    "surface-container-lowest": "#ffffff",
+                    "on-tertiary-fixed-variant": "#723600",
+                    "secondary": "#006c49",
+                    "on-primary-fixed": "#001a42",
+                    "on-tertiary-container": "#fffbff",
+                    "tertiary-fixed-dim": "#ffb786",
+                    "surface": "#f9f9ff",
+                    "on-tertiary-fixed": "#311400",
+                    "inverse-primary": "#adc6ff",
+                    "on-background": "#191b23",
+                    "inverse-on-surface": "#eff0fa",
+                    "secondary-fixed-dim": "#4edea3",
+                    "primary-fixed-dim": "#adc6ff",
+                    "on-secondary-fixed-variant": "#005236",
+                    "on-secondary-container": "#00714d",
+                    "tertiary": "#924700",
+                    "on-tertiary": "#ffffff",
+                    "surface-variant": "#e1e2ec",
+                    "on-secondary-fixed": "#002113",
+                    "secondary-container": "#6cf8bb",
+                    "primary": "#0058be",
+                    "error": "#ba1a1a",
+                    "on-error-container": "#93000a",
+                    "on-secondary": "#ffffff",
+                    "surface-tint": "#005ac2",
+                    "on-primary-container": "#fefcff",
+                    "surface-container-highest": "#e1e2ec",
+                    "surface-container-high": "#e6e7f2",
+                    "primary-fixed": "#d8e2ff",
+                    "surface-container": "#ecedf7",
+                    "surface-bright": "#f9f9ff",
+                    "inverse-surface": "#2e3038",
+                    "on-primary-fixed-variant": "#004395",
+                    "primary-container": "#2170e4",
+                    "tertiary-container": "#b75b00",
+                    "outline-variant": "#c2c6d6",
+                    "on-error": "#ffffff",
+                    "surface-container-low": "#f2f3fd",
+                    "tertiary-fixed": "#ffdcc6",
+                    "background": "#f9f9ff",
+                    "on-surface": "#191b23",
+                    "secondary-fixed": "#6ffbbe",
+                    "error-container": "#ffdad6",
+                    "on-surface-variant": "#424754",
+                    "on-primary": "#ffffff"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "fontFamily": {
+                    "headline": ["Inter"],
+                    "display": ["Inter"],
+                    "body": ["Inter"],
+                    "label": ["Inter"]
+            }
+          }
+        }
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background font-body min-h-screen flex flex-col pt-16 pb-16 md:pb-0">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 border-b border-outline-variant dark:border-outline shadow-sm bg-surface dark:bg-inverse-surface flex items-center justify-between px-4 h-16 transition-colors">
+<div class="flex items-center gap-3">
+<span aria-hidden="true" class="material-symbols-outlined text-primary dark:text-primary-fixed-dim" data-icon="shield">shield</span>
+<span class="text-xl font-bold text-primary dark:text-primary-fixed-dim font-headline">SafeNet</span>
+</div>
+<!-- Desktop Nav -->
+<nav class="hidden md:flex gap-6 absolute left-1/2 transform -translate-x-1/2">
+<a class="text-on-surface-variant hover:bg-surface-container-low transition-colors px-3 py-2 rounded-md font-label text-sm active:scale-95 transition-transform" href="#">Home</a>
+<a class="text-on-surface-variant hover:bg-surface-container-low transition-colors px-3 py-2 rounded-md font-label text-sm active:scale-95 transition-transform" href="#">Dashboard</a>
+<a class="text-primary font-bold hover:bg-surface-container-low transition-colors px-3 py-2 rounded-md font-label text-sm active:scale-95 transition-transform" href="#">Scanner</a>
+<a class="text-on-surface-variant hover:bg-surface-container-low transition-colors px-3 py-2 rounded-md font-label text-sm active:scale-95 transition-transform" href="#">Education</a>
+<a class="text-on-surface-variant hover:bg-surface-container-low transition-colors px-3 py-2 rounded-md font-label text-sm active:scale-95 transition-transform" href="#">Settings</a>
+</nav>
+<div class="flex items-center">
+<img alt="User profile" class="w-8 h-8 rounded-full border border-outline-variant object-cover" data-alt="A small circular avatar portrait of a user. The lighting is soft and natural, emphasizing a professional yet approachable aesthetic typical of modern software platforms." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCOSoPy6WgQ1DFS5ip7q6UXdRR3uBfTG6V6oZ-TZuDMWLxjZncWdetYMYy_ml3leJSERTwsZS4ljGsgB5tXEHLGuQr97y9eHh1YnDT0yYIgexIsGxfTdGBc_G5wBAKfnSnNg48-EVKJgBLJq7IkTw14dHKo5Rc59bmsNd_WBIydmPaglgknEEbBD1UyJsPCRKkAZsfbTHzpg3ImoEuLSIF_PBKp1f-PcbT6z0vFh5u5G3P80J-F8TqE7xU8p5udgyLdulhtDEHFq4OD"/>
+</div>
+</header>
+<!-- Main Content -->
+<main class="flex-grow max-w-7xl mx-auto w-full p-4 md:p-8 space-y-6">
+<!-- Search Input Header -->
+<section class="bg-surface-container-lowest rounded-xl border border-outline-variant shadow-sm p-4 md:p-6 mb-8 flex flex-col gap-4">
+<h1 class="font-headline text-2xl font-bold text-on-surface">Link Scanner Results</h1>
+<div class="relative w-full max-w-3xl">
+<div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+<span aria-hidden="true" class="material-symbols-outlined text-outline" data-icon="link">link</span>
+</div>
+<input aria-label="Scanned URL" class="w-full pl-10 pr-4 py-3 bg-surface-container-lowest border border-outline-variant rounded-lg text-on-surface font-body text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent cursor-default" readonly="" type="text" value="http://secure-login-update-banking.com/verify?id=9872"/>
+</div>
+</section>
+<!-- Bento Grid Layout -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+<!-- Hero Threat Card (Spans 8 cols on desktop) -->
+<div class="md:col-span-8 bg-error-container rounded-2xl border border-error/20 p-6 md:p-8 flex flex-col justify-center items-start shadow-sm relative overflow-hidden">
+<div class="absolute top-0 right-0 p-8 opacity-10 pointer-events-none">
+<span aria-hidden="true" class="material-symbols-outlined text-9xl text-error" data-icon="warning" data-weight="fill">warning</span>
+</div>
+<div class="flex items-center gap-3 mb-4 z-10">
+<span class="inline-flex items-center justify-center px-3 py-1 rounded-full bg-error text-on-error font-label text-xs font-bold uppercase tracking-wider">
+                        High Risk
+                    </span>
+</div>
+<h2 class="font-headline text-3xl md:text-4xl font-bold text-on-error-container mb-2 z-10">Phishing attempt detected.</h2>
+<p class="font-body text-on-error-container/80 text-lg md:text-xl mb-6 max-w-2xl z-10">This site mimics a known bank login page in an attempt to steal your credentials.</p>
+<div class="flex flex-col sm:flex-row gap-4 mt-auto w-full sm:w-auto z-10">
+<button class="bg-error hover:bg-error/90 text-on-error font-label font-semibold py-3 px-6 rounded-lg transition-colors flex items-center justify-center gap-2 shadow-sm">
+<span aria-hidden="true" class="material-symbols-outlined" data-icon="exit_to_app">exit_to_app</span>
+                        Leave Site Now
+                    </button>
+<button class="bg-surface-container-lowest/50 hover:bg-surface-container-lowest/80 text-on-error-container border border-error/30 font-label font-semibold py-3 px-6 rounded-lg transition-colors flex items-center justify-center gap-2">
+                        Learn why this is risky
+                    </button>
+</div>
+</div>
+<!-- Risk Score Card (Spans 4 cols on desktop) -->
+<div class="md:col-span-4 bg-surface-container-lowest rounded-2xl border border-outline-variant shadow-sm p-6 flex flex-col items-center justify-center text-center">
+<h3 class="font-headline text-lg font-semibold text-on-surface mb-2">Threat Score</h3>
+<div class="relative w-48 h-48 flex items-center justify-center mb-4">
+<!-- Circular Progress Placeholder -->
+<svg class="w-full h-full transform -rotate-90" viewbox="0 0 100 100">
+<circle cx="50" cy="50" fill="none" r="45" stroke="#ffdad6" stroke-width="10"></circle>
+<circle cx="50" cy="50" fill="none" r="45" stroke="#ba1a1a" stroke-dasharray="283" stroke-dashoffset="45" stroke-linecap="round" stroke-width="10"></circle>
+</svg>
+<div class="absolute flex flex-col items-center justify-center">
+<span class="font-headline text-5xl font-black text-error">84</span>
+<span class="font-label text-sm text-outline font-medium">/ 100</span>
+</div>
+</div>
+<p class="font-body text-sm text-on-surface-variant max-w-xs">A score above 70 indicates a severe threat. Proceeding is highly discouraged.</p>
+</div>
+<!-- Detailed Analysis Section (Full width) -->
+<div class="col-span-1 md:col-span-12 grid grid-cols-1 md:grid-cols-3 gap-6">
+<!-- Indicator 1 -->
+<div class="bg-surface-container-lowest rounded-xl border border-outline-variant p-5 shadow-sm flex flex-col">
+<div class="w-10 h-10 rounded-full bg-error-container flex items-center justify-center mb-4">
+<span aria-hidden="true" class="material-symbols-outlined text-error" data-icon="domain_verification">domain_verification</span>
+</div>
+<h4 class="font-headline text-md font-semibold text-on-surface mb-2">Suspicious URL Structure</h4>
+<p class="font-body text-sm text-on-surface-variant flex-grow">The domain "secure-login-update-banking.com" attempts to sound legitimate but does not belong to a verified financial institution.</p>
+</div>
+<!-- Indicator 2 -->
+<div class="bg-surface-container-lowest rounded-xl border border-outline-variant p-5 shadow-sm flex flex-col">
+<div class="w-10 h-10 rounded-full bg-error-container flex items-center justify-center mb-4">
+<span aria-hidden="true" class="material-symbols-outlined text-error" data-icon="public_off">public_off</span>
+</div>
+<h4 class="font-headline text-md font-semibold text-on-surface mb-2">Known Malicious Host</h4>
+<p class="font-body text-sm text-on-surface-variant flex-grow">This IP address has been flagged multiple times in the last 24 hours for hosting phishing campaigns.</p>
+</div>
+<!-- Indicator 3 -->
+<div class="bg-surface-container-lowest rounded-xl border border-outline-variant p-5 shadow-sm flex flex-col">
+<div class="w-10 h-10 rounded-full bg-surface-variant flex items-center justify-center mb-4">
+<span aria-hidden="true" class="material-symbols-outlined text-on-surface-variant" data-icon="history">history</span>
+</div>
+<h4 class="font-headline text-md font-semibold text-on-surface mb-2">Newly Registered Domain</h4>
+<p class="font-body text-sm text-on-surface-variant flex-grow">This domain was registered less than 3 days ago. Legitimate services typically use established domains.</p>
+</div>
+</div>
+</div>
+</main>
+<!-- BottomNavBar (Mobile Only) -->
+<nav class="md:hidden fixed bottom-0 w-full z-50 border-t border-outline-variant dark:border-outline shadow-lg bg-surface dark:bg-inverse-surface flex justify-around items-center h-16 px-2 pb-safe">
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline p-2 hover:bg-surface-container-high transition-colors active:scale-90 transition-transform w-16" href="#">
+<span aria-hidden="true" class="material-symbols-outlined mb-1" data-icon="home">home</span>
+<span class="font-label text-[10px] truncate w-full text-center">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline p-2 hover:bg-surface-container-high transition-colors active:scale-90 transition-transform w-16" href="#">
+<span aria-hidden="true" class="material-symbols-outlined mb-1" data-icon="dashboard">dashboard</span>
+<span class="font-label text-[10px] truncate w-full text-center">Dashboard</span>
+</a>
+<!-- Active Tab -->
+<a class="flex flex-col items-center justify-center bg-primary-container dark:bg-on-primary-fixed-variant text-on-primary-container dark:text-primary-fixed rounded-xl px-3 py-1 hover:bg-surface-container-high transition-colors active:scale-90 transition-transform w-16" href="#">
+<span aria-hidden="true" class="material-symbols-outlined mb-1" data-icon="security_update_good">security_update_good</span>
+<span class="font-label text-[10px] truncate w-full text-center font-bold">Scanner</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline p-2 hover:bg-surface-container-high transition-colors active:scale-90 transition-transform w-16" href="#">
+<span aria-hidden="true" class="material-symbols-outlined mb-1" data-icon="school">school</span>
+<span class="font-label text-[10px] truncate w-full text-center">Education</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline p-2 hover:bg-surface-container-high transition-colors active:scale-90 transition-transform w-16" href="#">
+<span aria-hidden="true" class="material-symbols-outlined mb-1" data-icon="settings">settings</span>
+<span class="font-label text-[10px] truncate w-full text-center">Settings</span>
+</a>
+</nav>
+<!-- Footer -->
+<footer class="w-full py-8 border-t border-outline-variant bg-surface-container-lowest dark:bg-background mt-auto hidden md:flex flex-col md:flex-row justify-between items-center px-8 max-w-7xl mx-auto gap-4">
+<p class="font-label text-label-sm font-bold text-on-surface">© 2024 SafeNet Digital Safety</p>
+<div class="flex gap-6">
+<a class="font-label text-label-sm text-on-surface-variant hover:text-primary transition-colors opacity-80 hover:opacity-100" href="#">Privacy Policy</a>
+<a class="font-label text-label-sm text-on-surface-variant hover:text-primary transition-colors opacity-80 hover:opacity-100" href="#">Contact Support</a>
+<a class="font-label text-label-sm text-on-surface-variant hover:text-primary transition-colors opacity-80 hover:opacity-100" href="#">Terms of Service</a>
+</div>
+</footer>
+</body></html>

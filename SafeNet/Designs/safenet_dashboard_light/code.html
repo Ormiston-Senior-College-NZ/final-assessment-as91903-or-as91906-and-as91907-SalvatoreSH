@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Dashboard - SafeNet</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-dim": "#d8d9e3",
+                        "outline": "#727785",
+                        "surface-container-lowest": "#ffffff",
+                        "on-tertiary-fixed-variant": "#723600",
+                        "secondary": "#006c49",
+                        "on-primary-fixed": "#001a42",
+                        "on-tertiary-container": "#fffbff",
+                        "tertiary-fixed-dim": "#ffb786",
+                        "surface": "#f9f9ff",
+                        "on-tertiary-fixed": "#311400",
+                        "inverse-primary": "#adc6ff",
+                        "on-background": "#191b23",
+                        "inverse-on-surface": "#eff0fa",
+                        "secondary-fixed-dim": "#4edea3",
+                        "primary-fixed-dim": "#adc6ff",
+                        "on-secondary-fixed-variant": "#005236",
+                        "on-secondary-container": "#00714d",
+                        "tertiary": "#924700",
+                        "on-tertiary": "#ffffff",
+                        "surface-variant": "#e1e2ec",
+                        "on-secondary-fixed": "#002113",
+                        "secondary-container": "#6cf8bb",
+                        "primary": "#0058be",
+                        "error": "#ba1a1a",
+                        "on-error-container": "#93000a",
+                        "on-secondary": "#ffffff",
+                        "surface-tint": "#005ac2",
+                        "on-primary-container": "#fefcff",
+                        "surface-container-highest": "#e1e2ec",
+                        "surface-container-high": "#e6e7f2",
+                        "primary-fixed": "#d8e2ff",
+                        "surface-container": "#ecedf7",
+                        "surface-bright": "#f9f9ff",
+                        "inverse-surface": "#2e3038",
+                        "on-primary-fixed-variant": "#004395",
+                        "primary-container": "#2170e4",
+                        "tertiary-container": "#b75b00",
+                        "outline-variant": "#c2c6d6",
+                        "on-error": "#ffffff",
+                        "surface-container-low": "#f2f3fd",
+                        "tertiary-fixed": "#ffdcc6",
+                        "background": "#f9f9ff",
+                        "on-surface": "#191b23",
+                        "secondary-fixed": "#6ffbbe",
+                        "error-container": "#ffdad6",
+                        "on-surface-variant": "#424754",
+                        "on-primary": "#ffffff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Inter"],
+                        "display": ["Inter"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background min-h-screen flex flex-col md:flex-row">
+<!-- TopAppBar (Mobile) -->
+<header class="md:hidden flex items-center justify-between px-4 h-16 fixed top-0 w-full z-50 bg-surface dark:bg-inverse-surface border-b border-outline-variant dark:border-outline shadow-sm">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary dark:text-primary-fixed-dim" style="font-variation-settings: 'FILL' 1;">shield</span>
+<span class="text-xl font-bold text-primary dark:text-primary-fixed-dim">SafeNet</span>
+</div>
+<div class="w-8 h-8 rounded-full bg-primary-container flex items-center justify-center text-on-primary-container font-bold text-sm">
+            AL
+        </div>
+</header>
+<!-- Navigation Drawer (Desktop) -->
+<nav class="hidden md:flex flex-col h-screen w-72 rounded-r-xl shadow-2xl bg-surface-container-low dark:bg-inverse-surface fixed left-0 top-0 z-40">
+<div class="flex items-center gap-3 p-6 border-b border-outline-variant">
+<span class="material-symbols-outlined text-primary text-3xl" style="font-variation-settings: 'FILL' 1;">shield</span>
+<span class="font-headline text-lg font-black text-primary">SafeNet</span>
+</div>
+<div class="p-6 border-b border-outline-variant">
+<div class="flex items-center gap-4">
+<img alt="Teen User" class="w-12 h-12 rounded-full object-cover border-2 border-primary-container" data-alt="A close-up portrait of a young adult looking forward with a confident, secure expression. The setting is bright and professional, adhering to a modern corporate aesthetic with soft white and subtle blue tones. Lighting is balanced and clear, emphasizing approachability and trust within a clean light-mode UI context." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAlSCU8dhhhaROYzaNR_R3NREm24TIkUbptJ4_h13uzErsns2gV2085g9Qs1g7GhjD8HmRGDwxGUpN4Y3UybAARe9iqooCn_HmHXk9jP5vbO27BQ1YUW2PmudWl6RPFSITc7fvvETOrP2MD6BDYFW_m7bVHeM8RPlPFQ-tILR23o4k8jrF4g86Zy60mOy2XR6potrjuzZMJlZ2mUySFuPgare2cKrShljbSo4AtzQQ3j22InjBXQ6CqlmFeSz9wJHXWBFmBoFtUsR8K"/>
+<div>
+<h3 class="font-bold text-on-surface">Alex Guardian</h3>
+<p class="text-xs text-on-surface-variant">Safety Status: High</p>
+</div>
+</div>
+</div>
+<ul class="flex-1 px-4 py-6 space-y-2">
+<li>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high rounded-full hover:bg-surface-container-highest transition-all duration-300 ease-in-out font-body text-body-md" href="#">
+<span class="material-symbols-outlined">home</span>
+                    Home
+                </a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-3 bg-secondary-container text-on-secondary-container font-semibold rounded-full hover:bg-surface-container-highest transition-all duration-300 ease-in-out font-body text-body-md" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">dashboard</span>
+                    Dashboard
+                </a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high rounded-full hover:bg-surface-container-highest transition-all duration-300 ease-in-out font-body text-body-md" href="#">
+<span class="material-symbols-outlined">security_update_good</span>
+                    Scanner
+                </a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high rounded-full hover:bg-surface-container-highest transition-all duration-300 ease-in-out font-body text-body-md" href="#">
+<span class="material-symbols-outlined">school</span>
+                    Education
+                </a>
+</li>
+<li class="pt-6 mt-6 border-t border-outline-variant">
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high rounded-full hover:bg-surface-container-highest transition-all duration-300 ease-in-out font-body text-body-md" href="#">
+<span class="material-symbols-outlined">settings</span>
+                    Settings
+                </a>
+</li>
+</ul>
+</nav>
+<!-- Main Content Canvas -->
+<main class="flex-1 md:ml-72 pt-20 pb-24 md:pt-8 md:pb-8 px-4 md:px-8 max-w-7xl mx-auto w-full">
+<!-- Welcome Section -->
+<header class="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-4">
+<div>
+<h1 class="text-3xl font-bold text-on-surface mb-2 font-headline">Hello, Alex!</h1>
+<p class="text-on-surface-variant text-lg">Your safety status is <span class="text-secondary font-semibold">Good</span>.</p>
+</div>
+<div class="flex gap-3">
+<button class="bg-primary text-on-primary px-6 py-2.5 rounded-lg font-semibold hover:bg-surface-tint transition-colors flex items-center gap-2 shadow-sm">
+<span class="material-symbols-outlined text-sm">link</span>
+                    Scan New Link
+                </button>
+<button class="bg-surface-container-highest text-on-surface px-6 py-2.5 rounded-lg font-semibold border border-outline-variant hover:bg-surface-variant transition-colors flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">play_circle</span>
+                    Start Lesson
+                </button>
+</div>
+</header>
+<!-- Bento Grid Layout -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+<!-- Safety Score Meter (Spans 4 columns) -->
+<div class="md:col-span-4 bg-surface-container-lowest rounded-xl border border-outline-variant shadow-sm p-6 flex flex-col items-center justify-center min-h-[300px]">
+<h2 class="text-lg font-semibold text-on-surface mb-6 w-full text-left">Safety Score</h2>
+<div class="relative w-48 h-48">
+<!-- Circular Gauge SVG Simulation -->
+<svg class="w-full h-full transform -rotate-90" viewbox="0 0 100 100">
+<circle class="text-surface-container-high" cx="50" cy="50" fill="none" r="45" stroke="currentColor" stroke-width="10"></circle>
+<circle class="text-secondary" cx="50" cy="50" fill="none" r="45" stroke="currentColor" stroke-dasharray="283" stroke-dashoffset="42" stroke-linecap="round" stroke-width="10"></circle>
+</svg>
+<div class="absolute inset-0 flex flex-col items-center justify-center">
+<span class="text-5xl font-black text-on-surface font-headline">85</span>
+<span class="text-sm text-on-surface-variant mt-1">/100</span>
+</div>
+</div>
+<p class="mt-6 text-sm text-center text-on-surface-variant">Your device is protected and monitored.</p>
+</div>
+<!-- Threat Overview & Tips (Spans 8 columns) -->
+<div class="md:col-span-8 flex flex-col gap-6">
+<!-- Overview Cards -->
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-6 h-full">
+<div class="bg-surface-container-lowest rounded-xl border border-outline-variant shadow-sm p-6 flex flex-col justify-between">
+<div class="flex justify-between items-start mb-4">
+<div class="w-12 h-12 rounded-full bg-error-container text-on-error-container flex items-center justify-center">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">gpp_bad</span>
+</div>
+<span class="text-xs font-bold text-error bg-error-container px-2 py-1 rounded-full uppercase tracking-wider">+2 Today</span>
+</div>
+<div>
+<h3 class="text-3xl font-bold text-on-surface mb-1">12</h3>
+<p class="text-on-surface-variant font-medium">Blocked Threats</p>
+</div>
+</div>
+<div class="bg-surface-container-lowest rounded-xl border border-outline-variant shadow-sm p-6 flex flex-col justify-between">
+<div class="flex justify-between items-start mb-4">
+<div class="w-12 h-12 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">radar</span>
+</div>
+<span class="text-xs font-bold text-primary bg-primary-container px-2 py-1 rounded-full uppercase tracking-wider">Active</span>
+</div>
+<div>
+<h3 class="text-3xl font-bold text-on-surface mb-1">1,402</h3>
+<p class="text-on-surface-variant font-medium">Recent Scans</p>
+</div>
+</div>
+</div>
+<!-- Tip Widget -->
+<div class="bg-tertiary-container rounded-xl p-6 flex items-start gap-4 text-on-tertiary-container shadow-sm border border-outline-variant relative overflow-hidden">
+<div class="absolute -right-10 -top-10 w-40 h-40 bg-tertiary opacity-20 rounded-full blur-2xl pointer-events-none"></div>
+<div class="bg-on-tertiary text-tertiary-container w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 z-10">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">lightbulb</span>
+</div>
+<div class="z-10">
+<h3 class="font-bold text-lg mb-1">Tip of the Day</h3>
+<p class="text-sm opacity-90 leading-relaxed">Use unique, complex passwords for every account. Consider using a password manager to keep them secure and easy to access.</p>
+</div>
+</div>
+</div>
+<!-- Notifications Panel (Spans 4 columns) -->
+<div class="md:col-span-4 bg-surface-container-lowest rounded-xl border border-outline-variant shadow-sm flex flex-col">
+<div class="p-5 border-b border-surface-variant flex justify-between items-center bg-surface-container-low rounded-t-xl">
+<h2 class="font-semibold text-on-surface">Notifications</h2>
+<span class="text-xs bg-error text-on-error px-2 py-0.5 rounded-full font-bold">2 New</span>
+</div>
+<div class="p-4 space-y-4 flex-1">
+<div class="flex gap-3 items-start pb-4 border-b border-surface-variant">
+<div class="w-8 h-8 rounded-full bg-surface-container-highest text-on-surface-variant flex items-center justify-center flex-shrink-0 mt-0.5">
+<span class="material-symbols-outlined text-sm">school</span>
+</div>
+<div>
+<p class="text-sm font-medium text-on-surface">New lesson available</p>
+<p class="text-xs text-on-surface-variant mt-1">Phishing Awareness 101 is now unlocked.</p>
+<span class="text-[10px] text-outline mt-2 block">2 hours ago</span>
+</div>
+</div>
+<div class="flex gap-3 items-start">
+<div class="w-8 h-8 rounded-full bg-error-container text-error flex items-center justify-center flex-shrink-0 mt-0.5">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">warning</span>
+</div>
+<div>
+<p class="text-sm font-medium text-on-surface">Security alert</p>
+<p class="text-xs text-on-surface-variant mt-1">Check your privacy settings on social media.</p>
+<span class="text-[10px] text-outline mt-2 block">5 hours ago</span>
+</div>
+</div>
+</div>
+<div class="p-3 border-t border-surface-variant text-center bg-surface-container-low rounded-b-xl">
+<a class="text-sm font-semibold text-primary hover:underline" href="#">View All</a>
+</div>
+</div>
+<!-- Recent Scans Table (Spans 8 columns) -->
+<div class="md:col-span-8 bg-surface-container-lowest rounded-xl border border-outline-variant shadow-sm overflow-hidden flex flex-col">
+<div class="p-5 border-b border-surface-variant flex justify-between items-center bg-surface-container-low">
+<h2 class="font-semibold text-on-surface">Recent Scans</h2>
+<button class="text-primary text-sm font-medium hover:underline flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">filter_list</span> Filter
+                    </button>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-lowest text-xs uppercase text-on-surface-variant border-b border-surface-variant">
+<th class="px-6 py-4 font-semibold">Target / URL</th>
+<th class="px-6 py-4 font-semibold">Date</th>
+<th class="px-6 py-4 font-semibold text-right">Status</th>
+</tr>
+</thead>
+<tbody class="text-sm divide-y divide-surface-variant">
+<tr class="hover:bg-surface-container-lowest transition-colors">
+<td class="px-6 py-4 font-medium text-on-surface flex items-center gap-3">
+<span class="material-symbols-outlined text-outline">language</span>
+                                    mail-update-secure.com
+                                </td>
+<td class="px-6 py-4 text-on-surface-variant">Oct 24, 10:45 AM</td>
+<td class="px-6 py-4 text-right">
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-error-container text-error uppercase">
+                                        Unsafe
+                                    </span>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-lowest transition-colors">
+<td class="px-6 py-4 font-medium text-on-surface flex items-center gap-3">
+<span class="material-symbols-outlined text-outline">language</span>
+                                    github.com/settings
+                                </td>
+<td class="px-6 py-4 text-on-surface-variant">Oct 24, 09:12 AM</td>
+<td class="px-6 py-4 text-right">
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-secondary-container text-secondary uppercase">
+                                        Safe
+                                    </span>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-lowest transition-colors">
+<td class="px-6 py-4 font-medium text-on-surface flex items-center gap-3">
+<span class="material-symbols-outlined text-outline">draft</span>
+                                    Invoice_PDF_Download.exe
+                                </td>
+<td class="px-6 py-4 text-on-surface-variant">Oct 23, 04:30 PM</td>
+<td class="px-6 py-4 text-right">
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-error-container text-error uppercase">
+                                        Unsafe
+                                    </span>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-lowest transition-colors">
+<td class="px-6 py-4 font-medium text-on-surface flex items-center gap-3">
+<span class="material-symbols-outlined text-outline">language</span>
+                                    wikipedia.org
+                                </td>
+<td class="px-6 py-4 text-on-surface-variant">Oct 23, 01:15 PM</td>
+<td class="px-6 py-4 text-right">
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-secondary-container text-secondary uppercase">
+                                        Safe
+                                    </span>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</main>
+<!-- BottomNavBar (Mobile) -->
+<nav class="md:hidden flex justify-around items-center h-16 px-2 pb-safe fixed bottom-0 w-full z-50 bg-surface dark:bg-inverse-surface border-t border-outline-variant dark:border-outline shadow-lg font-label text-label-sm">
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline p-2 hover:bg-surface-container-high transition-colors active:scale-90 transition-transform" href="#">
+<span class="material-symbols-outlined">home</span>
+            Home
+        </a>
+<a class="flex flex-col items-center justify-center bg-primary-container dark:bg-on-primary-fixed-variant text-on-primary-container dark:text-primary-fixed rounded-xl px-3 py-1 hover:bg-surface-container-high transition-colors active:scale-90 transition-transform" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">dashboard</span>
+            Dashboard
+        </a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline p-2 hover:bg-surface-container-high transition-colors active:scale-90 transition-transform" href="#">
+<span class="material-symbols-outlined">security_update_good</span>
+            Scanner
+        </a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline p-2 hover:bg-surface-container-high transition-colors active:scale-90 transition-transform" href="#">
+<span class="material-symbols-outlined">school</span>
+            Education
+        </a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline p-2 hover:bg-surface-container-high transition-colors active:scale-90 transition-transform" href="#">
+<span class="material-symbols-outlined">settings</span>
+            Settings
+        </a>
+</nav>
+</body></html>
