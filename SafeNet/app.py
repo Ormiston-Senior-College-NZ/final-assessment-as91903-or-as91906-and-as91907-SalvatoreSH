@@ -23,16 +23,34 @@ def scanner():
     return render_template("scanner.html", result=result)
 
 
-# BUG 3
-# Missing POST support
-
-@app.route("/report")
+@app.route("/report", methods=["GET", "POST"])
 def report():
-    return render_template("report.html")
 
+    if request.method == "POST":
 
-# BUG 4
-# reports.json doesn't exist
+        new_report = {
+            "title": request.form["title"],
+            "description": request.form["description"]
+        }
+
+        with open("reports.json", "r") as file:
+            reports = json.load(file)
+
+        reports.append(new_report)
+
+        with open("reports.json", "w") as file:
+            json.dump(reports, file, indent=4)
+
+        return render_template(
+            "report.html",
+            success=True
+        )
+
+    return render_template(
+        "report.html",
+        success=False
+    )
+
 
 @app.route("/reports")
 def reports():

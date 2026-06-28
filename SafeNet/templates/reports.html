@@ -2,16 +2,26 @@
 
 {% block content %}
 
-<h1>Community Reports</h1>
+<h1>Community Scam Reports</h1>
 
-{% for report in reports %}
+{% if reports %}
 
-<div class="card">
+    {% for report in reports %}
 
-    {{ report }}
+        <div class="card">
 
-</div>
+            <h3>{{ report.title }}</h3>
 
-{% endfor %}
+            <p>{{ report.description }}</p>
 
-<!-- {% endblock %} -->
+        </div>
+
+    {% endfor %}
+
+{% else %}
+
+<p>No reports submitted yet.</p>
+
+{% endif %}
+
+{% endblock %}
