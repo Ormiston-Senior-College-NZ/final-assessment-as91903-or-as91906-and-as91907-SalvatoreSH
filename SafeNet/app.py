@@ -1,10 +1,25 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, redirect, url_for
 import json
 
 app = Flask(__name__)
 
 @app.route("/")
 def home():
+    return render_template("login.html")
+
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    if request.method == "POST":
+        email = request.form.get("email", "").strip()
+        password = request.form.get("password", "").strip()
+
+        if email and password:
+            return redirect(url_for("dashboard"))
+
+    return render_template("login.html")
+
+@app.route("/dashboard")
+def dashboard():
     return render_template("index.html")
 
 @app.route("/scanner", methods=["GET", "POST"])

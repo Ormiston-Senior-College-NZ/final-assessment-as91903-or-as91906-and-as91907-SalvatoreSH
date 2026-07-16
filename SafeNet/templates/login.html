@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="page-shell">
+    <section class="hero-panel">
+        <div class="hero-copy">
+            <span class="badge">Secure sign in</span>
+            <h1>Welcome back to SafeNet</h1>
+            <p>Sign in to access your dashboard, scanner, and personal safety tools.</p>
+        </div>
+
+        <div class="hero-visual">
+            <div class="hero-badge">🔐</div>
+        </div>
+    </section>
+
+    <section class="info-grid">
+        <div class="form-card">
+            <div class="card" style="padding: 1.25rem; box-shadow: none;">
+                <h3 style="margin-bottom: 0.6rem;">Sign in</h3>
+                <p class="helper-text" style="margin-bottom: 1rem;">Demo login: use any email and password to continue.</p>
+
+                <form method="POST" action="/login">
+                    <label for="email">Email address</label>
+                    <input id="email" name="email" type="email" placeholder="you@example.com" required>
+
+                    <label for="password">Password</label>
+                    <input id="password" name="password" type="password" placeholder="Enter your password" required>
+
+                    <button type="submit" class="btn-primary">Sign in</button>
+                </form>
+
+                <div class="badge-row">
+                    <span class="badge badge--info">🔒 Protected demo</span>
+                    <span class="badge badge--warm">⚡ Quick access</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="content-card">
+            <h3>Why sign in?</h3>
+            <div class="panel-list">
+                <div class="list-item">
+                    <strong>Personal dashboard</strong>
+                    <p>See your safety score, recent scans, and helpful tips in one place.</p>
+                </div>
+                <div class="list-item">
+                    <strong>Fast access</strong>
+                    <p>Jump straight into scanner, reporting, and education features.</p>
+                </div>
+                <div class="list-item">
+                    <strong>Secure experience</strong>
+                    <p>Designed as a polished front-end with the same visual direction as the rest of the app.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+{% endblock %}

@@ -1,27 +1,86 @@
 {% extends "base.html" %}
 
 {% block content %}
+<div class="page-shell">
+    <section class="hero-panel">
+        <div class="hero-copy">
+            <span class="badge">Link scanner</span>
+            <h1>Check suspicious links in seconds</h1>
+            <p>Paste a URL below and review the result before you visit it.</p>
 
-<h1>Link Scanner</h1>
+            <div class="cta-row">
+                <a class="btn-secondary" href="/report">🚨 Report a threat</a>
+                <a class="btn-primary" href="/education">📚 Learn safer habits</a>
+            </div>
+        </div>
 
+        <div class="hero-visual">
+            <div class="hero-badge">🔎</div>
+        </div>
+    </section>
 
-<form action="/scanner" method="POST">
+    <section class="info-grid">
+        <div class="form-card">
+            <div class="card" style="padding: 1.25rem; box-shadow: none;">
+                <h3>Scan a URL</h3>
 
-    <input
-        type="text"
-        name="url"
-        placeholder="Enter URL">
+                <form action="/scanner" method="POST">
+                    <label for="url">URL to scan</label>
+                    <input id="url" type="text" name="url" placeholder="Example: https://example.com" required>
+                    <button type="submit" class="btn-primary">Scan Link</button>
+                </form>
 
-    <button>
-        Scan
-    </button>
+                <p class="helper-text" style="margin-top: 0.7rem;">
+                    Demo logic: URLs using <strong>http://</strong> are flagged as unsafe.
+                </p>
 
-</form>
+                <div class="badge-row">
+                    <span class="badge badge--info">✅ Quick check</span>
+                    <span class="badge badge--warm">⚠️ Caution prompts</span>
+                </div>
+            </div>
+        </div>
 
-{% if result %}
+        <div class="content-card">
+            <h3>Scan result</h3>
 
-<p>{{ result }}</p>
+            {% if result %}
+                <div class="status-banner {% if 'Warning' in result %}warning{% endif %}">
+                    {{ result }}
+                </div>
 
-{% endif %}
+                <div class="card" style="margin-top: 0.9rem;">
+                    <h3>What to do next</h3>
 
+                    {% if 'Warning' in result %}
+                        <p class="helper-text">
+                            Avoid entering credentials on this page. If it’s unexpected, close it and consider reporting it.
+                        </p>
+
+                        <div class="cta-row">
+                            <a class="btn-secondary" href="/report">🚨 Report this threat</a>
+                            <a class="btn-primary" href="/education">📚 Learn phishing risks</a>
+                        </div>
+                    {% else %}
+                        <p class="helper-text">
+                            This link passed the basic safety check. Still verify the domain and be cautious with login/payment prompts.
+                        </p>
+
+                        <div class="cta-row">
+                            <a class="btn-primary" href="/education">✅ Build safer habits</a>
+                            <a class="btn-secondary" href="/reports">📋 Browse reports</a>
+                        </div>
+                    {% endif %}
+                </div>
+            {% else %}
+                <div class="card" style="margin-top: 0.9rem;">
+                    <h3>Ready when you are</h3>
+                    <p class="helper-text">
+                        Run a scan to see whether the link looks suspicious.
+                    </p>
+                </div>
+            {% endif %}
+        </div>
+    </section>
+</div>
 {% endblock %}

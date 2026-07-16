@@ -1,27 +1,66 @@
 {% extends "base.html" %}
 
 {% block content %}
+<div class="page-shell">
+    <section class="hero-panel">
+        <div class="hero-copy">
+            <span class="badge">Community reports</span>
+            <h1>See recent scam reports</h1>
+            <p>Browse reports submitted by users to stay alert to the latest threats.</p>
 
-<h1>Community Scam Reports</h1>
-
-{% if reports %}
-
-    {% for report in reports %}
-
-        <div class="card">
-
-            <h3>{{ report.title }}</h3>
-
-            <p>{{ report.description }}</p>
-
+            <div class="cta-row">
+                <a class="btn-secondary" href="/report">🚨 Report a threat</a>
+                <a class="btn-primary" href="/scanner">🔎 Scan a link</a>
+            </div>
         </div>
 
-    {% endfor %}
+        <div class="hero-visual">
+            <div class="hero-badge">📋</div>
+        </div>
+    </section>
 
-{% else %}
+    <section class="content-card">
+        {% if reports %}
+            <div class="card" style="padding: 1.15rem; box-shadow:none;">
+                <h3 style="margin: 0 0 0.75rem;">Recent reports</h3>
+                <p class="helper-text" style="margin-bottom: 0.9rem;">A live-style feed of the reports currently stored in the app.</p>
 
-<p>No reports submitted yet.</p>
+                <div style="overflow:auto; border-radius: 18px; border:1px solid var(--border);">
+                    <table style="width:100%; border-collapse: collapse;">
+                        <thead>
+                            <tr style="background: rgba(33, 112, 228, 0.06);">
+                                <th style="text-align:left; padding: 0.85rem 1rem; font-size: 0.85rem; color: var(--muted); border-bottom:1px solid var(--border);">Title</th>
+                                <th style="text-align:left; padding: 0.85rem 1rem; font-size: 0.85rem; color: var(--muted); border-bottom:1px solid var(--border);">Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for report in reports %}
+                                <tr>
+                                    <td style="padding: 0.85rem 1rem; border-bottom:1px solid var(--border);">
+                                        <strong style="display:block; margin-bottom:0.25rem;">{{ report.title }}</strong>
+                                    </td>
+                                    <td style="padding: 0.85rem 1rem; border-bottom:1px solid var(--border);">{{ report.description }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
 
-{% endif %}
-
+                <div class="cta-row" style="margin-top: 1rem;">
+                    <a class="btn-secondary" href="/education">📚 Continue learning</a>
+                    <a class="btn-primary" href="/scanner">🔎 Run another scan</a>
+                </div>
+            </div>
+        {% else %}
+            <div class="card" style="padding: 1.15rem; box-shadow:none;">
+                <h3 style="margin: 0 0 0.5rem;">No reports submitted yet</h3>
+                <p class="helper-text" style="margin: 0 0 1rem;">Be the first to share a scam report so others can stay safer.</p>
+                <div class="cta-row" style="margin-top: 0;">
+                    <a class="btn-primary" href="/report">🚨 Submit a report</a>
+                    <a class="btn-secondary" href="/scanner">🔎 Scan a link</a>
+                </div>
+            </div>
+        {% endif %}
+    </section>
+</div>
 {% endblock %}

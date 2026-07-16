@@ -1,11 +1,73 @@
 {% extends "base.html" %}
 
 {% block content %}
+<div class="page-shell">
+    <section class="hero-panel">
+        <div class="hero-copy">
+            <span class="badge">Education hub</span>
+            <h1>Learn safer digital habits</h1>
+            <p>Short lessons to help you spot scams, protect your privacy, and stay confident online.</p>
 
-<h1>Education Hub</h1>
+            <div class="cta-row">
+                <a class="btn-primary" href="/scanner">🔎 Practice on the scanner</a>
+                <a class="btn-secondary" href="/report">🚨 Report a threat</a>
+            </div>
+        </div>
 
-<p>
-Learn how to stay safe online.
-</p>
+        <div class="hero-visual">
+            <div class="hero-badge">📚</div>
+        </div>
+    </section>
 
+    <section class="feature-grid">
+        <div class="card">
+            <h3>🕵️ Spotting phishing</h3>
+            <p>Learn how to identify suspicious senders, risky links, and urgent messages.</p>
+            <div class="cta-row" style="margin-top: 1rem;">
+                <a class="btn-secondary" href="/scanner">Try the scanner</a>
+                <a class="btn-primary" href="/report">Report a scam</a>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>🔐 Password safety</h3>
+            <p>Understand why unique passwords matter—and how password managers help.</p>
+            <div class="cta-row" style="margin-top: 1rem;">
+                <a class="btn-secondary" href="/education">Explore tips</a>
+                <a class="btn-primary" href="/reports">Browse reports</a>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>📱 Privacy basics</h3>
+            <p>Protect your personal information across apps, accounts, and messaging.</p>
+            <div class="cta-row" style="margin-top: 1rem;">
+                <a class="btn-secondary" href="/education">Learn privacy</a>
+                <a class="btn-primary" href="/scanner">Test a link</a>
+            </div>
+        </div>
+    </section>
+
+    <section class="content-card">
+        <h3>Learning path</h3>
+        <p class="helper-text" style="margin-top: 0;">Follow this path to build skills in the right order.</p>
+
+        <div class="panel-list" style="margin-top: 1rem;">
+            <div class="list-item">
+                <strong>Step 1 — Recognize red flags</strong>
+                <p class="helper-text" style="margin: 0;">Check urgency, sender mismatch, and unexpected login prompts.</p>
+            </div>
+
+            <div class="list-item">
+                <strong>Step 2 — Validate before entering info</strong>
+                <p class="helper-text" style="margin: 0;">Verify domains and avoid submitting credentials.</p>
+            </div>
+
+            <div class="list-item">
+                <strong>Step 3 — Report and share awareness</strong>
+                <p class="helper-text" style="margin: 0;">Help others by submitting reports to the community list.</p>
+            </div>
+        </div>
+    </section>
+</div>
 {% endblock %}

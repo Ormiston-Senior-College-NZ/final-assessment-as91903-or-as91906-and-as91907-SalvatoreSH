@@ -1,40 +1,42 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SafeNet</title>
-    <link rel="stylesheet"
-          href="{{ url_for('static', filename='style.css') }}">
+    <script>
+        (function () {
+            const storedTheme = localStorage.getItem("theme");
+            const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+            const theme = storedTheme || (prefersDark ? "dark" : "light");
+            document.documentElement.setAttribute("data-theme", theme);
+        })();
+    </script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
-
 <body>
+    <nav>
+        <a class="nav-brand" href="/">
+            <span>🛡️</span>
+            <span>SafeNet</span>
+        </a>
 
-<nav>
+        <div class="nav-links">
+            <a href="/dashboard" class="{% if request.path == '/dashboard' %}active{% endif %}">Dashboard</a>
+            <a href="/scanner" class="{% if request.path == '/scanner' %}active{% endif %}">Scanner</a>
+            <a href="/report" class="{% if request.path == '/report' %}active{% endif %}">Report Scam</a>
+            <a href="/reports" class="{% if request.path == '/reports' %}active{% endif %}">Reports</a>
+            <a href="/education" class="{% if request.path == '/education' %}active{% endif %}">Education Hub</a>
+            <a href="/login" class="{% if request.path == '/login' %}active{% endif %}">Login</a>
+        </div>
 
-    <a href="/">Dashboard</a>
+        <button class="theme-toggle" onclick="toggleTheme()">🌙 Dark Mode</button>
+    </nav>
 
+    <div class="container">
+        {% block content %}{% endblock %}
+    </div>
 
-    <a href="/scanner">Scanner</a>
-
-    <a href="/report">Report Scam</a>
-
-    <a href="/reports">Reports</a>
-
-    <a href="/education">Education Hub</a>
-
-    <button onclick="toggleTheme()">
-        Dark Mode
-    </button>
-
-</nav>
-
-<div class="container">
-{% block content %}
-{% endblock %}
-</div>
-
-<script src="{{ url_for('static', filename='script.js') }}">
-</script>
-
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
 </html>

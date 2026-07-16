@@ -1,34 +1,77 @@
 {% extends "base.html" %}
 
 {% block content %}
+<div class="page-shell">
+    <section class="hero-panel">
+        <div class="hero-copy">
+            <span class="badge">Report threat</span>
+            <h1>Report suspicious activity</h1>
+            <p>Share a scam or phishing attempt so others can stay informed and protected.</p>
 
-<h1>Report Scam</h1>
+            <div class="cta-row">
+                <a class="btn-secondary" href="/reports">📋 View community reports</a>
+                <a class="btn-primary" href="/scanner">🔎 Scan another link</a>
+            </div>
+        </div>
 
-<form method="POST">
+        <div class="hero-visual">
+            <div class="hero-badge">🚨</div>
+        </div>
+    </section>
 
-    <input
-        type="text"
-        name="title"
-        placeholder="Scam title"
-        required>
+    <section class="info-grid">
+        <div class="form-card">
+            <div class="card" style="padding: 1.25rem 1.15rem; box-shadow: none;">
+                <h3 style="margin: 0 0 0.65rem;">Submit a report</h3>
+                <p class="helper-text" style="margin: 0 0 1rem;">
+                    Include a clear title and a short description (what it tried to get you to do).
+                </p>
 
-    <textarea
-        name="description"
-        placeholder="Describe the scam"
-        required></textarea>
+                <form method="POST">
+                    <label for="title">Scam title</label>
+                    <input id="title" type="text" name="title" placeholder="e.g., Fake login page for your account" required>
 
-    <button type="submit">
-        Submit
-    </button>
+                    <label for="description">Description</label>
+                    <textarea id="description" name="description" placeholder="Describe what happened and any suspicious details" rows="5" required></textarea>
 
-</form>
+                    <button type="submit" class="btn-primary">Submit Report</button>
+                </form>
 
-{% if success %}
+                {% if success %}
+                    <div class="status-banner">✓ Report submitted successfully.</div>
+                {% endif %}
 
-<p style="color:green; font-weight:bold; margin-top:20px;">
-    ✓ Report submitted successfully.
-</p>
+                <div class="badge-row">
+                    <span class="badge badge--info">🧾 Helpful details</span>
+                    <span class="badge badge--warm">⚠️ Safety first</span>
+                </div>
+            </div>
+        </div>
 
-{% endif %}
+        <div class="content-card">
+            <h3 style="margin-bottom: 0.8rem;">After you submit</h3>
 
+            <div class="card" style="padding: 1.15rem; box-shadow: none;">
+                <h3 style="margin: 0 0 0.35rem;">What we do with reports</h3>
+                <p class="helper-text" style="margin: 0;">
+                    This front-end shares your report locally to keep the demo functional. In a full build, it would connect to live threat intelligence and a database.
+                </p>
+
+                <div class="cta-row" style="margin-top: 1rem;">
+                    <a class="btn-primary" href="/education">📚 Learn scams</a>
+                    <a class="btn-secondary" href="/reports">📋 Browse</a>
+                </div>
+            </div>
+
+            <div class="card" style="padding: 1.15rem; margin-top: 1rem; box-shadow: none;">
+                <h3 style="margin: 0 0 0.35rem;">Safety checklist</h3>
+                <ul style="margin: 0; padding-left: 1.1rem; color: var(--muted); line-height: 1.7;">
+                    <li>Avoid logging in from unexpected pages</li>
+                    <li>Don’t click urgent “verify now” links</li>
+                    <li>Report suspected content to protect others</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+</div>
 {% endblock %}
