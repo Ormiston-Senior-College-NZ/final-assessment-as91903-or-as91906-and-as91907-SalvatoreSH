@@ -1,66 +1,127 @@
 {% extends "base.html" %}
+{% block title %}Community Reports{% endblock %}
 
 {% block content %}
-<div class="page-shell">
-    <section class="hero-panel">
-        <div class="hero-copy">
-            <span class="badge">Community reports</span>
-            <h1>See recent scam reports</h1>
-            <p>Browse reports submitted by users to stay alert to the latest threats.</p>
+<div class="space-y-6">
 
-            <div class="cta-row">
-                <a class="btn-secondary" href="/report">🚨 Report a threat</a>
-                <a class="btn-primary" href="/scanner">🔎 Scan a link</a>
+    <!-- Header -->
+    <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+        <div>
+            <h1 class="text-3xl font-bold text-on-surface font-headline mb-1">Community Reports</h1>
+            <p class="text-on-surface-variant">User-submitted scam and phishing reports. Help protect others by adding your own.</p>
+        </div>
+        <a href="{{ url_for('report') }}"
+           class="bg-primary text-on-primary px-6 py-2.5 rounded-lg font-semibold hover:bg-surface-tint transition-colors flex items-center gap-2 shadow-sm self-start md:self-auto">
+            <span class="material-symbols-outlined text-sm">add</span>
+            Submit Report
+        </a>
+    </div>
+
+    <!-- Stats bar -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        {% set types = reports | map(attribute='threat_type') | list %}
+        <div class="bg-surface-container-lowest rounded-xl border border-outline-variant p-4 flex items-center gap-3">
+            <span class="material-symbols-outlined fill-icon text-outline text-2xl">list_alt</span>
+            <div>
+                <p class="text-xl font-bold text-on-surface">{{ reports | length }}</p>
+                <p class="text-xs text-on-surface-variant">Total Reports</p>
             </div>
         </div>
-
-        <div class="hero-visual">
-            <div class="hero-badge">📋</div>
+        <div class="bg-surface-container-lowest rounded-xl border border-outline-variant p-4 flex items-center gap-3">
+            <span class="material-symbols-outlined fill-icon text-error text-2xl">phishing</span>
+            <div>
+                <p class="text-xl font-bold text-on-surface">{{ reports | selectattr('threat_type', 'equalto', 'phishing') | list | length }}</p>
+                <p class="text-xs text-on-surface-variant">Phishing</p>
+            </div>
         </div>
-    </section>
-
-    <section class="content-card">
-        {% if reports %}
-            <div class="card" style="padding: 1.15rem; box-shadow:none;">
-                <h3 style="margin: 0 0 0.75rem;">Recent reports</h3>
-                <p class="helper-text" style="margin-bottom: 0.9rem;">A live-style feed of the reports currently stored in the app.</p>
-
-                <div style="overflow:auto; border-radius: 18px; border:1px solid var(--border);">
-                    <table style="width:100%; border-collapse: collapse;">
-                        <thead>
-                            <tr style="background: rgba(33, 112, 228, 0.06);">
-                                <th style="text-align:left; padding: 0.85rem 1rem; font-size: 0.85rem; color: var(--muted); border-bottom:1px solid var(--border);">Title</th>
-                                <th style="text-align:left; padding: 0.85rem 1rem; font-size: 0.85rem; color: var(--muted); border-bottom:1px solid var(--border);">Description</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for report in reports %}
-                                <tr>
-                                    <td style="padding: 0.85rem 1rem; border-bottom:1px solid var(--border);">
-                                        <strong style="display:block; margin-bottom:0.25rem;">{{ report.title }}</strong>
-                                    </td>
-                                    <td style="padding: 0.85rem 1rem; border-bottom:1px solid var(--border);">{{ report.description }}</td>
-                                </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-
-                <div class="cta-row" style="margin-top: 1rem;">
-                    <a class="btn-secondary" href="/education">📚 Continue learning</a>
-                    <a class="btn-primary" href="/scanner">🔎 Run another scan</a>
-                </div>
+        <div class="bg-surface-container-lowest rounded-xl border border-outline-variant p-4 flex items-center gap-3">
+            <span class="material-symbols-outlined fill-icon text-primary text-2xl">sms_failed</span>
+            <div>
+                <p class="text-xl font-bold text-on-surface">{{ reports | selectattr('threat_type', 'equalto', 'scam') | list | length }}</p>
+                <p class="text-xs text-on-surface-variant">Scams</p>
             </div>
-        {% else %}
-            <div class="card" style="padding: 1.15rem; box-shadow:none;">
-                <h3 style="margin: 0 0 0.5rem;">No reports submitted yet</h3>
-                <p class="helper-text" style="margin: 0 0 1rem;">Be the first to share a scam report so others can stay safer.</p>
-                <div class="cta-row" style="margin-top: 0;">
-                    <a class="btn-primary" href="/report">🚨 Submit a report</a>
-                    <a class="btn-secondary" href="/scanner">🔎 Scan a link</a>
-                </div>
+        </div>
+        <div class="bg-surface-container-lowest rounded-xl border border-outline-variant p-4 flex items-center gap-3">
+            <span class="material-symbols-outlined fill-icon text-tertiary text-2xl">bug_report</span>
+            <div>
+                <p class="text-xl font-bold text-on-surface">{{ reports | selectattr('threat_type', 'equalto', 'malware') | list | length }}</p>
+                <p class="text-xs text-on-surface-variant">Malware</p>
             </div>
-        {% endif %}
-    </section>
+        </div>
+    </div>
+
+    <!-- Reports list -->
+    {% if reports %}
+    <div class="space-y-3">
+        {% for r in reports %}
+        <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant shadow-sm p-5 flex flex-col md:flex-row md:items-start gap-4 hover:border-outline transition-colors">
+
+            <!-- Icon -->
+            <div class="flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center
+                {% if r.threat_type == 'phishing' %}bg-error-container text-error
+                {% elif r.threat_type == 'malware' %}bg-tertiary-container text-on-tertiary
+                {% elif r.threat_type == 'scam' %}bg-primary-container text-on-primary-container
+                {% else %}bg-surface-container text-on-surface-variant{% endif %}">
+                <span class="material-symbols-outlined fill-icon">
+                    {% if r.threat_type == 'phishing' %}phishing
+                    {% elif r.threat_type == 'malware' %}bug_report
+                    {% elif r.threat_type == 'scam' %}sms_failed
+                    {% else %}flag{% endif %}
+                </span>
+            </div>
+
+            <!-- Content -->
+            <div class="flex-1 min-w-0">
+                <div class="flex flex-wrap items-center gap-2 mb-2">
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wide
+                        {% if r.threat_type == 'phishing' %}bg-error-container text-error
+                        {% elif r.threat_type == 'malware' %}bg-tertiary-container text-on-tertiary
+                        {% elif r.threat_type == 'scam' %}bg-primary-container text-on-primary-container
+                        {% else %}bg-surface-container text-on-surface-variant{% endif %}">
+                        {{ r.threat_type or 'other' }}
+                    </span>
+                    {% if r.timestamp %}
+                    <span class="text-xs text-on-surface-variant flex items-center gap-1">
+                        <span class="material-symbols-outlined text-xs">schedule</span>
+                        {{ r.timestamp }}
+                    </span>
+                    {% endif %}
+                </div>
+
+                {% if r.url_content %}
+                <p class="text-sm font-mono text-primary break-all mb-2">{{ r.url_content }}</p>
+                {% endif %}
+
+                {% if r.description %}
+                <p class="text-sm text-on-surface-variant leading-relaxed">{{ r.description }}</p>
+                {% endif %}
+            </div>
+
+            <!-- Scan button -->
+            {% if r.url_content and r.url_content.startswith('http') %}
+            <a href="{{ url_for('scanner') }}"
+               class="flex-shrink-0 self-start flex items-center gap-1.5 text-xs font-semibold text-primary border border-primary/30 bg-primary-container/30 hover:bg-primary-container transition-colors px-3 py-2 rounded-lg">
+                <span class="material-symbols-outlined text-sm">search</span>
+                Scan
+            </a>
+            {% endif %}
+
+        </div>
+        {% endfor %}
+    </div>
+
+    {% else %}
+    <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant p-12 text-center">
+        <span class="material-symbols-outlined text-5xl text-outline mb-4 block">inbox</span>
+        <h3 class="font-semibold text-on-surface text-lg mb-2">No reports yet</h3>
+        <p class="text-on-surface-variant text-sm mb-6">Be the first to report a suspicious link or scam.</p>
+        <a href="{{ url_for('report') }}"
+           class="bg-primary text-on-primary px-6 py-3 rounded-lg font-semibold hover:bg-surface-tint transition-colors inline-flex items-center gap-2">
+            <span class="material-symbols-outlined text-sm">flag</span>
+            Submit a Report
+        </a>
+    </div>
+    {% endif %}
+
 </div>
 {% endblock %}

@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}Page Not Found{% endblock %}
+
+{% block content %}
+<div class="max-w-lg mx-auto flex flex-col items-center justify-center text-center py-20 space-y-6">
+
+    <div class="w-24 h-24 rounded-full bg-error-container flex items-center justify-center mb-2">
+        <span class="material-symbols-outlined fill-icon text-error" style="font-size:3rem;">
+            {% if code == 500 %}error{% else %}search_off{% endif %}
+        </span>
+    </div>
+
+    <h1 class="text-6xl font-black text-on-surface font-headline">
+        {% if code == 500 %}500{% else %}404{% endif %}
+    </h1>
+
+    <h2 class="text-2xl font-bold text-on-surface">
+        {% if code == 500 %}Something went wrong{% else %}Page not found{% endif %}
+    </h2>
+
+    <p class="text-on-surface-variant max-w-sm leading-relaxed">
+        {% if code == 500 %}
+        An unexpected error occurred on our end. Try refreshing the page.
+        {% else %}
+        The page you're looking for doesn't exist or has been moved.
+        {% endif %}
+    </p>
+
+    <div class="flex flex-col sm:flex-row gap-3">
+        <a href="{{ url_for('dashboard') }}"
+           class="bg-primary text-on-primary px-6 py-3 rounded-lg font-semibold hover:bg-surface-tint transition-colors flex items-center gap-2 shadow-sm">
+            <span class="material-symbols-outlined text-sm">home</span>
+            Go to Dashboard
+        </a>
+        <a href="{{ url_for('scanner') }}"
+           class="bg-surface-container-lowest border border-outline-variant text-on-surface px-6 py-3 rounded-lg font-semibold hover:bg-surface-container-high transition-colors flex items-center gap-2">
+            <span class="material-symbols-outlined text-sm">search</span>
+            Scan a Link
+        </a>
+    </div>
+
+</div>
+{% endblock %}

@@ -1,108 +1,191 @@
 {% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
 
 {% block content %}
-<div class="page-shell">
-    <section class="hero-panel">
-        <div class="hero-copy">
-            <span class="badge">SafeNet dashboard</span>
-            <h1>Hello, Alex!</h1>
-            <p>Your safety status is <strong>Good</strong>. Your device is being monitored for suspicious activity.</p>
+<!-- Welcome header -->
+<header class="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-4">
+    <div>
+        <h1 class="text-3xl font-bold text-on-surface mb-1 font-headline">SafeNet Dashboard</h1>
+        <p class="text-on-surface-variant text-lg">Your safety status is <span class="text-secondary font-semibold">Good</span>.</p>
+    </div>
+    <div class="flex gap-3">
+        <a href="{{ url_for('scanner') }}"
+           class="bg-primary text-on-primary px-6 py-2.5 rounded-lg font-semibold hover:bg-surface-tint transition-colors flex items-center gap-2 shadow-sm">
+            <span class="material-symbols-outlined text-sm">link</span>
+            Scan a Link
+        </a>
+        <a href="{{ url_for('education') }}"
+           class="bg-surface-container-highest text-on-surface px-6 py-2.5 rounded-lg font-semibold border border-outline-variant hover:bg-surface-variant transition-colors flex items-center gap-2">
+            <span class="material-symbols-outlined text-sm">school</span>
+            Learn
+        </a>
+    </div>
+</header>
 
-            <div class="cta-row">
-                <a class="btn-primary" href="/scanner">Scan a link</a>
-                <a class="btn-secondary" href="/report">Report a threat</a>
+<!-- Bento grid -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+
+    <!-- Safety score (4 cols) -->
+    <div class="md:col-span-4 bg-surface-container-lowest rounded-2xl border border-outline-variant shadow-sm p-6 flex flex-col items-center justify-center min-h-[280px]">
+        <h2 class="text-lg font-semibold text-on-surface mb-6 w-full text-left">Safety Score</h2>
+        <div class="relative w-44 h-44">
+            <svg class="w-full h-full -rotate-90" viewBox="0 0 100 100">
+                <circle cx="50" cy="50" r="45" fill="none" stroke="currentColor" class="text-surface-container-high" stroke-width="10"/>
+                <circle cx="50" cy="50" r="45" fill="none" stroke="#006c49" stroke-dasharray="283" stroke-dashoffset="42"
+                        stroke-linecap="round" stroke-width="10"/>
+            </svg>
+            <div class="absolute inset-0 flex flex-col items-center justify-center">
+                <span class="text-5xl font-black text-on-surface font-headline">85</span>
+                <span class="text-sm text-on-surface-variant mt-1">/100</span>
             </div>
-
-            <div class="badge-row">
-                <span class="badge badge--ok">🛡️ Fast checks</span>
-                <span class="badge badge--info">🔒 Private by design</span>
-                <span class="badge badge--warm">✨ Free to try</span>
-            </div>
         </div>
+        <p class="mt-6 text-sm text-center text-on-surface-variant">Your device is protected and monitored.</p>
+    </div>
 
-        <div class="hero-visual">
-            <div class="hero-badge">🛡️</div>
-        </div>
-    </section>
-
-    <section class="stats-row">
-        <div class="card stat-card">
-            <div class="badge badge--warm">🧯 Blocked</div>
-            <strong>12</strong>
-            <span>Blocked threats today</span>
-        </div>
-
-        <div class="card stat-card">
-            <div class="badge badge--info">📡 Active monitoring</div>
-            <strong>1,402</strong>
-            <span>Recent scans completed</span>
-        </div>
-
-        <div class="card stat-card">
-            <div class="badge badge--ok">✅ Safety score</div>
-            <strong>85/100</strong>
-            <span>Current safety score</span>
-        </div>
-    </section>
-
-    <section class="info-grid">
-        <div class="content-card">
-            <h3>Protection overview</h3>
-            <p>SafeNet is actively watching for suspicious URLs, fake login pages, and scam activity that could impact your account.</p>
-
-            <div class="summary-grid">
-                <div class="card">
-                    <h3>Quick scan</h3>
-                    <p>Run a check on any suspicious link before you click it.</p>
+    <!-- Stats + tip (8 cols) -->
+    <div class="md:col-span-8 flex flex-col gap-6">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <!-- Blocked threats -->
+            <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant shadow-sm p-6 flex flex-col justify-between">
+                <div class="flex justify-between items-start mb-4">
+                    <div class="w-12 h-12 rounded-full bg-error-container text-on-error-container flex items-center justify-center">
+                        <span class="material-symbols-outlined fill-icon">gpp_bad</span>
+                    </div>
+                    <span class="text-xs font-bold text-error bg-error-container px-2 py-1 rounded-full uppercase tracking-wider">+2 Today</span>
                 </div>
-                <div class="card">
-                    <h3>Community reports</h3>
-                    <p>Review shared scam reports to stay ahead of new threats.</p>
+                <div>
+                    <h3 class="text-3xl font-bold text-on-surface mb-1">12</h3>
+                    <p class="text-on-surface-variant font-medium">Blocked Threats</p>
                 </div>
             </div>
-
-            <div class="cta-row">
-                <a class="btn-secondary" href="/reports">📋 View reports</a>
-                <a class="btn-primary" href="/education">📚 Continue learning</a>
-            </div>
-        </div>
-
-        <div class="content-card">
-            <h3>Latest updates</h3>
-            <div class="panel-list">
-                <div class="list-item">
-                    <strong>New lesson unlocked</strong>
-                    <p>Phishing awareness tips are now available in the education hub.</p>
+            <!-- Reports submitted -->
+            <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant shadow-sm p-6 flex flex-col justify-between">
+                <div class="flex justify-between items-start mb-4">
+                    <div class="w-12 h-12 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center">
+                        <span class="material-symbols-outlined fill-icon">radar</span>
+                    </div>
+                    <span class="text-xs font-bold text-primary bg-primary-container px-2 py-1 rounded-full uppercase tracking-wider">Community</span>
                 </div>
-                <div class="list-item">
-                    <strong>Security reminder</strong>
-                    <p>Use strong, unique passwords and review your privacy settings.</p>
+                <div>
+                    <h3 class="text-3xl font-bold text-on-surface mb-1">{{ total_reports }}</h3>
+                    <p class="text-on-surface-variant font-medium">Scam Reports Filed</p>
                 </div>
             </div>
+        </div>
 
-            <div class="card" style="margin-top: 0.9rem;">
-                <h3>Tip of the Day</h3>
-                <p>Use unique, complex passwords for every account. Consider a password manager to keep them secure.</p>
+        <!-- Tip of the day -->
+        <div class="bg-tertiary-container rounded-2xl p-6 flex items-start gap-4 text-on-tertiary border border-outline-variant shadow-sm relative overflow-hidden">
+            <div class="absolute -right-10 -top-10 w-40 h-40 bg-tertiary opacity-20 rounded-full blur-2xl pointer-events-none"></div>
+            <div class="bg-on-tertiary text-tertiary-container w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 z-10">
+                <span class="material-symbols-outlined fill-icon">lightbulb</span>
+            </div>
+            <div class="z-10">
+                <h3 class="font-bold text-lg mb-1">Tip of the Day</h3>
+                <p class="text-sm opacity-90 leading-relaxed">
+                    {{ tip }}
+                </p>
             </div>
         </div>
-    </section>
+    </div>
 
-    <section class="feature-grid">
-        <div class="card">
-            <h3>Scanner</h3>
-            <p>Paste a link and get a quick safety check before opening it.</p>
-            <div class="cta-row"><a class="btn-secondary" href="/scanner">Open scanner</a></div>
+    <!-- Quick actions (4 cols) -->
+    <div class="md:col-span-4 bg-surface-container-lowest rounded-2xl border border-outline-variant shadow-sm flex flex-col">
+        <div class="p-5 border-b border-surface-variant flex justify-between items-center bg-surface-container-low rounded-t-2xl">
+            <h2 class="font-semibold text-on-surface">Quick Actions</h2>
         </div>
-        <div class="card">
-            <h3>Report scam</h3>
-            <p>Share suspicious messages or sites and help protect others.</p>
-            <div class="cta-row"><a class="btn-secondary" href="/report">Open report</a></div>
+        <div class="p-4 space-y-3 flex-1">
+            <a href="{{ url_for('scanner') }}"
+               class="flex items-center gap-3 p-3 rounded-xl hover:bg-surface-container-high transition-colors group">
+                <div class="w-9 h-9 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center flex-shrink-0">
+                    <span class="material-symbols-outlined fill-icon text-sm">security_update_good</span>
+                </div>
+                <div>
+                    <p class="text-sm font-semibold text-on-surface">Scan a Link</p>
+                    <p class="text-xs text-on-surface-variant">Check before you click</p>
+                </div>
+                <span class="material-symbols-outlined text-outline ml-auto group-hover:text-primary transition-colors">chevron_right</span>
+            </a>
+            <a href="{{ url_for('report') }}"
+               class="flex items-center gap-3 p-3 rounded-xl hover:bg-surface-container-high transition-colors group">
+                <div class="w-9 h-9 rounded-full bg-error-container text-on-error-container flex items-center justify-center flex-shrink-0">
+                    <span class="material-symbols-outlined fill-icon text-sm">flag</span>
+                </div>
+                <div>
+                    <p class="text-sm font-semibold text-on-surface">Report a Scam</p>
+                    <p class="text-xs text-on-surface-variant">Help protect others</p>
+                </div>
+                <span class="material-symbols-outlined text-outline ml-auto group-hover:text-primary transition-colors">chevron_right</span>
+            </a>
+            <a href="{{ url_for('education') }}"
+               class="flex items-center gap-3 p-3 rounded-xl hover:bg-surface-container-high transition-colors group">
+                <div class="w-9 h-9 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center flex-shrink-0">
+                    <span class="material-symbols-outlined fill-icon text-sm">school</span>
+                </div>
+                <div>
+                    <p class="text-sm font-semibold text-on-surface">Education Hub</p>
+                    <p class="text-xs text-on-surface-variant">Learn safer habits</p>
+                </div>
+                <span class="material-symbols-outlined text-outline ml-auto group-hover:text-primary transition-colors">chevron_right</span>
+            </a>
+            <a href="{{ url_for('reports') }}"
+               class="flex items-center gap-3 p-3 rounded-xl hover:bg-surface-container-high transition-colors group">
+                <div class="w-9 h-9 rounded-full bg-surface-container text-on-surface-variant flex items-center justify-center flex-shrink-0">
+                    <span class="material-symbols-outlined fill-icon text-sm">list_alt</span>
+                </div>
+                <div>
+                    <p class="text-sm font-semibold text-on-surface">Community Reports</p>
+                    <p class="text-xs text-on-surface-variant">See recent scams</p>
+                </div>
+                <span class="material-symbols-outlined text-outline ml-auto group-hover:text-primary transition-colors">chevron_right</span>
+            </a>
         </div>
-        <div class="card">
-            <h3>Education hub</h3>
-            <p>Build safer habits with short lessons and practical guidance.</p>
-            <div class="cta-row"><a class="btn-secondary" href="/education">Open hub</a></div>
+    </div>
+
+    <!-- Recent reports table (8 cols) -->
+    <div class="md:col-span-8 bg-surface-container-lowest rounded-2xl border border-outline-variant shadow-sm overflow-hidden flex flex-col">
+        <div class="p-5 border-b border-surface-variant flex justify-between items-center bg-surface-container-low">
+            <h2 class="font-semibold text-on-surface">Recent Community Reports</h2>
+            <a href="{{ url_for('reports') }}" class="text-primary text-sm font-medium hover:underline flex items-center gap-1">
+                View all <span class="material-symbols-outlined text-sm">arrow_forward</span>
+            </a>
         </div>
-    </section>
+        <div class="overflow-x-auto flex-1">
+            {% if recent_reports %}
+            <table class="w-full text-left border-collapse text-sm">
+                <thead>
+                    <tr class="bg-surface-container-lowest text-xs uppercase text-on-surface-variant border-b border-surface-variant">
+                        <th class="px-6 py-4 font-semibold">Type</th>
+                        <th class="px-6 py-4 font-semibold">URL / Content</th>
+                        <th class="px-6 py-4 font-semibold">Date</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-surface-variant">
+                    {% for r in recent_reports %}
+                    <tr class="hover:bg-surface-container-low transition-colors">
+                        <td class="px-6 py-4">
+                            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold
+                                {% if r.threat_type == 'phishing' %}bg-error-container text-error
+                                {% elif r.threat_type == 'malware' %}bg-tertiary-container text-on-tertiary
+                                {% elif r.threat_type == 'scam' %}bg-primary-container text-on-primary-container
+                                {% else %}bg-surface-container text-on-surface-variant{% endif %} uppercase">
+                                {{ r.threat_type or 'Other' }}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 text-on-surface font-medium max-w-xs truncate">{{ r.url_content or '—' }}</td>
+                        <td class="px-6 py-4 text-on-surface-variant">{{ r.timestamp or '—' }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <div class="p-8 text-center text-on-surface-variant">
+                <span class="material-symbols-outlined text-4xl mb-3 block text-outline">inbox</span>
+                <p class="font-medium">No reports yet.</p>
+                <a href="{{ url_for('report') }}" class="text-primary text-sm hover:underline mt-1 inline-block">Be the first to submit one →</a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
 </div>
 {% endblock %}

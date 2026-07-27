@@ -1,77 +1,118 @@
 {% extends "base.html" %}
+{% block title %}Report a Scam{% endblock %}
 
 {% block content %}
-<div class="page-shell">
-    <section class="hero-panel">
-        <div class="hero-copy">
-            <span class="badge">Report threat</span>
-            <h1>Report suspicious activity</h1>
-            <p>Share a scam or phishing attempt so others can stay informed and protected.</p>
+<div class="max-w-3xl mx-auto space-y-6">
 
-            <div class="cta-row">
-                <a class="btn-secondary" href="/reports">📋 View community reports</a>
-                <a class="btn-primary" href="/scanner">🔎 Scan another link</a>
-            </div>
+    <div>
+        <h1 class="text-3xl font-bold text-on-surface font-headline mb-1">Report a Threat</h1>
+        <p class="text-on-surface-variant">Submit a suspicious URL, message, or scam attempt so others can stay informed and protected.</p>
+    </div>
+
+    <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant shadow-sm p-6 md:p-8">
+        {% if error %}
+        <div class="mb-6 p-4 rounded-xl bg-error-container border border-error/20 flex items-start gap-3">
+            <span class="material-symbols-outlined fill-icon text-error flex-shrink-0 mt-0.5">error</span>
+            <p class="text-sm text-on-error-container font-medium">{{ error }}</p>
         </div>
+        {% endif %}
 
-        <div class="hero-visual">
-            <div class="hero-badge">🚨</div>
-        </div>
-    </section>
+        <form method="POST" action="{{ url_for('report') }}" class="space-y-6">
 
-    <section class="info-grid">
-        <div class="form-card">
-            <div class="card" style="padding: 1.25rem 1.15rem; box-shadow: none;">
-                <h3 style="margin: 0 0 0.65rem;">Submit a report</h3>
-                <p class="helper-text" style="margin: 0 0 1rem;">
-                    Include a clear title and a short description (what it tried to get you to do).
-                </p>
-
-                <form method="POST">
-                    <label for="title">Scam title</label>
-                    <input id="title" type="text" name="title" placeholder="e.g., Fake login page for your account" required>
-
-                    <label for="description">Description</label>
-                    <textarea id="description" name="description" placeholder="Describe what happened and any suspicious details" rows="5" required></textarea>
-
-                    <button type="submit" class="btn-primary">Submit Report</button>
-                </form>
-
-                {% if success %}
-                    <div class="status-banner">✓ Report submitted successfully.</div>
-                {% endif %}
-
-                <div class="badge-row">
-                    <span class="badge badge--info">🧾 Helpful details</span>
-                    <span class="badge badge--warm">⚠️ Safety first</span>
-                </div>
-            </div>
-        </div>
-
-        <div class="content-card">
-            <h3 style="margin-bottom: 0.8rem;">After you submit</h3>
-
-            <div class="card" style="padding: 1.15rem; box-shadow: none;">
-                <h3 style="margin: 0 0 0.35rem;">What we do with reports</h3>
-                <p class="helper-text" style="margin: 0;">
-                    This front-end shares your report locally to keep the demo functional. In a full build, it would connect to live threat intelligence and a database.
-                </p>
-
-                <div class="cta-row" style="margin-top: 1rem;">
-                    <a class="btn-primary" href="/education">📚 Learn scams</a>
-                    <a class="btn-secondary" href="/reports">📋 Browse</a>
+            <!-- Threat type -->
+            <div class="space-y-2">
+                <label class="block text-sm font-semibold text-on-surface" for="threat_type">Threat Type</label>
+                <div class="relative">
+                    <select id="threat_type" name="threat_type" required
+                            class="block w-full pl-3 pr-10 py-3 text-sm border border-outline-variant rounded-lg bg-surface text-on-surface appearance-none focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                        <option value="" disabled {% if not form.threat_type %}selected{% endif %}>Select the type of threat...</option>
+                        <option value="phishing" {% if form.threat_type == 'phishing' %}selected{% endif %}>Phishing (Fake login page, deceptive email)</option>
+                        <option value="scam" {% if form.threat_type == 'scam' %}selected{% endif %}>Scam (Fraudulent offer, impersonation)</option>
+                        <option value="malware" {% if form.threat_type == 'malware' %}selected{% endif %}>Malware (Suspicious download, virus)</option>
+                        <option value="other" {% if form.threat_type == 'other' %}selected{% endif %}>Other</option>
+                    </select>
+                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-on-surface-variant">
+                        <span class="material-symbols-outlined">expand_more</span>
+                    </div>
                 </div>
             </div>
 
-            <div class="card" style="padding: 1.15rem; margin-top: 1rem; box-shadow: none;">
-                <h3 style="margin: 0 0 0.35rem;">Safety checklist</h3>
-                <ul style="margin: 0; padding-left: 1.1rem; color: var(--muted); line-height: 1.7;">
-                    <li>Avoid logging in from unexpected pages</li>
-                    <li>Don’t click urgent “verify now” links</li>
-                    <li>Report suspected content to protect others</li>
-                </ul>
+            <!-- URL or content -->
+            <div class="space-y-2">
+                <label class="block text-sm font-semibold text-on-surface" for="url_content">Suspicious URL or Message Content</label>
+                <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <span class="material-symbols-outlined text-on-surface-variant">link</span>
+                    </div>
+                    <input id="url_content" name="url_content" type="text" required
+                           value="{{ form.url_content or '' }}"
+                           placeholder="https://suspicious-link.com or paste message text here"
+                           class="w-full pl-10 pr-4 py-3 text-sm border border-outline-variant rounded-lg bg-surface text-on-surface focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" />
+                </div>
             </div>
-        </div>
-    </section>
+
+            <!-- Description -->
+            <div class="space-y-2">
+                <label class="block text-sm font-semibold text-on-surface" for="description">
+                    Description <span class="text-on-surface-variant font-normal">(min. 20 characters)</span>
+                </label>
+                <textarea id="description" name="description" rows="4" minlength="20" maxlength="500" required
+                          placeholder="Describe what happened and any suspicious details — what it tried to get you to do, where you found it, etc.">{{ form.description or '' }}</textarea>
+                <textarea class="hidden"
+                          class="w-full px-3 py-3 text-sm border border-outline-variant rounded-lg bg-surface text-on-surface focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent resize-none"></textarea>
+                <div class="flex justify-between items-center">
+                    <p class="text-xs text-on-surface-variant">Minimum 20 characters. Maximum 500.</p>
+                    <p class="text-xs text-on-surface-variant"><span id="char-count">0</span> / 500</p>
+                </div>
+            </div>
+
+            <!-- Buttons -->
+            <div class="flex items-center justify-end gap-4 pt-4 border-t border-surface-variant">
+                <a href="{{ url_for('dashboard') }}"
+                   class="bg-surface-container-lowest border border-outline-variant text-on-surface hover:bg-surface-container-high transition-colors px-6 py-3 rounded-lg font-semibold text-sm">
+                    Cancel
+                </a>
+                <button type="submit"
+                        class="bg-primary text-on-primary hover:bg-surface-tint transition-colors px-6 py-3 rounded-lg font-semibold text-sm shadow-sm flex items-center gap-2 active:scale-95">
+                    <span class="material-symbols-outlined text-sm">send</span>
+                    Submit Report
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Safety tips sidebar card -->
+    <div class="bg-surface-container-low rounded-2xl border border-outline-variant p-5">
+        <h3 class="font-semibold text-on-surface mb-3 flex items-center gap-2">
+            <span class="material-symbols-outlined fill-icon text-secondary">security</span>
+            Safety checklist
+        </h3>
+        <ul class="space-y-2 text-sm text-on-surface-variant">
+            <li class="flex items-start gap-2">
+                <span class="material-symbols-outlined fill-icon text-secondary text-base mt-0.5">check_circle</span>
+                Avoid entering credentials on unexpected login pages.
+            </li>
+            <li class="flex items-start gap-2">
+                <span class="material-symbols-outlined fill-icon text-secondary text-base mt-0.5">check_circle</span>
+                Don't click "Verify now" or "Urgent action required" links from unknown senders.
+            </li>
+            <li class="flex items-start gap-2">
+                <span class="material-symbols-outlined fill-icon text-secondary text-base mt-0.5">check_circle</span>
+                Report suspected content to help protect the community.
+            </li>
+        </ul>
+    </div>
+
 </div>
+
+<script>
+    const desc = document.getElementById('description');
+    const counter = document.getElementById('char-count');
+    if (desc && counter) {
+        desc.addEventListener('input', () => {
+            counter.textContent = desc.value.length;
+            counter.style.color = desc.value.length > 450 ? 'var(--error-color, #ba1a1a)' : '';
+        });
+    }
+</script>
 {% endblock %}

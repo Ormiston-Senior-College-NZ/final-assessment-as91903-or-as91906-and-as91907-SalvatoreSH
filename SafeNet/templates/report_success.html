@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}Report Submitted{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto flex flex-col items-center justify-center text-center py-16 space-y-6">
+
+    <div class="w-20 h-20 rounded-full bg-secondary-container flex items-center justify-center mb-2">
+        <span class="material-symbols-outlined fill-icon text-secondary" style="font-size:2.5rem;">check_circle</span>
+    </div>
+
+    <h1 class="text-3xl font-bold text-on-surface font-headline">Report Submitted</h1>
+    <p class="text-on-surface-variant text-lg max-w-md">
+        Thank you for helping keep the community safe. Your report has been saved and will help others avoid this threat.
+    </p>
+
+    <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant shadow-sm p-6 w-full text-left space-y-3">
+        <h2 class="font-semibold text-on-surface mb-2">What happens next?</h2>
+        <div class="flex items-start gap-3">
+            <span class="material-symbols-outlined fill-icon text-primary text-base mt-0.5">storage</span>
+            <p class="text-sm text-on-surface-variant">Your report has been saved to the community reports database.</p>
+        </div>
+        <div class="flex items-start gap-3">
+            <span class="material-symbols-outlined fill-icon text-primary text-base mt-0.5">group</span>
+            <p class="text-sm text-on-surface-variant">Other users can now see this report and avoid the same scam.</p>
+        </div>
+        <div class="flex items-start gap-3">
+            <span class="material-symbols-outlined fill-icon text-primary text-base mt-0.5">school</span>
+            <p class="text-sm text-on-surface-variant">Visit the Education Hub to learn more about staying safe online.</p>
+        </div>
+    </div>
+
+    <div class="flex flex-col sm:flex-row gap-3 pt-2">
+        <a href="{{ url_for('reports') }}"
+           class="bg-primary text-on-primary px-6 py-3 rounded-lg font-semibold hover:bg-surface-tint transition-colors flex items-center gap-2 shadow-sm">
+            <span class="material-symbols-outlined text-sm">list_alt</span>
+            View All Reports
+        </a>
+        <a href="{{ url_for('report') }}"
+           class="bg-surface-container-lowest border border-outline-variant text-on-surface px-6 py-3 rounded-lg font-semibold hover:bg-surface-container-high transition-colors flex items-center gap-2">
+            <span class="material-symbols-outlined text-sm">flag</span>
+            Submit Another
+        </a>
+        <a href="{{ url_for('dashboard') }}"
+           class="bg-surface-container-lowest border border-outline-variant text-on-surface px-6 py-3 rounded-lg font-semibold hover:bg-surface-container-high transition-colors flex items-center gap-2">
+            <span class="material-symbols-outlined text-sm">dashboard</span>
+            Dashboard
+        </a>
+    </div>
+
+</div>
+{% endblock %}

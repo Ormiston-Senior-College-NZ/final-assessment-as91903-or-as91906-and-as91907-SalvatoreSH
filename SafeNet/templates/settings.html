@@ -1,0 +1,173 @@
+{% extends "base.html" %}
+{% block title %}Settings{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto space-y-6">
+
+    <div>
+        <h1 class="text-3xl font-bold text-on-surface font-headline mb-1">Settings</h1>
+        <p class="text-on-surface-variant">Manage your preferences and appearance.</p>
+    </div>
+
+    <!-- Appearance -->
+    <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant shadow-sm overflow-hidden">
+        <div class="bg-surface-container-low px-6 py-4 border-b border-outline-variant">
+            <h2 class="font-semibold text-on-surface">Appearance</h2>
+        </div>
+        <div class="p-6 space-y-4">
+
+            <!-- Theme toggle -->
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center">
+                        <span class="material-symbols-outlined text-on-surface-variant">dark_mode</span>
+                    </div>
+                    <div>
+                        <p class="text-sm font-semibold text-on-surface">Dark Mode</p>
+                        <p class="text-xs text-on-surface-variant">Switch between light and dark themes</p>
+                    </div>
+                </div>
+                <button id="settings-theme-toggle" onclick="toggleTheme()"
+                        class="relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 bg-outline"
+                        role="switch" aria-checked="false">
+                    <span id="settings-thumb"
+                          class="inline-block h-4 w-4 rounded-full bg-white shadow transform transition-transform translate-x-1"></span>
+                </button>
+            </div>
+
+            <!-- Theme selector cards -->
+            <div class="grid grid-cols-2 gap-3 pt-2">
+                <button onclick="setTheme('light')"
+                        class="theme-option p-4 rounded-xl border-2 border-outline-variant bg-white text-left hover:border-primary transition-colors" data-theme="light">
+                    <div class="flex items-center gap-2 mb-2">
+                        <span class="material-symbols-outlined text-on-surface text-sm">light_mode</span>
+                        <span class="text-sm font-semibold text-on-surface">Light</span>
+                    </div>
+                    <div class="h-8 rounded-lg bg-surface-container border border-outline-variant/50"></div>
+                </button>
+                <button onclick="setTheme('dark')"
+                        class="theme-option p-4 rounded-xl border-2 border-outline-variant bg-gray-900 text-left hover:border-primary transition-colors" data-theme="dark">
+                    <div class="flex items-center gap-2 mb-2">
+                        <span class="material-symbols-outlined text-white text-sm">dark_mode</span>
+                        <span class="text-sm font-semibold text-white">Dark</span>
+                    </div>
+                    <div class="h-8 rounded-lg bg-gray-700 border border-gray-600/50"></div>
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- About -->
+    <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant shadow-sm overflow-hidden">
+        <div class="bg-surface-container-low px-6 py-4 border-b border-outline-variant">
+            <h2 class="font-semibold text-on-surface">About SafeNet</h2>
+        </div>
+        <div class="p-6 space-y-4">
+            <div class="flex items-start gap-4">
+                <div class="w-12 h-12 rounded-full bg-primary-container flex items-center justify-center flex-shrink-0">
+                    <span class="material-symbols-outlined fill-icon text-primary">shield</span>
+                </div>
+                <div>
+                    <h3 class="font-semibold text-on-surface">SafeNet v1.0</h3>
+                    <p class="text-sm text-on-surface-variant mt-1 leading-relaxed">
+                        SafeNet is a digital safety web application built with Python and Flask.
+                        It helps users identify suspicious links, report scams, and learn about online safety.
+                    </p>
+                    <p class="text-xs text-on-surface-variant mt-2">
+                        Built by Salvatore Shadrick · Year 13 · Ormiston Senior College
+                    </p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
+                <div class="bg-surface-container-low rounded-xl p-3 border border-outline-variant text-center">
+                    <p class="text-xs text-on-surface-variant mb-1">Backend</p>
+                    <p class="text-sm font-semibold text-on-surface">Python / Flask</p>
+                </div>
+                <div class="bg-surface-container-low rounded-xl p-3 border border-outline-variant text-center">
+                    <p class="text-xs text-on-surface-variant mb-1">Frontend</p>
+                    <p class="text-sm font-semibold text-on-surface">HTML / Tailwind CSS</p>
+                </div>
+                <div class="bg-surface-container-low rounded-xl p-3 border border-outline-variant text-center">
+                    <p class="text-xs text-on-surface-variant mb-1">Storage</p>
+                    <p class="text-sm font-semibold text-on-surface">JSON</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Data -->
+    <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant shadow-sm overflow-hidden">
+        <div class="bg-surface-container-low px-6 py-4 border-b border-outline-variant">
+            <h2 class="font-semibold text-on-surface">Data & Privacy</h2>
+        </div>
+        <div class="p-6 space-y-3">
+            <div class="flex items-start gap-3">
+                <span class="material-symbols-outlined fill-icon text-secondary text-base mt-0.5">check_circle</span>
+                <p class="text-sm text-on-surface-variant">SafeNet does not collect any personally identifying information.</p>
+            </div>
+            <div class="flex items-start gap-3">
+                <span class="material-symbols-outlined fill-icon text-secondary text-base mt-0.5">check_circle</span>
+                <p class="text-sm text-on-surface-variant">Scam reports are stored locally and are never transmitted to external services.</p>
+            </div>
+            <div class="flex items-start gap-3">
+                <span class="material-symbols-outlined fill-icon text-secondary text-base mt-0.5">check_circle</span>
+                <p class="text-sm text-on-surface-variant">The link scanner analyses URL patterns only — it never follows or visits the link.</p>
+            </div>
+            <div class="flex items-start gap-3">
+                <span class="material-symbols-outlined fill-icon text-secondary text-base mt-0.5">check_circle</span>
+                <p class="text-sm text-on-surface-variant">Your theme preference is stored in your browser's local storage only.</p>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+// Sync the settings toggle with the current theme on page load
+(function() {
+    const isDark = document.documentElement.classList.contains('dark');
+    const toggle = document.getElementById('settings-theme-toggle');
+    const thumb = document.getElementById('settings-thumb');
+    if (toggle && thumb) {
+        if (isDark) {
+            toggle.classList.replace('bg-outline', 'bg-primary');
+            thumb.classList.replace('translate-x-1', 'translate-x-6');
+            toggle.setAttribute('aria-checked', 'true');
+        }
+    }
+    // Highlight active theme card
+    document.querySelectorAll('.theme-option').forEach(btn => {
+        if (btn.dataset.theme === (isDark ? 'dark' : 'light')) {
+            btn.classList.add('border-primary');
+        }
+    });
+})();
+
+function setTheme(theme) {
+    const html = document.documentElement;
+    const isDark = theme === 'dark';
+    html.classList.toggle('dark', isDark);
+    html.setAttribute('data-theme', theme);
+    localStorage.setItem('theme', theme);
+    // Update toggle
+    const toggle = document.getElementById('settings-theme-toggle');
+    const thumb = document.getElementById('settings-thumb');
+    if (toggle && thumb) {
+        toggle.classList.toggle('bg-primary', isDark);
+        toggle.classList.toggle('bg-outline', !isDark);
+        thumb.classList.toggle('translate-x-6', isDark);
+        thumb.classList.toggle('translate-x-1', !isDark);
+        toggle.setAttribute('aria-checked', String(isDark));
+    }
+    // Update card highlights
+    document.querySelectorAll('.theme-option').forEach(btn => {
+        btn.classList.toggle('border-primary', btn.dataset.theme === theme);
+        btn.classList.toggle('border-outline-variant', btn.dataset.theme !== theme);
+    });
+    // Update sidebar icons
+    updateThemeIcons(isDark);
+}
+</script>
+{% endblock %}

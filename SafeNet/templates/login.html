@@ -1,59 +1,103 @@
 {% extends "base.html" %}
+{% block title %}Sign In{% endblock %}
 
 {% block content %}
-<div class="page-shell">
-    <section class="hero-panel">
-        <div class="hero-copy">
-            <span class="badge">Secure sign in</span>
-            <h1>Welcome back to SafeNet</h1>
-            <p>Sign in to access your dashboard, scanner, and personal safety tools.</p>
+<div class="max-w-md mx-auto py-8 space-y-6">
+
+    <!-- Brand -->
+    <div class="text-center">
+        <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary-container mb-4">
+            <span class="material-symbols-outlined fill-icon text-primary" style="font-size:2rem;">shield_lock</span>
         </div>
+        <h1 class="text-3xl font-bold text-on-surface font-headline">Welcome back</h1>
+        <p class="text-on-surface-variant mt-1">Sign in to your SafeNet account</p>
+    </div>
 
-        <div class="hero-visual">
-            <div class="hero-badge">🔐</div>
+    <!-- Card -->
+    <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant shadow-sm p-8">
+
+        {% if error %}
+        <div class="mb-6 p-4 rounded-xl bg-error-container border border-error/20 flex items-start gap-3">
+            <span class="material-symbols-outlined fill-icon text-error flex-shrink-0">error</span>
+            <p class="text-sm text-on-error-container font-medium">{{ error }}</p>
         </div>
-    </section>
+        {% endif %}
 
-    <section class="info-grid">
-        <div class="form-card">
-            <div class="card" style="padding: 1.25rem; box-shadow: none;">
-                <h3 style="margin-bottom: 0.6rem;">Sign in</h3>
-                <p class="helper-text" style="margin-bottom: 1rem;">Demo login: use any email and password to continue.</p>
+        <form method="POST" action="{{ url_for('login') }}" class="space-y-5">
 
-                <form method="POST" action="/login">
-                    <label for="email">Email address</label>
-                    <input id="email" name="email" type="email" placeholder="you@example.com" required>
-
-                    <label for="password">Password</label>
-                    <input id="password" name="password" type="password" placeholder="Enter your password" required>
-
-                    <button type="submit" class="btn-primary">Sign in</button>
-                </form>
-
-                <div class="badge-row">
-                    <span class="badge badge--info">🔒 Protected demo</span>
-                    <span class="badge badge--warm">⚡ Quick access</span>
+            <div class="space-y-2">
+                <label for="email" class="block text-sm font-semibold text-on-surface">Email address</label>
+                <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <span class="material-symbols-outlined text-outline">mail</span>
+                    </div>
+                    <input id="email" name="email" type="email" autocomplete="email" required
+                           placeholder="you@example.com"
+                           class="w-full pl-10 pr-4 py-3 text-sm border border-outline-variant rounded-lg bg-surface text-on-surface focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" />
                 </div>
             </div>
-        </div>
 
-        <div class="content-card">
-            <h3>Why sign in?</h3>
-            <div class="panel-list">
-                <div class="list-item">
-                    <strong>Personal dashboard</strong>
-                    <p>See your safety score, recent scans, and helpful tips in one place.</p>
-                </div>
-                <div class="list-item">
-                    <strong>Fast access</strong>
-                    <p>Jump straight into scanner, reporting, and education features.</p>
-                </div>
-                <div class="list-item">
-                    <strong>Secure experience</strong>
-                    <p>Designed as a polished front-end with the same visual direction as the rest of the app.</p>
+            <div class="space-y-2">
+                <label for="password" class="block text-sm font-semibold text-on-surface">Password</label>
+                <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <span class="material-symbols-outlined text-outline">lock</span>
+                    </div>
+                    <input id="password" name="password" type="password" autocomplete="current-password" required
+                           placeholder="••••••••"
+                           class="w-full pl-10 pr-10 py-3 text-sm border border-outline-variant rounded-lg bg-surface text-on-surface focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" />
+                    <button type="button" onclick="togglePassword()"
+                            class="absolute inset-y-0 right-0 pr-3 flex items-center text-on-surface-variant hover:text-on-surface">
+                        <span id="pwd-toggle-icon" class="material-symbols-outlined text-base">visibility</span>
+                    </button>
                 </div>
             </div>
+
+            <div class="flex items-center justify-between text-sm">
+                <label class="flex items-center gap-2 text-on-surface-variant cursor-pointer">
+                    <input type="checkbox" class="rounded border-outline-variant text-primary focus:ring-primary" />
+                    Remember me
+                </label>
+                <a href="#" class="text-primary hover:underline font-medium">Forgot password?</a>
+            </div>
+
+            <button type="submit"
+                    class="w-full bg-primary text-on-primary py-3 rounded-lg font-semibold hover:bg-surface-tint active:scale-[0.98] transition-all shadow-sm flex items-center justify-center gap-2">
+                <span class="material-symbols-outlined text-sm">login</span>
+                Sign In
+            </button>
+        </form>
+
+        <div class="mt-6 pt-6 border-t border-surface-variant text-center">
+            <p class="text-sm text-on-surface-variant">
+                Don't have an account?
+                <a href="#" class="text-primary hover:underline font-medium ml-1">Create one</a>
+            </p>
         </div>
-    </section>
+    </div>
+
+    <!-- Continue without account -->
+    <div class="text-center">
+        <a href="{{ url_for('dashboard') }}"
+           class="text-sm text-on-surface-variant hover:text-primary transition-colors flex items-center justify-center gap-1">
+            <span class="material-symbols-outlined text-sm">arrow_forward</span>
+            Continue without an account
+        </a>
+    </div>
+
 </div>
+
+<script>
+function togglePassword() {
+    const pwd = document.getElementById('password');
+    const icon = document.getElementById('pwd-toggle-icon');
+    if (pwd.type === 'password') {
+        pwd.type = 'text';
+        icon.textContent = 'visibility_off';
+    } else {
+        pwd.type = 'password';
+        icon.textContent = 'visibility';
+    }
+}
+</script>
 {% endblock %}
