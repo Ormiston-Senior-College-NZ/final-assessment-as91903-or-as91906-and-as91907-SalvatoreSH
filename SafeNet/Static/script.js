@@ -16,9 +16,11 @@ function applyTheme(theme) {
     document.documentElement.setAttribute("data-theme", theme);
     localStorage.setItem("theme", theme);
     updateThemeIcons(isDark);
-    // Sync settings page toggle if present
     syncSettingsToggle(isDark);
 }
+
+// Expose globally so settings.html onclick="setTheme(...)" works
+window.setTheme = applyTheme;
 
 function updateThemeIcons(isDark) {
     const desktopIcon  = document.getElementById("desktop-theme-icon");
@@ -33,15 +35,19 @@ function syncSettingsToggle(isDark) {
     const toggle = document.getElementById("settings-theme-toggle");
     const thumb  = document.getElementById("settings-thumb");
     if (!toggle || !thumb) return;
+
     toggle.setAttribute("aria-checked", String(isDark));
     if (isDark) {
         toggle.classList.replace("bg-outline", "bg-primary");
         thumb.classList.replace("translate-x-1", "translate-x-6");
     } else {
-        toggle.classList.replace("bg-primary", "bg-outline");
-        thumb.classList.replace("translate-x-6", "translate-x-1");
+        // safely replace in either direction
+        toggle.classList.remove("bg-primary");
+        toggle.classList.add("bg-outline");
+        thumb.classList.remove("translate-x-6");
+        thumb.classList.add("translate-x-1");
     }
-    // Highlight correct theme card
+
     document.querySelectorAll(".theme-option").forEach(btn => {
         const active = btn.dataset.theme === (isDark ? "dark" : "light");
         btn.classList.toggle("border-primary", active);
@@ -58,39 +64,38 @@ function syncSettingsToggle(isDark) {
 })();
 
 
-// ─── Scan form: loading state + history ──────────────────────────────────────
+// ─── DOM ready ────────────────────────────────────────────────────────────────
 
 document.addEventListener("DOMContentLoaded", function () {
 
-    // ── Scan button loading state ─────────────────────────────────────────
-    const scanForm = document.querySelector("form[action*='scanner']");
-    if (scanForm) {
-        scanForm.addEventListener("submit", function () {
-            const btn = scanForm.querySelector("button[type='submit']");
+    // ── Scan button loading state (scanner page + landing hero) ──────────
+    document.querySelectorAll("form[action*='scanner']").forEach(function (form) {
+        form.addEventListener("submit", function () {
+            const btn = form.querySelector("button[type='submit']");
             if (!btn) return;
-            const url = scanForm.querySelector("input[name='url']")?.value?.trim();
-            if (!url) return; // let HTML validation handle it
+            const url = form.querySelector("input[name='url']")?.value?.trim();
+            if (!url) return; // let HTML5 required handle empty
             btn.disabled = true;
-            btn.innerHTML = '<span class="spinner"></span> Scanning...';
-            // Save to scan history
+            btn.innerHTML = '<span class="spinner"></span>&nbsp;Scanning&hellip;';
             saveScanHistory(url);
         });
-        // Populate URL from query param if redirected with ?url=
-        const params = new URLSearchParams(window.location.search);
-        const preUrl = params.get("url");
-        if (preUrl) {
-            const urlInput = scanForm.querySelector("input[name='url']");
-            if (urlInput && !urlInput.value) urlInput.value = preUrl;
-        }
+    });
+
+    // Pre-fill URL input from ?url= query param (e.g. redirect from reports page)
+    const preUrl = new URLSearchParams(window.location.search).get("url");
+    if (preUrl) {
+        const urlInput = document.querySelector("input[name='url']");
+        if (urlInput && !urlInput.value) urlInput.value = preUrl;
     }
 
-    // ── Scan history sidebar ──────────────────────────────────────────────
+    // ── Render scan history in sidebar ────────────────────────────────────
     renderScanHistory();
 
     // ── Report form char counter ──────────────────────────────────────────
     const desc    = document.getElementById("description");
     const counter = document.getElementById("char-count");
     if (desc && counter) {
+        // Set initial count (for form-preserved values on validation error)
         counter.textContent = desc.value.length;
         desc.addEventListener("input", function () {
             const len = desc.value.length;
@@ -99,11 +104,7 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    // ── Result card entrance animation ───────────────────────────────────
-    const resultCards = document.querySelectorAll(".result-enter");
-    resultCards.forEach(card => card.classList.add("result-enter"));
-
-    // ── Smooth scroll for hash links ──────────────────────────────────────
+    // ── Smooth scroll for in-page anchor links ────────────────────────────
     document.querySelectorAll("a[href^='#']").forEach(anchor => {
         anchor.addEventListener("click", function (e) {
             const target = document.querySelector(this.getAttribute("href"));
@@ -113,16 +114,6 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         });
     });
-
-    // ── Auto-dismiss flash messages ───────────────────────────────────────
-    const flash = document.getElementById("flash-message");
-    if (flash) {
-        setTimeout(() => {
-            flash.style.transition = "opacity 0.5s ease";
-            flash.style.opacity = "0";
-            setTimeout(() => flash.remove(), 500);
-        }, 4000);
-    }
 
 });
 
@@ -135,7 +126,6 @@ const MAX_HISTORY = 8;
 function saveScanHistory(url) {
     try {
         let history = JSON.parse(localStorage.getItem(HISTORY_KEY) || "[]");
-        // Remove duplicate if exists
         history = history.filter(item => item.url !== url);
         history.unshift({ url, ts: new Date().toISOString() });
         if (history.length > MAX_HISTORY) history = history.slice(0, MAX_HISTORY);
@@ -159,18 +149,18 @@ function renderScanHistory() {
     if (!container) return;
     const history = getScanHistory();
     if (history.length === 0) {
-        container.innerHTML = '<p class="text-xs text-on-surface-variant italic px-1">No recent scans.</p>';
+        container.innerHTML = '<p class="text-xs text-on-surface-variant italic px-1 py-1">No recent scans.</p>';
         return;
     }
     container.innerHTML = history.map(item => {
         const short = item.url.replace(/^https?:\/\//, "").slice(0, 36);
         const date  = new Date(item.ts).toLocaleDateString("en-NZ", { day: "numeric", month: "short" });
-        return `<button onclick="reScan('${escapeHtml(item.url)}')"
+        return `<button onclick="reScan('${escHtml(item.url)}')"
                         class="w-full text-left flex items-center gap-2 px-2 py-1.5 rounded-lg
                                hover:bg-surface-container-high transition-colors group text-xs">
-                    <span class="material-symbols-outlined text-outline text-[16px] group-hover:text-primary">history</span>
-                    <span class="flex-1 truncate text-on-surface-variant group-hover:text-on-surface">${escapeHtml(short)}</span>
-                    <span class="text-outline text-[10px] whitespace-nowrap">${date}</span>
+                    <span class="material-symbols-outlined text-outline text-[15px] group-hover:text-primary flex-shrink-0">history</span>
+                    <span class="flex-1 truncate text-on-surface-variant group-hover:text-on-surface font-mono">${escHtml(short)}</span>
+                    <span class="text-outline text-[10px] whitespace-nowrap flex-shrink-0">${date}</span>
                 </button>`;
     }).join("");
 }
@@ -183,12 +173,11 @@ function reScan(url) {
     }
 }
 
-function escapeHtml(str) {
-    return str.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+function escHtml(str) {
+    return str
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
 }
-
-
-// ─── Settings page helpers ────────────────────────────────────────────────────
-
-// Exposed globally so settings.html onclick can call it
-window.setTheme = applyTheme;

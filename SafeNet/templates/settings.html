@@ -124,50 +124,5 @@
 
 </div>
 
-<script>
-// Sync the settings toggle with the current theme on page load
-(function() {
-    const isDark = document.documentElement.classList.contains('dark');
-    const toggle = document.getElementById('settings-theme-toggle');
-    const thumb = document.getElementById('settings-thumb');
-    if (toggle && thumb) {
-        if (isDark) {
-            toggle.classList.replace('bg-outline', 'bg-primary');
-            thumb.classList.replace('translate-x-1', 'translate-x-6');
-            toggle.setAttribute('aria-checked', 'true');
-        }
-    }
-    // Highlight active theme card
-    document.querySelectorAll('.theme-option').forEach(btn => {
-        if (btn.dataset.theme === (isDark ? 'dark' : 'light')) {
-            btn.classList.add('border-primary');
-        }
-    });
-})();
-
-function setTheme(theme) {
-    const html = document.documentElement;
-    const isDark = theme === 'dark';
-    html.classList.toggle('dark', isDark);
-    html.setAttribute('data-theme', theme);
-    localStorage.setItem('theme', theme);
-    // Update toggle
-    const toggle = document.getElementById('settings-theme-toggle');
-    const thumb = document.getElementById('settings-thumb');
-    if (toggle && thumb) {
-        toggle.classList.toggle('bg-primary', isDark);
-        toggle.classList.toggle('bg-outline', !isDark);
-        thumb.classList.toggle('translate-x-6', isDark);
-        thumb.classList.toggle('translate-x-1', !isDark);
-        toggle.setAttribute('aria-checked', String(isDark));
-    }
-    // Update card highlights
-    document.querySelectorAll('.theme-option').forEach(btn => {
-        btn.classList.toggle('border-primary', btn.dataset.theme === theme);
-        btn.classList.toggle('border-outline-variant', btn.dataset.theme !== theme);
-    });
-    // Update sidebar icons
-    updateThemeIcons(isDark);
-}
-</script>
+<!-- Theme sync handled by script.js — syncSettingsToggle() is called on every applyTheme() -->
 {% endblock %}

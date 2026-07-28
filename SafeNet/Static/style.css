@@ -149,6 +149,17 @@ circle[stroke-dashoffset] {
     vertical-align: bottom;
 }
 
+/* ── Hero scan form focus ring ──────────────────────────────────────────── */
+#hero-scan-form:focus-within {
+    border-color: #0058be;
+    box-shadow: 0 0 0 3px rgba(0, 88, 190, 0.12);
+}
+
+html.dark #hero-scan-form:focus-within {
+    border-color: #adc6ff;
+    box-shadow: 0 0 0 3px rgba(173, 198, 255, 0.15);
+}
+
 /* ── Responsive table scroll hint ───────────────────────────────────────── */
 .table-wrap {
     overflow-x: auto;
