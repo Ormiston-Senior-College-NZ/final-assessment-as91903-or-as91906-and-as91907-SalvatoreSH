@@ -8,9 +8,9 @@
      ══════════════════════════════════════════════════════════════════════════ -->
 <section class="relative grid grid-cols-1 lg:grid-cols-2 gap-10 items-center py-8 lg:py-16 overflow-hidden">
 
-    <!-- Decorative background orbs -->
-    <div class="deco-blob orb-drift  w-80 h-80 bg-primary-fixed       -top-20 -left-20  opacity-30"></div>
-    <div class="deco-blob orb-drift-2 w-64 h-64 bg-secondary-container  bottom-0  right-0  opacity-25"></div>
+    <!-- Decorative background orbs — dark purple tones only, no light colours -->
+    <div class="deco-blob orb-drift   w-80 h-80 bg-[#543B66]  -top-20 -left-20  opacity-20"></div>
+    <div class="deco-blob orb-drift-2 w-64 h-64 bg-[#2a1d33]   bottom-0  right-0  opacity-30"></div>
 
     <!-- Left: copy -->
     <div class="flex flex-col gap-6 relative z-10">
@@ -72,12 +72,14 @@
     <!-- Right: hero visual -->
     <div class="flex flex-col gap-3 relative z-10 reveal-right" style="transition-delay:0.1s">
 
-        <!-- Main visual container — no overflow clipping so badges aren't cut -->
+        <!-- Hero box: clips background but allows stat card to bleed out bottom -->
         <div class="relative h-80 lg:h-[440px] w-full rounded-2xl shadow-2xl border border-white/10
-                    flex items-center justify-center overflow-hidden">
+                    flex items-center justify-center mb-6">
 
-            <!-- Background: pure gradient, no grid lines -->
-            <div class="absolute inset-0 bg-gradient-to-br from-[#543B66]/60 via-[#2a1d33]/75 to-black/90"></div>
+            <!-- Clipped background layer (separate so rounded corners apply) -->
+            <div class="absolute inset-0 rounded-2xl overflow-hidden pointer-events-none">
+                <div class="absolute inset-0 bg-gradient-to-br from-[#543B66]/60 via-[#2a1d33]/75 to-black/90"></div>
+            </div>
 
             <!-- Central shield -->
             <div class="relative z-10 p-10 rounded-full bg-white/10
@@ -117,19 +119,19 @@
                 Scanning…
             </div>
 
-        </div>
+            <!-- Stat card — inside the box, bottom edge, dark styled, float animation -->
+            <div class="float-badge absolute -bottom-5 left-6 flex items-center gap-3
+                        bg-[#1a0f24]/90 backdrop-blur-md rounded-2xl border border-white/20
+                        shadow-2xl px-4 py-3" style="animation-delay:0.8s">
+                <div class="w-9 h-9 rounded-full bg-secondary flex items-center justify-center flex-shrink-0">
+                    <span class="material-symbols-outlined fill-icon text-on-secondary text-[16px]">shield</span>
+                </div>
+                <div>
+                    <p class="text-sm font-bold text-white">1M+ links scanned</p>
+                    <p class="text-xs text-white/60">and counting</p>
+                </div>
+            </div>
 
-        <!-- Stat card — sits BELOW the hero box as a normal row, no overlap -->
-        <div class="reveal-pop self-end bg-surface-container-lowest/90 backdrop-blur-sm rounded-2xl
-                    border border-outline-variant shadow-xl px-4 py-3 flex items-center gap-3 card-lift"
-             style="transition-delay:0.35s">
-            <div class="w-9 h-9 rounded-full bg-secondary-container flex items-center justify-center flex-shrink-0">
-                <span class="material-symbols-outlined fill-icon text-secondary text-[16px]">shield</span>
-            </div>
-            <div>
-                <p class="text-sm font-bold text-on-surface">1M+ links scanned</p>
-                <p class="text-xs text-on-surface-variant">and counting</p>
-            </div>
         </div>
 
     </div>
