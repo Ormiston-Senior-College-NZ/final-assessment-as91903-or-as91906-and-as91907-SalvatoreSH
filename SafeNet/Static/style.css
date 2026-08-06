@@ -344,10 +344,10 @@ html.dark .skeleton {
 
 @keyframes scanRingPulse {
     0%, 100% {
-        box-shadow: 0 0 0 0 rgba(0, 88, 190, 0.25);
+        box-shadow: 0 0 0 0 rgba(84, 59, 102, 0.3);
     }
     50% {
-        box-shadow: 0 0 0 16px rgba(0, 88, 190, 0);
+        box-shadow: 0 0 0 16px rgba(84, 59, 102, 0);
     }
 }
 
@@ -647,13 +647,13 @@ html.dark .badge-other     { background: #33354a; color: #b8bace; }
 }
 
 #hero-scan-form:focus-within {
-    border-color: #0058be;
-    box-shadow: 0 0 0 4px rgba(0, 88, 190, 0.12);
+    border-color: #543B66;
+    box-shadow: 0 0 0 4px rgba(84, 59, 102, 0.15);
 }
 
 html.dark #hero-scan-form:focus-within {
-    border-color: #adc6ff;
-    box-shadow: 0 0 0 4px rgba(173, 198, 255, 0.15);
+    border-color: #c9aaff;
+    box-shadow: 0 0 0 4px rgba(201, 170, 255, 0.15);
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
