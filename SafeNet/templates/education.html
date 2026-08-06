@@ -4,40 +4,132 @@
 {% block content %}
 <div class="space-y-8">
 
-    <!-- Header -->
-    <div>
-        <h1 class="text-3xl font-bold text-on-surface font-headline mb-1">Education Hub</h1>
-        <p class="text-on-surface-variant">Learn how to recognise and avoid online scams, phishing attacks, and digital threats.</p>
-    </div>
-
-    <!-- Quick topics nav -->
-    <div class="flex flex-wrap gap-2">
-        <a href="#phishing" class="px-4 py-1.5 rounded-full bg-primary-container text-on-primary-container text-sm font-medium hover:opacity-80 transition-opacity">🎣 Phishing</a>
-        <a href="#malware"  class="px-4 py-1.5 rounded-full bg-tertiary-container text-on-tertiary text-sm font-medium hover:opacity-80 transition-opacity">🐛 Malware</a>
-        <a href="#scams"    class="px-4 py-1.5 rounded-full bg-secondary-container text-on-secondary-container text-sm font-medium hover:opacity-80 transition-opacity">💸 Scams</a>
-        <a href="#passwords" class="px-4 py-1.5 rounded-full bg-surface-container text-on-surface text-sm font-medium border border-outline-variant hover:bg-surface-variant transition-colors">🔐 Passwords</a>
-        <a href="#urls"     class="px-4 py-1.5 rounded-full bg-surface-container text-on-surface text-sm font-medium border border-outline-variant hover:bg-surface-variant transition-colors">🔗 Suspicious URLs</a>
-    </div>
-
-    <!-- ── Phishing ───────────────────────────────────────────────────────── -->
-    <section id="phishing" class="bg-surface-container-lowest rounded-2xl border border-outline-variant shadow-sm overflow-hidden">
-        <div class="bg-primary-container p-6 flex items-center gap-4">
-            <div class="w-12 h-12 rounded-full bg-primary text-on-primary flex items-center justify-center flex-shrink-0">
-                <span class="material-symbols-outlined fill-icon">phishing</span>
+    <!-- ══════════════════════════════════════════════════════════════════
+         PAGE HEADER BANNER
+         ══════════════════════════════════════════════════════════════════ -->
+    <div class="relative rounded-2xl overflow-hidden border border-outline-variant shadow-sm
+                min-h-[140px] flex items-center reveal">
+        <div class="absolute inset-0 bg-gradient-to-br from-secondary-container/40 via-surface-container-low
+                    to-primary-fixed/20 img-placeholder-grid pointer-events-none"></div>
+        <div class="deco-blob orb-drift   w-48 h-48 bg-secondary-container -top-10 -right-16 opacity-40"></div>
+        <div class="deco-blob orb-drift-2 w-32 h-32 bg-primary-fixed       bottom-0  left-32 opacity-30"></div>
+        <div class="relative z-10 flex items-center gap-5 px-6 py-6 w-full">
+            <div class="w-14 h-14 rounded-2xl bg-secondary-container flex items-center justify-center
+                        flex-shrink-0 shadow-sm">
+                <span class="material-symbols-outlined fill-icon text-secondary" style="font-size:1.8rem;">school</span>
             </div>
-            <div>
-                <h2 class="text-xl font-bold text-on-primary-container font-headline">What is Phishing?</h2>
-                <p class="text-on-primary-container/70 text-sm">A scam where criminals pretend to be a trusted organisation to steal your information.</p>
+            <div class="flex-1">
+                <h1 class="text-2xl md:text-3xl font-bold text-on-surface font-headline">Education Hub</h1>
+                <p class="text-on-surface-variant text-sm mt-0.5 max-w-xl">
+                    Learn to recognise and avoid online scams, phishing attacks, and digital threats.
+                </p>
+            </div>
+            <div class="hidden lg:flex items-center gap-3 flex-shrink-0">
+                <div class="text-center">
+                    <p class="text-2xl font-extrabold text-on-surface">5</p>
+                    <p class="text-xs text-on-surface-variant">Topics</p>
+                </div>
+                <div class="w-px h-10 bg-outline-variant"></div>
+                <div class="text-center">
+                    <p class="text-2xl font-extrabold text-on-surface">8</p>
+                    <p class="text-xs text-on-surface-variant">Glossary terms</p>
+                </div>
             </div>
         </div>
-        <div class="p-6 space-y-4">
+    </div>
+
+
+    <!-- ══════════════════════════════════════════════════════════════════
+         TOPIC PILLS NAV
+         ══════════════════════════════════════════════════════════════════ -->
+    <div class="flex flex-wrap gap-2 reveal-stagger">
+        <a href="#phishing"  class="topic-pill topic-pill-btn px-4 py-2 rounded-full bg-primary-container
+                                    text-on-primary-container text-sm font-semibold hover:opacity-90
+                                    transition-all flex items-center gap-1.5">
+            <span class="material-symbols-outlined fill-icon text-[15px]">phishing</span> Phishing
+        </a>
+        <a href="#malware"   class="topic-pill topic-pill-btn px-4 py-2 rounded-full bg-tertiary-container
+                                    text-on-tertiary text-sm font-semibold hover:opacity-90
+                                    transition-all flex items-center gap-1.5">
+            <span class="material-symbols-outlined fill-icon text-[15px]">bug_report</span> Malware
+        </a>
+        <a href="#scams"     class="topic-pill topic-pill-btn px-4 py-2 rounded-full bg-secondary-container
+                                    text-on-secondary-container text-sm font-semibold hover:opacity-90
+                                    transition-all flex items-center gap-1.5">
+            <span class="material-symbols-outlined fill-icon text-[15px]">sms_failed</span> Scams
+        </a>
+        <a href="#passwords" class="topic-pill topic-pill-btn px-4 py-2 rounded-full bg-surface-container-highest
+                                    text-on-surface text-sm font-semibold border border-outline-variant
+                                    hover:bg-surface-variant transition-all flex items-center gap-1.5">
+            <span class="material-symbols-outlined fill-icon text-[15px]">lock</span> Passwords
+        </a>
+        <a href="#urls"      class="topic-pill topic-pill-btn px-4 py-2 rounded-full bg-surface-container-highest
+                                    text-on-surface text-sm font-semibold border border-outline-variant
+                                    hover:bg-surface-variant transition-all flex items-center gap-1.5">
+            <span class="material-symbols-outlined fill-icon text-[15px]">link</span> Suspicious URLs
+        </a>
+    </div>
+
+
+    <!-- ══════════════════════════════════════════════════════════════════
+         PHISHING SECTION
+         ══════════════════════════════════════════════════════════════════ -->
+    <section id="phishing"
+             class="bg-surface-container-lowest rounded-2xl border border-outline-variant shadow-sm overflow-hidden reveal">
+
+        <!-- Visual header with image placeholder -->
+        <div class="relative bg-primary-container overflow-hidden">
+            <div class="absolute inset-0 img-placeholder-grid opacity-30 pointer-events-none"></div>
+            <div class="deco-blob orb-drift w-32 h-32 bg-primary -top-8 -right-8 opacity-20"></div>
+            <div class="relative z-10 p-6 flex items-center gap-4">
+                <div class="w-14 h-14 rounded-2xl bg-primary text-on-primary flex items-center
+                            justify-center flex-shrink-0 shadow-md shield-enter">
+                    <span class="material-symbols-outlined fill-icon text-2xl">phishing</span>
+                </div>
+                <div>
+                    <h2 class="text-xl font-bold text-on-primary-container font-headline">What is Phishing?</h2>
+                    <p class="text-on-primary-container/70 text-sm">
+                        Criminals impersonating trusted organisations to steal your information.
+                    </p>
+                </div>
+                <!-- Decorative image slot -->
+                <div class="hidden md:flex ml-auto flex-shrink-0 w-24 h-16 rounded-xl
+                            bg-primary/20 border border-primary/30 items-center justify-center">
+                    <span class="material-symbols-outlined fill-icon text-primary text-4xl opacity-60">mail</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="p-6 space-y-5">
             <p class="text-on-surface-variant leading-relaxed">
-                Phishing attacks typically arrive as emails, text messages, or fake websites that look like they are from a bank, delivery company, or government agency.
-                Their goal is to trick you into entering your login credentials, credit card details, or personal information.
+                Phishing attacks arrive as emails, text messages, or fake websites mimicking a bank,
+                delivery company, or government agency. Their goal is to trick you into entering
+                your login credentials, credit card details, or personal information.
             </p>
+
+            <!-- Image placeholder strip -->
+            <div class="feature-img-strip img-placeholder-grid rounded-xl min-h-[100px] flex items-center justify-center">
+                <div class="relative z-10 flex items-center gap-6 pointer-events-none select-none">
+                    <div class="flex flex-col items-center gap-1">
+                        <span class="material-symbols-outlined fill-icon text-error text-3xl">mail</span>
+                        <span class="text-xs text-on-surface-variant font-medium">Fake Email</span>
+                    </div>
+                    <span class="material-symbols-outlined text-outline text-2xl">arrow_forward</span>
+                    <div class="flex flex-col items-center gap-1">
+                        <span class="material-symbols-outlined fill-icon text-tertiary text-3xl">language</span>
+                        <span class="text-xs text-on-surface-variant font-medium">Fake Site</span>
+                    </div>
+                    <span class="material-symbols-outlined text-outline text-2xl">arrow_forward</span>
+                    <div class="flex flex-col items-center gap-1">
+                        <span class="material-symbols-outlined fill-icon text-error text-3xl">credit_card_off</span>
+                        <span class="text-xs text-on-surface-variant font-medium">Data Stolen</span>
+                    </div>
+                </div>
+            </div>
+
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div class="bg-surface-container-low rounded-xl p-4 border border-outline-variant">
-                    <h3 class="font-semibold text-on-surface mb-3 flex items-center gap-2">
+                <div class="bg-surface-container-low rounded-xl p-4 border border-outline-variant card-lift">
+                    <h3 class="font-semibold text-on-surface mb-3 flex items-center gap-2 text-sm">
                         <span class="material-symbols-outlined fill-icon text-error text-base">warning</span>
                         Warning Signs
                     </h3>
@@ -45,17 +137,17 @@
                         <li class="flex items-start gap-2"><span class="text-error mt-0.5">•</span> Urgent language — "Your account will be suspended!"</li>
                         <li class="flex items-start gap-2"><span class="text-error mt-0.5">•</span> Unexpected requests for passwords or card numbers</li>
                         <li class="flex items-start gap-2"><span class="text-error mt-0.5">•</span> Sender email doesn't match the company's real domain</li>
-                        <li class="flex items-start gap-2"><span class="text-error mt-0.5">•</span> Links that hover to a suspicious or misspelled URL</li>
+                        <li class="flex items-start gap-2"><span class="text-error mt-0.5">•</span> Links hover to a suspicious or misspelled URL</li>
                         <li class="flex items-start gap-2"><span class="text-error mt-0.5">•</span> Poor spelling or grammar in the message</li>
                     </ul>
                 </div>
-                <div class="bg-surface-container-low rounded-xl p-4 border border-outline-variant">
-                    <h3 class="font-semibold text-on-surface mb-3 flex items-center gap-2">
+                <div class="bg-surface-container-low rounded-xl p-4 border border-outline-variant card-lift">
+                    <h3 class="font-semibold text-on-surface mb-3 flex items-center gap-2 text-sm">
                         <span class="material-symbols-outlined fill-icon text-secondary text-base">shield</span>
                         How to Protect Yourself
                     </h3>
                     <ul class="space-y-2 text-sm text-on-surface-variant">
-                        <li class="flex items-start gap-2"><span class="text-secondary mt-0.5">✓</span> Never click links in unexpected emails — go to the website directly</li>
+                        <li class="flex items-start gap-2"><span class="text-secondary mt-0.5">✓</span> Never click links in unexpected emails — go directly</li>
                         <li class="flex items-start gap-2"><span class="text-secondary mt-0.5">✓</span> Check the sender's actual email address carefully</li>
                         <li class="flex items-start gap-2"><span class="text-secondary mt-0.5">✓</span> Use SafeNet to scan any link before clicking</li>
                         <li class="flex items-start gap-2"><span class="text-secondary mt-0.5">✓</span> Enable two-factor authentication on important accounts</li>
@@ -63,61 +155,86 @@
                     </ul>
                 </div>
             </div>
-            <!-- Real-world example -->
+
             <div class="bg-error-container/30 border border-error/20 rounded-xl p-4">
                 <h3 class="font-semibold text-on-surface mb-2 flex items-center gap-2 text-sm">
-                    <span class="material-symbols-outlined fill-icon text-error text-base">example</span>
-                    Real Example
+                    <span class="material-symbols-outlined fill-icon text-error text-base">info</span>
+                    Real NZ Example
                 </h3>
                 <p class="text-sm text-on-surface-variant leading-relaxed">
-                    A common NZ phishing scam involves a fake NZ Post email claiming your parcel is on hold. The email contains a link like
-                    <span class="font-mono text-error text-xs">http://nzpost.delivery-confirm.ru/track</span> — notice it is not the real
-                    <span class="font-mono text-xs">nzpost.co.nz</span> domain. Clicking it leads to a page that steals your credit card details.
+                    A common NZ phishing scam involves a fake NZ Post email claiming your parcel is on hold.
+                    The link looks like
+                    <span class="font-mono text-error text-xs">http://nzpost.delivery-confirm.ru/track</span> —
+                    not the real <span class="font-mono text-xs">nzpost.co.nz</span>.
+                    Clicking it leads to a page that steals your credit card details.
                 </p>
             </div>
         </div>
     </section>
 
-    <!-- ── Malware ────────────────────────────────────────────────────────── -->
-    <section id="malware" class="bg-surface-container-lowest rounded-2xl border border-outline-variant shadow-sm overflow-hidden">
-        <div class="bg-tertiary-container p-6 flex items-center gap-4">
-            <div class="w-12 h-12 rounded-full bg-tertiary text-on-tertiary flex items-center justify-center flex-shrink-0">
-                <span class="material-symbols-outlined fill-icon">bug_report</span>
-            </div>
-            <div>
-                <h2 class="text-xl font-bold text-on-surface font-headline">What is Malware?</h2>
-                <p class="text-on-surface-variant text-sm">Malicious software designed to damage, spy on, or take control of your device without your knowledge.</p>
+
+    <!-- ══════════════════════════════════════════════════════════════════
+         MALWARE SECTION
+         ══════════════════════════════════════════════════════════════════ -->
+    <section id="malware"
+             class="bg-surface-container-lowest rounded-2xl border border-outline-variant shadow-sm overflow-hidden reveal">
+
+        <!-- Visual header -->
+        <div class="relative bg-tertiary-container overflow-hidden">
+            <div class="absolute inset-0 img-placeholder-grid opacity-30 pointer-events-none"></div>
+            <div class="deco-blob orb-drift-2 w-28 h-28 bg-tertiary -bottom-6 -left-6 opacity-20"></div>
+            <div class="relative z-10 p-6 flex items-center gap-4">
+                <div class="w-14 h-14 rounded-2xl bg-tertiary text-on-tertiary flex items-center
+                            justify-center flex-shrink-0 shadow-md">
+                    <span class="material-symbols-outlined fill-icon text-2xl">bug_report</span>
+                </div>
+                <div>
+                    <h2 class="text-xl font-bold text-on-surface font-headline">What is Malware?</h2>
+                    <p class="text-on-surface-variant text-sm">
+                        Malicious software designed to damage, spy on, or control your device.
+                    </p>
+                </div>
+                <div class="hidden md:flex ml-auto flex-shrink-0 w-24 h-16 rounded-xl
+                            bg-tertiary/20 border border-tertiary/30 items-center justify-center">
+                    <span class="material-symbols-outlined fill-icon text-tertiary text-4xl opacity-60">deployed_code_alert</span>
+                </div>
             </div>
         </div>
-        <div class="p-6 space-y-4">
+
+        <div class="p-6 space-y-5">
             <p class="text-on-surface-variant leading-relaxed">
-                Malware includes viruses, spyware, ransomware, and trojans. It can arrive through email attachments, fake software downloads,
-                infected USB drives, or malicious websites. Once installed, it can steal your data, encrypt your files, or use your device to attack others.
+                Malware includes viruses, spyware, ransomware, and trojans. It arrives through email
+                attachments, fake software downloads, infected USB drives, or malicious websites.
+                Once installed, it can steal data, encrypt files, or use your device to attack others.
             </p>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div class="bg-surface-container-low rounded-xl p-4 border border-outline-variant text-center">
-                    <span class="material-symbols-outlined fill-icon text-error text-3xl mb-2 block">lock</span>
-                    <h4 class="font-semibold text-on-surface mb-1">Ransomware</h4>
-                    <p class="text-xs text-on-surface-variant">Encrypts your files and demands payment to restore access.</p>
+
+            <!-- Malware type cards with image placeholders -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 reveal-stagger">
+                {% for name, icon, colour, desc in [
+                    ('Ransomware', 'lock',              'text-error',    'Encrypts your files and demands payment to restore access.'),
+                    ('Spyware',   'visibility',         'text-tertiary', 'Secretly monitors your activity and sends data to attackers.'),
+                    ('Trojan',    'deployed_code_alert','text-primary',  'Disguises itself as legitimate software to gain system access.')
+                ] %}
+                <div class="bg-surface-container-low rounded-xl border border-outline-variant overflow-hidden card-lift">
+                    <!-- Mini visual placeholder header -->
+                    <div class="img-placeholder img-placeholder-grid h-20 rounded-none flex items-center justify-center">
+                        <span class="material-symbols-outlined fill-icon {{ colour }} text-4xl z-10">{{ icon }}</span>
+                    </div>
+                    <div class="p-4 text-center">
+                        <h4 class="font-semibold text-on-surface mb-1 text-sm">{{ name }}</h4>
+                        <p class="text-xs text-on-surface-variant">{{ desc }}</p>
+                    </div>
                 </div>
-                <div class="bg-surface-container-low rounded-xl p-4 border border-outline-variant text-center">
-                    <span class="material-symbols-outlined fill-icon text-tertiary text-3xl mb-2 block">visibility</span>
-                    <h4 class="font-semibold text-on-surface mb-1">Spyware</h4>
-                    <p class="text-xs text-on-surface-variant">Secretly monitors your activity and sends data to attackers.</p>
-                </div>
-                <div class="bg-surface-container-low rounded-xl p-4 border border-outline-variant text-center">
-                    <span class="material-symbols-outlined fill-icon text-primary text-3xl mb-2 block">deployed_code_alert</span>
-                    <h4 class="font-semibold text-on-surface mb-1">Trojan</h4>
-                    <p class="text-xs text-on-surface-variant">Disguises itself as legitimate software to gain access to your system.</p>
-                </div>
+                {% endfor %}
             </div>
+
             <div class="bg-surface-container-low rounded-xl p-4 border border-outline-variant">
-                <h3 class="font-semibold text-on-surface mb-3 flex items-center gap-2">
+                <h3 class="font-semibold text-on-surface mb-3 flex items-center gap-2 text-sm">
                     <span class="material-symbols-outlined fill-icon text-secondary text-base">shield</span>
                     Protection Tips
                 </h3>
                 <ul class="grid grid-cols-1 md:grid-cols-2 gap-y-2 gap-x-6 text-sm text-on-surface-variant">
-                    <li class="flex items-start gap-2"><span class="text-secondary">✓</span> Keep your operating system and apps updated</li>
+                    <li class="flex items-start gap-2"><span class="text-secondary">✓</span> Keep your OS and apps updated</li>
                     <li class="flex items-start gap-2"><span class="text-secondary">✓</span> Only download software from official sources</li>
                     <li class="flex items-start gap-2"><span class="text-secondary">✓</span> Never open unexpected email attachments</li>
                     <li class="flex items-start gap-2"><span class="text-secondary">✓</span> Use reputable antivirus software</li>
@@ -128,101 +245,178 @@
         </div>
     </section>
 
-    <!-- ── Scams ──────────────────────────────────────────────────────────── -->
-    <section id="scams" class="bg-surface-container-lowest rounded-2xl border border-outline-variant shadow-sm overflow-hidden">
-        <div class="bg-secondary-container p-6 flex items-center gap-4">
-            <div class="w-12 h-12 rounded-full bg-secondary text-on-secondary flex items-center justify-center flex-shrink-0">
-                <span class="material-symbols-outlined fill-icon">sms_failed</span>
-            </div>
-            <div>
-                <h2 class="text-xl font-bold text-on-secondary-container font-headline">Online Scams</h2>
-                <p class="text-on-secondary-container/70 text-sm">Fraudulent schemes designed to trick you into giving away money or personal information.</p>
+
+    <!-- ══════════════════════════════════════════════════════════════════
+         SCAMS SECTION
+         ══════════════════════════════════════════════════════════════════ -->
+    <section id="scams"
+             class="bg-surface-container-lowest rounded-2xl border border-outline-variant shadow-sm overflow-hidden reveal">
+
+        <!-- Visual header -->
+        <div class="relative bg-secondary-container overflow-hidden">
+            <div class="absolute inset-0 img-placeholder-grid opacity-25 pointer-events-none"></div>
+            <div class="deco-blob orb-drift w-28 h-28 bg-secondary -top-6 -right-6 opacity-20"></div>
+            <div class="relative z-10 p-6 flex items-center gap-4">
+                <div class="w-14 h-14 rounded-2xl bg-secondary text-on-secondary flex items-center
+                            justify-center flex-shrink-0 shadow-md">
+                    <span class="material-symbols-outlined fill-icon text-2xl">sms_failed</span>
+                </div>
+                <div>
+                    <h2 class="text-xl font-bold text-on-secondary-container font-headline">Online Scams</h2>
+                    <p class="text-on-secondary-container/70 text-sm">
+                        Fraudulent schemes designed to trick you out of money or personal information.
+                    </p>
+                </div>
+                <div class="hidden md:flex ml-auto flex-shrink-0 w-24 h-16 rounded-xl
+                            bg-secondary/20 border border-secondary/30 items-center justify-center">
+                    <span class="material-symbols-outlined fill-icon text-secondary text-4xl opacity-60">money_off</span>
+                </div>
             </div>
         </div>
-        <div class="p-6 space-y-4">
+
+        <div class="p-6 space-y-5">
             <p class="text-on-surface-variant leading-relaxed">
-                Online scams come in many forms. They often exploit trust, urgency, or curiosity.
-                Common scams in New Zealand include fake prize notifications, investment fraud, romance scams, and impersonation of government agencies like IRD or ACC.
+                Online scams come in many forms, often exploiting trust, urgency, or curiosity.
+                Common scams in New Zealand include fake prize notifications, investment fraud,
+                romance scams, and impersonation of IRD or ACC.
             </p>
+
+            <!-- Visual scam type strip -->
+            <div class="feature-img-strip img-placeholder-grid rounded-xl min-h-[90px] flex items-center justify-center">
+                <div class="relative z-10 flex flex-wrap items-center justify-center gap-4 pointer-events-none select-none px-4">
+                    {% for label, icon in [('Prize Scam','emoji_events'),('Investment Fraud','trending_up'),('Romance Scam','favorite'),('Tech Support','support_agent'),('Gov Impersonation','account_balance')] %}
+                    <div class="flex flex-col items-center gap-1">
+                        <span class="material-symbols-outlined fill-icon text-on-surface-variant text-2xl">{{ icon }}</span>
+                        <span class="text-[10px] text-on-surface-variant font-medium whitespace-nowrap">{{ label }}</span>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div class="bg-error-container/30 border border-error/20 rounded-xl p-4">
+                <div class="bg-error-container/30 border border-error/20 rounded-xl p-4 card-lift">
                     <h3 class="font-semibold text-on-surface mb-2 text-sm">🚨 Common Scam Types</h3>
                     <ul class="space-y-1.5 text-sm text-on-surface-variant">
                         <li><strong>Prize scams</strong> — "You've won! Click to claim."</li>
                         <li><strong>Investment fraud</strong> — Fake crypto or trading platforms</li>
                         <li><strong>Romance scams</strong> — Building fake relationships to request money</li>
-                        <li><strong>Tech support scams</strong> — "Your computer has a virus, call us now"</li>
-                        <li><strong>Government impersonation</strong> — Fake IRD or ACC messages</li>
+                        <li><strong>Tech support</strong> — "Your computer has a virus, call us now"</li>
+                        <li><strong>Gov impersonation</strong> — Fake IRD or ACC messages</li>
                     </ul>
                 </div>
-                <div class="bg-secondary-container/30 border border-secondary/20 rounded-xl p-4">
+                <div class="bg-secondary-container/30 border border-secondary/20 rounded-xl p-4 card-lift">
                     <h3 class="font-semibold text-on-surface mb-2 text-sm">✅ How to Spot a Scam</h3>
                     <ul class="space-y-1.5 text-sm text-on-surface-variant">
                         <li>If it sounds too good to be true, it probably is</li>
                         <li>Legitimate organisations never ask for gift card payments</li>
                         <li>Real IRD/ACC will not threaten immediate arrest</li>
-                        <li>Always verify by calling the organisation directly on their official number</li>
-                        <li>Never transfer money under pressure — scammers create urgency on purpose</li>
+                        <li>Always verify by calling the organisation on their official number</li>
+                        <li>Never transfer money under pressure — urgency is deliberate</li>
                     </ul>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- ── Passwords ──────────────────────────────────────────────────────── -->
-    <section id="passwords" class="bg-surface-container-lowest rounded-2xl border border-outline-variant shadow-sm overflow-hidden">
-        <div class="bg-surface-container-high p-6 flex items-center gap-4 border-b border-outline-variant">
-            <div class="w-12 h-12 rounded-full bg-surface-variant text-on-surface flex items-center justify-center flex-shrink-0">
-                <span class="material-symbols-outlined fill-icon">lock</span>
-            </div>
-            <div>
-                <h2 class="text-xl font-bold text-on-surface font-headline">Password Safety</h2>
-                <p class="text-on-surface-variant text-sm">Strong, unique passwords are your first line of defence.</p>
+
+    <!-- ══════════════════════════════════════════════════════════════════
+         PASSWORDS SECTION
+         ══════════════════════════════════════════════════════════════════ -->
+    <section id="passwords"
+             class="bg-surface-container-lowest rounded-2xl border border-outline-variant shadow-sm overflow-hidden reveal">
+
+        <div class="relative bg-surface-container-high border-b border-outline-variant overflow-hidden">
+            <div class="absolute inset-0 img-placeholder-grid opacity-20 pointer-events-none"></div>
+            <div class="relative z-10 p-6 flex items-center gap-4">
+                <div class="w-14 h-14 rounded-2xl bg-surface-variant text-on-surface flex items-center
+                            justify-center flex-shrink-0 shadow-sm">
+                    <span class="material-symbols-outlined fill-icon text-2xl">lock</span>
+                </div>
+                <div>
+                    <h2 class="text-xl font-bold text-on-surface font-headline">Password Safety</h2>
+                    <p class="text-on-surface-variant text-sm">Strong, unique passwords are your first line of defence.</p>
+                </div>
+                <div class="hidden md:flex ml-auto flex-shrink-0 w-24 h-16 rounded-xl
+                            bg-surface-container border border-outline-variant/50 items-center justify-center">
+                    <span class="material-symbols-outlined fill-icon text-on-surface-variant text-4xl opacity-50">key</span>
+                </div>
             </div>
         </div>
-        <div class="p-6">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div class="flex flex-col gap-2">
+
+        <div class="p-6 space-y-5">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 reveal-stagger">
+                <div class="flex flex-col gap-3">
                     <div class="w-8 h-8 rounded-full bg-error-container text-error flex items-center justify-center text-sm font-bold">✗</div>
-                    <h4 class="font-semibold text-on-surface">Weak Password</h4>
-                    <p class="font-mono text-sm bg-surface-container p-2 rounded-lg border border-outline-variant text-error">password123</p>
+                    <h4 class="font-semibold text-on-surface text-sm">Weak Password</h4>
+                    <div class="img-placeholder img-placeholder-grid h-12 rounded-lg flex items-center justify-center">
+                        <p class="font-mono text-sm text-error z-10">password123</p>
+                    </div>
                     <p class="text-xs text-on-surface-variant">Dictionary word + simple numbers. Cracked in seconds.</p>
                 </div>
-                <div class="flex flex-col gap-2">
+                <div class="flex flex-col gap-3">
                     <div class="w-8 h-8 rounded-full bg-tertiary-container text-on-tertiary flex items-center justify-center text-sm font-bold">~</div>
-                    <h4 class="font-semibold text-on-surface">Moderate Password</h4>
-                    <p class="font-mono text-sm bg-surface-container p-2 rounded-lg border border-outline-variant text-tertiary">S@feNet2024</p>
-                    <p class="text-xs text-on-surface-variant">Better, but based on a recognisable word. Could be improved.</p>
+                    <h4 class="font-semibold text-on-surface text-sm">Moderate Password</h4>
+                    <div class="img-placeholder img-placeholder-grid h-12 rounded-lg flex items-center justify-center">
+                        <p class="font-mono text-sm text-tertiary z-10">S@feNet2024</p>
+                    </div>
+                    <p class="text-xs text-on-surface-variant">Better, but based on a recognisable word.</p>
                 </div>
-                <div class="flex flex-col gap-2">
+                <div class="flex flex-col gap-3">
                     <div class="w-8 h-8 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center text-sm font-bold">✓</div>
-                    <h4 class="font-semibold text-on-surface">Strong Password</h4>
-                    <p class="font-mono text-sm bg-surface-container p-2 rounded-lg border border-outline-variant text-secondary">k#9Lp!mXqR2$vT</p>
-                    <p class="text-xs text-on-surface-variant">Random mix of characters. Use a password manager to store it.</p>
+                    <h4 class="font-semibold text-on-surface text-sm">Strong Password</h4>
+                    <div class="img-placeholder img-placeholder-grid h-12 rounded-lg flex items-center justify-center">
+                        <p class="font-mono text-sm text-secondary z-10">k#9Lp!mXqR2$vT</p>
+                    </div>
+                    <p class="text-xs text-on-surface-variant">Random mix. Use a password manager to store it.</p>
                 </div>
             </div>
-            <div class="mt-4 bg-surface-container-low rounded-xl p-4 border border-outline-variant">
+            <div class="bg-surface-container-low rounded-xl p-4 border border-outline-variant">
                 <p class="text-sm text-on-surface-variant">
-                    <strong class="text-on-surface">Pro tip:</strong> Use a passphrase — a sentence like
-                    <span class="font-mono text-sm">Purple-Kiwi-Runs-Fast-42!</span> is both memorable and very secure.
-                    Never reuse passwords across sites and enable two-factor authentication wherever possible.
+                    <strong class="text-on-surface">Pro tip:</strong> Use a passphrase like
+                    <span class="font-mono text-sm">Purple-Kiwi-Runs-Fast-42!</span> — memorable and very secure.
+                    Never reuse passwords and enable two-factor authentication wherever possible.
                 </p>
             </div>
         </div>
     </section>
 
-    <!-- ── Suspicious URLs ────────────────────────────────────────────────── -->
-    <section id="urls" class="bg-surface-container-lowest rounded-2xl border border-outline-variant shadow-sm overflow-hidden">
-        <div class="bg-surface-container-high p-6 flex items-center gap-4 border-b border-outline-variant">
-            <div class="w-12 h-12 rounded-full bg-surface-variant text-on-surface flex items-center justify-center flex-shrink-0">
-                <span class="material-symbols-outlined fill-icon">link_off</span>
-            </div>
-            <div>
-                <h2 class="text-xl font-bold text-on-surface font-headline">Recognising Suspicious URLs</h2>
-                <p class="text-on-surface-variant text-sm">Learn to read web addresses before you click them.</p>
+
+    <!-- ══════════════════════════════════════════════════════════════════
+         SUSPICIOUS URLS SECTION
+         ══════════════════════════════════════════════════════════════════ -->
+    <section id="urls"
+             class="bg-surface-container-lowest rounded-2xl border border-outline-variant shadow-sm overflow-hidden reveal">
+
+        <div class="relative bg-surface-container-high border-b border-outline-variant overflow-hidden">
+            <div class="absolute inset-0 img-placeholder-grid opacity-20 pointer-events-none"></div>
+            <div class="relative z-10 p-6 flex items-center gap-4">
+                <div class="w-14 h-14 rounded-2xl bg-surface-variant text-on-surface flex items-center
+                            justify-center flex-shrink-0 shadow-sm">
+                    <span class="material-symbols-outlined fill-icon text-2xl">link_off</span>
+                </div>
+                <div>
+                    <h2 class="text-xl font-bold text-on-surface font-headline">Recognising Suspicious URLs</h2>
+                    <p class="text-on-surface-variant text-sm">Learn to read web addresses before you click them.</p>
+                </div>
+                <div class="hidden md:flex ml-auto flex-shrink-0 w-24 h-16 rounded-xl
+                            bg-surface-container border border-outline-variant/50 items-center justify-center">
+                    <span class="material-symbols-outlined fill-icon text-on-surface-variant text-4xl opacity-50">manage_search</span>
+                </div>
             </div>
         </div>
-        <div class="p-6 space-y-4">
+
+        <div class="p-6 space-y-5">
+            <!-- URL anatomy visual placeholder -->
+            <div class="feature-img-strip img-placeholder-grid rounded-xl min-h-[80px] flex items-center justify-center px-6">
+                <div class="relative z-10 font-mono text-sm flex flex-wrap gap-0 items-center pointer-events-none select-none">
+                    <span class="bg-error/20 text-error px-1 rounded">http://</span>
+                    <span class="bg-tertiary/20 text-on-tertiary px-1 rounded">paypal</span>
+                    <span class="bg-surface-container-lowest/80 text-on-surface-variant px-1">.login-secure</span>
+                    <span class="bg-error/20 text-error px-1 rounded">.ru</span>
+                    <span class="bg-surface-container-lowest/80 text-on-surface-variant px-1">/verify/now</span>
+                </div>
+            </div>
+
             <div class="overflow-x-auto">
                 <table class="w-full text-sm text-left border-collapse">
                     <thead>
@@ -233,37 +427,27 @@
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-outline-variant/50">
-                        <tr class="py-3">
-                            <td class="py-3 pr-4 font-medium text-on-surface">Protocol</td>
-                            <td class="py-3 pr-4 font-mono text-secondary text-xs">https://</td>
-                            <td class="py-3 font-mono text-error text-xs">http://</td>
+                        {% for signal, safe, bad in [
+                            ('Protocol',  'https://',           'http://'),
+                            ('Domain',    'anz.co.nz',          'anz.co.nz.login-secure.ru'),
+                            ('TLD',       '.co.nz / .com',      '.tk / .xyz / .ru'),
+                            ('Path',      '/personal/login',    '/verify-now/urgent/confirm'),
+                            ('Length',    'Short and readable', '300+ characters of random text')
+                        ] %}
+                        <tr class="hover:bg-surface-container-low transition-colors">
+                            <td class="py-3 pr-4 font-medium text-on-surface text-sm">{{ signal }}</td>
+                            <td class="py-3 pr-4 font-mono text-secondary text-xs">{{ safe }}</td>
+                            <td class="py-3 font-mono text-error text-xs">{{ bad }}</td>
                         </tr>
-                        <tr>
-                            <td class="py-3 pr-4 font-medium text-on-surface">Domain</td>
-                            <td class="py-3 pr-4 font-mono text-secondary text-xs">anz.co.nz</td>
-                            <td class="py-3 font-mono text-error text-xs">anz.co.nz.login-secure.ru</td>
-                        </tr>
-                        <tr>
-                            <td class="py-3 pr-4 font-medium text-on-surface">TLD</td>
-                            <td class="py-3 pr-4 font-mono text-secondary text-xs">.co.nz / .com</td>
-                            <td class="py-3 font-mono text-error text-xs">.tk / .xyz / .ru</td>
-                        </tr>
-                        <tr>
-                            <td class="py-3 pr-4 font-medium text-on-surface">Path</td>
-                            <td class="py-3 pr-4 font-mono text-secondary text-xs">/personal/login</td>
-                            <td class="py-3 font-mono text-error text-xs">/verify-now/urgent/confirm</td>
-                        </tr>
-                        <tr>
-                            <td class="py-3 pr-4 font-medium text-on-surface">Length</td>
-                            <td class="py-3 pr-4 font-mono text-secondary text-xs">Short and readable</td>
-                            <td class="py-3 font-mono text-error text-xs">300+ characters of random text</td>
-                        </tr>
+                        {% endfor %}
                     </tbody>
                 </table>
             </div>
+
             <div class="flex flex-col sm:flex-row gap-3 pt-2">
                 <a href="{{ url_for('scanner') }}"
-                   class="bg-primary text-on-primary px-6 py-3 rounded-lg font-semibold hover:bg-surface-tint transition-colors flex items-center gap-2 shadow-sm">
+                   class="bg-primary text-on-primary px-6 py-3 rounded-xl font-semibold
+                          hover:bg-surface-tint transition-colors flex items-center gap-2 shadow-sm text-sm">
                     <span class="material-symbols-outlined text-sm">search</span>
                     Scan a Suspicious Link
                 </a>
@@ -271,24 +455,37 @@
         </div>
     </section>
 
-    <!-- Glossary -->
-    <section class="bg-surface-container-low rounded-2xl border border-outline-variant p-6">
-        <h2 class="text-xl font-bold text-on-surface font-headline mb-4">Quick Glossary</h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+
+    <!-- ══════════════════════════════════════════════════════════════════
+         GLOSSARY
+         ══════════════════════════════════════════════════════════════════ -->
+    <section class="reveal">
+        <div class="flex items-center gap-3 mb-5">
+            <div class="w-10 h-10 rounded-xl bg-surface-container flex items-center justify-center">
+                <span class="material-symbols-outlined fill-icon text-on-surface-variant">menu_book</span>
+            </div>
+            <h2 class="text-xl font-bold text-on-surface font-headline">Quick Glossary</h2>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 reveal-stagger">
             {% set terms = [
-                ("Phishing", "A scam where criminals impersonate a trusted organisation to steal your credentials."),
-                ("Malware", "Malicious software designed to damage or gain unauthorised access to your device."),
-                ("Ransomware", "Malware that encrypts your files and demands payment to restore access."),
-                ("TLD", "Top-Level Domain — the ending of a web address, e.g. .com, .co.nz, .tk."),
-                ("Two-Factor Authentication (2FA)", "A security method requiring a second verification step (e.g. a code sent to your phone) in addition to a password."),
-                ("VPN", "Virtual Private Network — encrypts your internet connection to protect your privacy."),
-                ("Subdomain spoofing", "Using a real brand name as a subdomain (e.g. paypal.evil-site.com) to trick users."),
-                ("URL shortener", "A service that creates a short link hiding the true destination — can be used maliciously.")
+                ("Phishing",                    "phishing",        "Criminals impersonating a trusted organisation to steal your credentials."),
+                ("Malware",                     "bug_report",      "Malicious software designed to damage or gain unauthorised access to your device."),
+                ("Ransomware",                  "lock",            "Malware that encrypts your files and demands payment to restore access."),
+                ("TLD",                         "public",          "Top-Level Domain — the ending of a web address, e.g. .com, .co.nz, .tk."),
+                ("Two-Factor Auth (2FA)",       "phonelink_lock",  "A second verification step (e.g. a code sent to your phone) beyond your password."),
+                ("VPN",                         "vpn_key",         "Virtual Private Network — encrypts your internet connection to protect your privacy."),
+                ("Subdomain Spoofing",          "language",        "Using a brand name as a subdomain (e.g. paypal.evil-site.com) to trick users."),
+                ("URL Shortener",               "link",            "A service creating a short link that hides the true destination — can be used maliciously.")
             ] %}
-            {% for term, definition in terms %}
-            <div class="bg-surface-container-lowest rounded-xl p-4 border border-outline-variant">
-                <h4 class="font-semibold text-on-surface text-sm mb-1">{{ term }}</h4>
-                <p class="text-xs text-on-surface-variant leading-relaxed">{{ definition }}</p>
+            {% for term, icon, definition in terms %}
+            <div class="bg-surface-container-lowest rounded-xl p-4 border border-outline-variant card-lift flex items-start gap-3">
+                <div class="w-8 h-8 rounded-lg bg-surface-container flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <span class="material-symbols-outlined fill-icon text-on-surface-variant text-[16px]">{{ icon }}</span>
+                </div>
+                <div>
+                    <h4 class="font-semibold text-on-surface text-sm mb-0.5">{{ term }}</h4>
+                    <p class="text-xs text-on-surface-variant leading-relaxed">{{ definition }}</p>
+                </div>
             </div>
             {% endfor %}
         </div>

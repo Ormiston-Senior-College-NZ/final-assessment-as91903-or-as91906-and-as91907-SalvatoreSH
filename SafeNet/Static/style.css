@@ -1,7 +1,7 @@
 /* ═══════════════════════════════════════════════════════════════════════════
    SafeNet — style.css
-   Complements Tailwind CDN. Handles: transitions, scrollbar, focus rings,
-   print, and any utility Tailwind can't express inline.
+   Complements Tailwind CDN. Handles: transitions, animations, scrollbar,
+   focus rings, cards, popups, image placeholders, page polish, print.
    ═══════════════════════════════════════════════════════════════════════════ */
 
 /* ── Smooth scrolling & base reset ───────────────────────────────────────── */
@@ -16,11 +16,11 @@ html {
 
 /* ── Dark mode base transition (prevents FOUC on theme switch) ───────────── */
 html {
-    transition: background-color 0.25s ease, color 0.25s ease;
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 body {
-    transition: background-color 0.25s ease, color 0.25s ease;
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 /* ── Material Symbols baseline ───────────────────────────────────────────── */
@@ -62,7 +62,7 @@ html.dark ::-webkit-scrollbar-thumb:hover {
     background: #5a5c70;
 }
 
-/* ── Focus ring override (accessible, not ugly) ───────────────────────────── */
+/* ── Focus ring override ───────────────────────────────────────────────────── */
 :focus-visible {
     outline: 2px solid #0058be;
     outline-offset: 2px;
@@ -84,7 +84,7 @@ input:focus, textarea:focus, select:focus {
 
 /* ── Sidebar transition ──────────────────────────────────────────────────── */
 nav.sidebar {
-    transition: background-color 0.25s ease;
+    transition: background-color 0.3s ease;
 }
 
 /* ── Button active feedback ──────────────────────────────────────────────── */
@@ -92,20 +92,18 @@ button:active, a[class*="rounded"]:active {
     transform: scale(0.97);
 }
 
-/* ── SVG ring stroke transition ──────────────────────────────────────────── */
-circle[stroke-dashoffset] {
-    transition: stroke-dashoffset 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+/* ═══════════════════════════════════════════════════════════════════════════
+   PAGE TRANSITION
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.page-content {
+    animation: pageFadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) both;
 }
 
-/* ── Scan result card entrance ───────────────────────────────────────────── */
-.result-enter {
-    animation: resultSlideIn 0.35s cubic-bezier(0.4, 0, 0.2, 1) both;
-}
-
-@keyframes resultSlideIn {
+@keyframes pageFadeIn {
     from {
         opacity: 0;
-        transform: translateY(12px);
+        transform: translateY(10px);
     }
     to {
         opacity: 1;
@@ -113,7 +111,250 @@ circle[stroke-dashoffset] {
     }
 }
 
-/* ── Pulse badge ─────────────────────────────────────────────────────────── */
+/* Page-leave fade for link clicks */
+body.page-leaving main {
+    animation: pageFadeOut 0.2s ease forwards;
+}
+
+@keyframes pageFadeOut {
+    to {
+        opacity: 0;
+        transform: translateY(-6px);
+    }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ENTRANCE ANIMATIONS  (triggered via JS Intersection Observer)
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Base — hidden before reveal */
+.reveal {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.55s cubic-bezier(0.4, 0, 0.2, 1),
+                transform 0.55s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Staggered children inside a .reveal-stagger parent */
+.reveal-stagger > * {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.45s cubic-bezier(0.4, 0, 0.2, 1),
+                transform 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.reveal-stagger.visible > *:nth-child(1)  { transition-delay: 0.05s; }
+.reveal-stagger.visible > *:nth-child(2)  { transition-delay: 0.12s; }
+.reveal-stagger.visible > *:nth-child(3)  { transition-delay: 0.19s; }
+.reveal-stagger.visible > *:nth-child(4)  { transition-delay: 0.26s; }
+.reveal-stagger.visible > *:nth-child(5)  { transition-delay: 0.33s; }
+.reveal-stagger.visible > *:nth-child(6)  { transition-delay: 0.40s; }
+.reveal-stagger.visible > *:nth-child(n+7){ transition-delay: 0.46s; }
+
+.reveal-stagger.visible > * {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Slide-in from left */
+.reveal-left {
+    opacity: 0;
+    transform: translateX(-28px);
+    transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+                transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.reveal-left.visible {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+/* Slide-in from right */
+.reveal-right {
+    opacity: 0;
+    transform: translateX(28px);
+    transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+                transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.reveal-right.visible {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+/* Scale-up pop */
+.reveal-pop {
+    opacity: 0;
+    transform: scale(0.92);
+    transition: opacity 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
+                transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.reveal-pop.visible {
+    opacity: 1;
+    transform: scale(1);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   CARD HOVER LIFT
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.card-lift {
+    transition: transform 0.22s cubic-bezier(0.4, 0, 0.2, 1),
+                box-shadow 0.22s cubic-bezier(0.4, 0, 0.2, 1),
+                border-color 0.22s ease;
+}
+
+.card-lift:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.09);
+}
+
+html.dark .card-lift:hover {
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   SCAN RESULT ENTRANCE
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.result-enter {
+    animation: resultSlideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+@keyframes resultSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(16px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   POPUP / MODAL ANIMATIONS
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.popup-overlay {
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+}
+
+.popup-overlay.open {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.popup-panel {
+    opacity: 0;
+    transform: translateY(20px) scale(0.97);
+    transition: opacity 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+                transform 0.25s cubic-bezier(0.34, 1.4, 0.64, 1);
+}
+
+.popup-overlay.open .popup-panel {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+}
+
+/* Toast / notification slide-in from bottom */
+.toast {
+    animation: toastIn 0.35s cubic-bezier(0.34, 1.4, 0.64, 1) forwards;
+}
+
+.toast.hiding {
+    animation: toastOut 0.25s ease forwards;
+}
+
+@keyframes toastIn {
+    from { opacity: 0; transform: translateY(16px) scale(0.95); }
+    to   { opacity: 1; transform: translateY(0)    scale(1); }
+}
+
+@keyframes toastOut {
+    from { opacity: 1; transform: translateY(0) scale(1); }
+    to   { opacity: 0; transform: translateY(8px) scale(0.95); }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   LOADING ANIMATIONS
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Spinner */
+.spinner {
+    width: 18px;
+    height: 18px;
+    border: 2.5px solid rgba(255, 255, 255, 0.35);
+    border-top-color: #ffffff;
+    border-radius: 50%;
+    animation: spin 0.65s linear infinite;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Spinner dark variant */
+.spinner-dark {
+    width: 18px;
+    height: 18px;
+    border: 2.5px solid rgba(0, 88, 190, 0.2);
+    border-top-color: #0058be;
+    border-radius: 50%;
+    animation: spin 0.65s linear infinite;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+/* Shimmer skeleton loader */
+.skeleton {
+    background: linear-gradient(90deg,
+        var(--sk-base, #e6e7f2) 25%,
+        var(--sk-shine, #f2f3fd) 50%,
+        var(--sk-base, #e6e7f2) 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.4s ease infinite;
+    border-radius: 0.5rem;
+}
+
+html.dark .skeleton {
+    --sk-base: #21222e;
+    --sk-shine: #2a2b38;
+}
+
+@keyframes shimmer {
+    0%   { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+/* Scanning pulse ring */
+.scan-ring {
+    animation: scanRingPulse 1.8s ease-in-out infinite;
+}
+
+@keyframes scanRingPulse {
+    0%, 100% {
+        box-shadow: 0 0 0 0 rgba(0, 88, 190, 0.25);
+    }
+    50% {
+        box-shadow: 0 0 0 16px rgba(0, 88, 190, 0);
+    }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   PULSE / BADGE / RING
+   ═══════════════════════════════════════════════════════════════════════════ */
+
 .pulse-dot {
     animation: pulseDot 2s infinite;
 }
@@ -123,50 +364,257 @@ circle[stroke-dashoffset] {
     50%       { opacity: 0.6; transform: scale(0.92); }
 }
 
-/* ── Loading spinner ─────────────────────────────────────────────────────── */
-.spinner {
-    width: 18px;
-    height: 18px;
-    border: 2px solid rgba(255,255,255,0.35);
-    border-top-color: #ffffff;
-    border-radius: 50%;
-    animation: spin 0.7s linear infinite;
-    display: inline-block;
-    vertical-align: middle;
+/* SVG ring stroke transition */
+circle[stroke-dashoffset] {
+    transition: stroke-dashoffset 1s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-@keyframes spin {
-    to { transform: rotate(360deg); }
+/* ═══════════════════════════════════════════════════════════════════════════
+   HERO DECORATIVE ANIMATIONS
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Floating badge bob */
+.float-badge {
+    animation: floatBob 4s ease-in-out infinite;
 }
 
-/* ── Truncate long URLs gracefully ───────────────────────────────────────── */
-.url-truncate {
-    max-width: 32ch;
-    white-space: nowrap;
+.float-badge:nth-child(2) {
+    animation-delay: 1.5s;
+}
+
+.float-badge:nth-child(3) {
+    animation-delay: 2.8s;
+}
+
+@keyframes floatBob {
+    0%, 100% { transform: translateY(0); }
+    50%       { transform: translateY(-8px); }
+}
+
+/* Hero shield rotate-in */
+.shield-enter {
+    animation: shieldIn 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+@keyframes shieldIn {
+    from { opacity: 0; transform: scale(0.6) rotate(-15deg); }
+    to   { opacity: 1; transform: scale(1) rotate(0deg); }
+}
+
+/* Gradient orb drift */
+.orb-drift {
+    animation: orbDrift 8s ease-in-out infinite alternate;
+}
+
+.orb-drift-2 {
+    animation: orbDrift2 10s ease-in-out infinite alternate;
+}
+
+@keyframes orbDrift {
+    0%   { transform: translate(0, 0) scale(1); }
+    100% { transform: translate(20px, -15px) scale(1.08); }
+}
+
+@keyframes orbDrift2 {
+    0%   { transform: translate(0, 0) scale(1); }
+    100% { transform: translate(-18px, 12px) scale(1.05); }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   IMAGE PLACEHOLDER SECTIONS
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Standard image placeholder block */
+.img-placeholder {
+    position: relative;
     overflow: hidden;
-    text-overflow: ellipsis;
+    background: linear-gradient(135deg, #e8ecf8 0%, #dce1f5 100%);
+    border-radius: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 0.75rem;
+    color: #727785;
+    font-size: 0.8rem;
+    font-weight: 500;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+}
+
+.img-placeholder::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg,
+        transparent 0%,
+        rgba(255, 255, 255, 0.5) 50%,
+        transparent 100%);
+    background-size: 200% 100%;
+    animation: shimmer 2.5s ease infinite;
+    pointer-events: none;
+}
+
+html.dark .img-placeholder {
+    background: linear-gradient(135deg, #1a1b2e 0%, #21223a 100%);
+    color: #727785;
+}
+
+/* Visual grid pattern overlay on placeholders */
+.img-placeholder-grid::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+        linear-gradient(rgba(114, 119, 133, 0.08) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(114, 119, 133, 0.08) 1px, transparent 1px);
+    background-size: 24px 24px;
+    pointer-events: none;
+}
+
+/* Wide feature image strip */
+.feature-img-strip {
+    width: 100%;
+    min-height: 180px;
+    border-radius: 1.25rem;
+    background: linear-gradient(135deg,
+        #dce8ff 0%,
+        #e8f5ff 40%,
+        #d8f0e8 100%);
+    position: relative;
+    overflow: hidden;
+}
+
+html.dark .feature-img-strip {
+    background: linear-gradient(135deg, #0f1a2e 0%, #0f1e28 40%, #0a1a14 100%);
+}
+
+/* Aspect-ratio boxes for image slots */
+.aspect-video-placeholder {
+    aspect-ratio: 16 / 9;
+}
+
+.aspect-square-placeholder {
+    aspect-ratio: 1 / 1;
+}
+
+.aspect-portrait-placeholder {
+    aspect-ratio: 3 / 4;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   FLOATING DECORATIVE SHAPES
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.deco-blob {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(60px);
+    pointer-events: none;
+    opacity: 0.35;
+}
+
+html.dark .deco-blob {
+    opacity: 0.15;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   STAT COUNTER ANIMATION
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.counter-value {
     display: inline-block;
-    vertical-align: bottom;
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-/* ── Hero scan form focus ring ──────────────────────────────────────────── */
-#hero-scan-form:focus-within {
-    border-color: #0058be;
-    box-shadow: 0 0 0 3px rgba(0, 88, 190, 0.12);
+.counter-value.bump {
+    transform: scale(1.15);
 }
 
-html.dark #hero-scan-form:focus-within {
-    border-color: #adc6ff;
-    box-shadow: 0 0 0 3px rgba(173, 198, 255, 0.15);
+/* ═══════════════════════════════════════════════════════════════════════════
+   STEP / PROGRESS INDICATORS
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.step-line {
+    position: relative;
 }
 
-/* ── Responsive table scroll hint ───────────────────────────────────────── */
-.table-wrap {
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
+.step-line::before {
+    content: '';
+    position: absolute;
+    left: 20px;
+    top: 40px;
+    bottom: -8px;
+    width: 2px;
+    background: linear-gradient(to bottom, #c2c6d6, transparent);
 }
 
-/* ── Tag / badge ─────────────────────────────────────────────────────────── */
+html.dark .step-line::before {
+    background: linear-gradient(to bottom, #3a3c50, transparent);
+}
+
+.step-line:last-child::before {
+    display: none;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   CONFETTI (report success page)
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.confetti-piece {
+    position: fixed;
+    width: 10px;
+    height: 10px;
+    top: -10px;
+    border-radius: 2px;
+    animation: confettiFall linear forwards;
+    pointer-events: none;
+    z-index: 9999;
+}
+
+@keyframes confettiFall {
+    0% {
+        transform: translateY(0) rotate(0deg);
+        opacity: 1;
+    }
+    80% {
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(100vh) rotate(720deg);
+        opacity: 0;
+    }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   FORM POLISH
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Floating label lift */
+.field-group {
+    position: relative;
+}
+
+.field-group input:focus ~ .field-label,
+.field-group input:not(:placeholder-shown) ~ .field-label,
+.field-group textarea:focus ~ .field-label,
+.field-group textarea:not(:placeholder-shown) ~ .field-label {
+    transform: translateY(-1.4rem) scale(0.82);
+    color: #0058be;
+}
+
+/* Form field success state */
+.field-success input,
+.field-success textarea,
+.field-success select {
+    border-color: #006c49 !important;
+    box-shadow: 0 0 0 3px rgba(0, 108, 73, 0.1);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   BADGES & TAGS
+   ═══════════════════════════════════════════════════════════════════════════ */
+
 .badge-phishing  { background: #ffdad6; color: #93000a; }
 .badge-malware   { background: #ffdcc6; color: #5c2a00; }
 .badge-scam      { background: #d8e2ff; color: #004395; }
@@ -177,19 +625,118 @@ html.dark .badge-malware   { background: #3e1800; color: #ffb787; }
 html.dark .badge-scam      { background: #00316b; color: #adc6ff; }
 html.dark .badge-other     { background: #33354a; color: #b8bace; }
 
-/* ── Education section anchor offset (clears fixed header on mobile) ─────── */
+/* ═══════════════════════════════════════════════════════════════════════════
+   NAVIGATION ACTIVE INDICATOR
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.nav-link {
+    position: relative;
+    transition: background-color 0.18s ease, color 0.18s ease, transform 0.15s ease;
+}
+
+.nav-link:hover {
+    transform: translateX(2px);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   HERO SCAN FORM
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+#hero-scan-form {
+    transition: box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+#hero-scan-form:focus-within {
+    border-color: #0058be;
+    box-shadow: 0 0 0 4px rgba(0, 88, 190, 0.12);
+}
+
+html.dark #hero-scan-form:focus-within {
+    border-color: #adc6ff;
+    box-shadow: 0 0 0 4px rgba(173, 198, 255, 0.15);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   TOPIC PILL HOVER
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.topic-pill {
+    transition: transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1),
+                box-shadow 0.18s ease,
+                opacity 0.15s ease;
+}
+
+.topic-pill:hover {
+    transform: translateY(-2px) scale(1.04);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   TABLE HELPERS
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.table-wrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.url-truncate {
+    max-width: 32ch;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: inline-block;
+    vertical-align: bottom;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   SECTION ANCHOR OFFSET
+   ═══════════════════════════════════════════════════════════════════════════ */
+
 section[id] {
     scroll-margin-top: 80px;
 }
 
-/* ── Print styles ────────────────────────────────────────────────────────── */
+/* ═══════════════════════════════════════════════════════════════════════════
+   GRADIENT BORDER CARD
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.gradient-border {
+    position: relative;
+    background: var(--gb-bg, #ffffff);
+    border-radius: 1.25rem;
+}
+
+.gradient-border::before {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    background: linear-gradient(135deg, #0058be33, #006c4933, #92470033);
+    z-index: -1;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.gradient-border:hover::before {
+    opacity: 1;
+}
+
+html.dark .gradient-border {
+    --gb-bg: #141520;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   PRINT STYLES
+   ═══════════════════════════════════════════════════════════════════════════ */
+
 @media print {
     nav, header, footer, .no-print { display: none !important; }
     main { margin: 0 !important; padding: 0 !important; }
     body { background: white !important; color: black !important; }
 }
 
-/* ── Mobile: prevent content sitting under fixed top bar ─────────────────── */
+/* ── Mobile padding ───────────────────────────────────────────────────────── */
 @media (max-width: 767px) {
     body > main {
         padding-top: 5rem !important;

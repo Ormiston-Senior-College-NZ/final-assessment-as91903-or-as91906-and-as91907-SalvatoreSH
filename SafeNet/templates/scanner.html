@@ -4,21 +4,45 @@
 {% block content %}
 <div class="space-y-6">
 
-    <!-- Page header -->
-    <div>
-        <h1 class="text-3xl font-bold text-on-surface font-headline mb-1">Link Scanner</h1>
-        <p class="text-on-surface-variant text-sm">Enter a URL below to check whether it is safe before you visit it.
-           SafeNet analyses the URL structure — it does not follow or visit the link.</p>
+    <!-- ══════════════════════════════════════════════════════════════════
+         PAGE HEADER BANNER
+         ══════════════════════════════════════════════════════════════════ -->
+    <div class="relative rounded-2xl overflow-hidden border border-outline-variant shadow-sm
+                bg-surface-container-low min-h-[120px] flex items-center reveal">
+        <!-- Grid + gradient bg -->
+        <div class="absolute inset-0 bg-gradient-to-br from-primary/8 via-surface-container-low
+                    to-secondary-container/15 img-placeholder-grid pointer-events-none"></div>
+        <div class="deco-blob orb-drift  w-40 h-40 bg-primary-fixed  -top-8 -right-8 opacity-30"></div>
+
+        <div class="relative z-10 flex items-center gap-5 px-6 py-5 w-full">
+            <div class="w-12 h-12 rounded-2xl bg-primary-container flex items-center justify-center flex-shrink-0 shadow-sm">
+                <span class="material-symbols-outlined fill-icon text-primary" style="font-size:1.6rem;">security_update_good</span>
+            </div>
+            <div>
+                <h1 class="text-2xl md:text-3xl font-bold text-on-surface font-headline">Link Scanner</h1>
+                <p class="text-on-surface-variant text-sm mt-0.5 max-w-xl">
+                    Enter a URL to check whether it is safe before you visit it.
+                    SafeNet analyses the URL structure — it never follows or visits the link.
+                </p>
+            </div>
+            <!-- Decorative scan icon -->
+            <div class="hidden md:flex ml-auto flex-shrink-0 w-16 h-16 rounded-2xl
+                        bg-surface-container-lowest/70 backdrop-blur-sm border border-outline-variant/50
+                        items-center justify-center">
+                <span class="material-symbols-outlined fill-icon text-primary text-4xl">radar</span>
+            </div>
+        </div>
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
-        <!-- Main column -->
+        <!-- ── Main column ─────────────────────────────────────────────── -->
         <div class="lg:col-span-2 space-y-6">
 
             <!-- Scan form -->
-            <section class="bg-surface-container-lowest rounded-2xl border border-outline-variant shadow-sm p-5">
-                <form action="{{ url_for('scanner') }}" method="POST" class="flex flex-col sm:flex-row gap-3">
+            <section class="bg-surface-container-lowest rounded-2xl border border-outline-variant shadow-sm p-5 reveal">
+                <form action="{{ url_for('scanner') }}" method="POST"
+                      class="flex flex-col sm:flex-row gap-3">
                     <div class="relative flex-1">
                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                             <span class="material-symbols-outlined text-outline text-[20px]">link</span>
@@ -34,49 +58,66 @@
                     <button type="submit" id="scan-btn"
                             class="bg-primary text-on-primary px-6 py-3 rounded-xl font-semibold
                                    hover:bg-surface-tint active:scale-95 transition-all shadow-sm
-                                   flex items-center justify-center gap-2 whitespace-nowrap min-w-[120px]">
+                                   flex items-center justify-center gap-2 whitespace-nowrap min-w-[130px]">
                         <span class="material-symbols-outlined text-[18px]">search</span>
                         Scan Link
                     </button>
                 </form>
+
+                <!-- Tips strip -->
+                <div class="mt-4 flex flex-wrap gap-3">
+                    <span class="text-xs text-on-surface-variant flex items-center gap-1">
+                        <span class="material-symbols-outlined fill-icon text-secondary text-[14px]">check_circle</span>
+                        Include <span class="font-mono ml-1">https://</span>
+                    </span>
+                    <span class="text-xs text-on-surface-variant flex items-center gap-1">
+                        <span class="material-symbols-outlined fill-icon text-secondary text-[14px]">check_circle</span>
+                        Works with shortened URLs
+                    </span>
+                    <span class="text-xs text-on-surface-variant flex items-center gap-1">
+                        <span class="material-symbols-outlined fill-icon text-secondary text-[14px]">check_circle</span>
+                        No link is ever visited
+                    </span>
+                </div>
             </section>
 
-            <!-- Results -->
+            <!-- ── Results ─────────────────────────────────────────────── -->
             {% if result %}
             <div class="space-y-4 result-enter">
 
-                <!-- Hero result card -->
+                <!-- ── Hero result card ─────────────────────────────────── -->
                 {% if result.level == 'danger' %}
                 <div class="rounded-2xl border border-red-200 p-6 relative overflow-hidden
                             bg-error-container shadow-sm">
                     <div class="absolute top-0 right-0 p-6 opacity-10 pointer-events-none select-none">
-                        <span class="material-symbols-outlined fill-icon text-error" style="font-size:5rem;">gpp_bad</span>
+                        <span class="material-symbols-outlined fill-icon text-error" style="font-size:7rem;">gpp_bad</span>
                     </div>
+                    <div class="absolute inset-0 img-placeholder-grid opacity-30 pointer-events-none"></div>
                     <div class="relative z-10">
                         <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-error text-on-error
                                      text-xs font-bold uppercase tracking-wider mb-3">
                             <span class="material-symbols-outlined fill-icon text-[14px]">warning</span>
-                            High Risk
+                            High Risk — Do Not Visit
                         </span>
                         <h2 class="font-headline text-xl md:text-2xl font-bold text-on-error-container mb-2">
                             {{ result.title }}
                         </h2>
-                        <p class="text-on-error-container text-sm opacity-80 mb-4 max-w-lg">
+                        <p class="text-on-error-container text-sm opacity-80 mb-5 max-w-lg">
                             This URL matches patterns associated with phishing, scams, or malware. Do not visit this site.
                         </p>
                         <div class="flex flex-wrap gap-3">
                             <a href="{{ url_for('report') }}"
-                               class="bg-error text-on-error px-4 py-2 rounded-lg font-semibold text-sm
+                               class="bg-error text-on-error px-4 py-2 rounded-xl font-semibold text-sm
                                       hover:opacity-90 transition-opacity flex items-center gap-1.5 shadow-sm">
                                 <span class="material-symbols-outlined text-[16px]">flag</span>
                                 Report This URL
                             </a>
                             <a href="{{ url_for('education') }}"
                                class="bg-surface-container-lowest/60 text-on-error-container border border-error/30
-                                      px-4 py-2 rounded-lg font-semibold text-sm hover:bg-surface-container-lowest/80
+                                      px-4 py-2 rounded-xl font-semibold text-sm hover:bg-surface-container-lowest/80
                                       transition-colors flex items-center gap-1.5">
                                 <span class="material-symbols-outlined text-[16px]">school</span>
-                                Learn why this is risky
+                                Learn why
                             </a>
                         </div>
                     </div>
@@ -86,31 +127,32 @@
                 <div class="rounded-2xl border border-orange-200 p-6 relative overflow-hidden
                             bg-tertiary-fixed shadow-sm">
                     <div class="absolute top-0 right-0 p-6 opacity-10 pointer-events-none select-none">
-                        <span class="material-symbols-outlined fill-icon text-tertiary" style="font-size:5rem;">warning_amber</span>
+                        <span class="material-symbols-outlined fill-icon text-tertiary" style="font-size:7rem;">warning_amber</span>
                     </div>
+                    <div class="absolute inset-0 img-placeholder-grid opacity-20 pointer-events-none"></div>
                     <div class="relative z-10">
                         <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-tertiary text-on-tertiary
                                      text-xs font-bold uppercase tracking-wider mb-3">
                             <span class="material-symbols-outlined fill-icon text-[14px]">warning_amber</span>
-                            Suspicious
+                            Suspicious — Proceed with Caution
                         </span>
                         <h2 class="font-headline text-xl md:text-2xl font-bold text-on-surface mb-2">
                             {{ result.title }}
                         </h2>
-                        <p class="text-on-surface-variant text-sm mb-4 max-w-lg">
-                            This URL has some characteristics associated with suspicious sites.
-                            Verify the domain before entering any personal information.
+                        <p class="text-on-surface-variant text-sm mb-5 max-w-lg">
+                            This URL has characteristics associated with suspicious sites.
+                            Verify the domain carefully before entering any personal information.
                         </p>
                         <div class="flex flex-wrap gap-3">
                             <a href="{{ url_for('report') }}"
-                               class="bg-tertiary text-on-tertiary px-4 py-2 rounded-lg font-semibold text-sm
+                               class="bg-tertiary text-on-tertiary px-4 py-2 rounded-xl font-semibold text-sm
                                       hover:opacity-90 transition-opacity flex items-center gap-1.5 shadow-sm">
                                 <span class="material-symbols-outlined text-[16px]">flag</span>
                                 Report This URL
                             </a>
                             <a href="{{ url_for('education') }}"
                                class="bg-surface-container-lowest text-on-surface border border-outline-variant
-                                      px-4 py-2 rounded-lg font-semibold text-sm hover:bg-surface-container-high
+                                      px-4 py-2 rounded-xl font-semibold text-sm hover:bg-surface-container-high
                                       transition-colors flex items-center gap-1.5">
                                 <span class="material-symbols-outlined text-[16px]">school</span>
                                 Learn more
@@ -123,31 +165,32 @@
                 <div class="rounded-2xl border border-green-200 p-6 relative overflow-hidden
                             bg-secondary-container shadow-sm">
                     <div class="absolute top-0 right-0 p-6 opacity-10 pointer-events-none select-none">
-                        <span class="material-symbols-outlined fill-icon text-secondary" style="font-size:5rem;">verified_user</span>
+                        <span class="material-symbols-outlined fill-icon text-secondary" style="font-size:7rem;">verified_user</span>
                     </div>
+                    <div class="absolute inset-0 img-placeholder-grid opacity-20 pointer-events-none"></div>
                     <div class="relative z-10">
                         <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-secondary text-on-secondary
                                      text-xs font-bold uppercase tracking-wider mb-3">
                             <span class="material-symbols-outlined fill-icon text-[14px]">check_circle</span>
-                            Safe
+                            Safe — No Threats Detected
                         </span>
                         <h2 class="font-headline text-xl md:text-2xl font-bold text-on-secondary-container mb-2">
                             {{ result.title }}
                         </h2>
-                        <p class="text-on-secondary-container text-sm opacity-80 mb-4 max-w-lg">
-                            This URL passed all safety checks. Still verify the domain name carefully
+                        <p class="text-on-secondary-container text-sm opacity-80 mb-5 max-w-lg">
+                            This URL passed all safety checks. Always verify the domain name carefully
                             before entering any login or payment details.
                         </p>
                         <div class="flex flex-wrap gap-3">
                             <a href="{{ url_for('scanner') }}"
-                               class="bg-secondary text-on-secondary px-4 py-2 rounded-lg font-semibold text-sm
+                               class="bg-secondary text-on-secondary px-4 py-2 rounded-xl font-semibold text-sm
                                       hover:opacity-90 transition-opacity flex items-center gap-1.5 shadow-sm">
                                 <span class="material-symbols-outlined text-[16px]">search</span>
                                 Scan Another
                             </a>
                             <a href="{{ url_for('education') }}"
                                class="bg-surface-container-lowest text-on-surface border border-outline-variant
-                                      px-4 py-2 rounded-lg font-semibold text-sm hover:bg-surface-container-high
+                                      px-4 py-2 rounded-xl font-semibold text-sm hover:bg-surface-container-high
                                       transition-colors flex items-center gap-1.5">
                                 <span class="material-symbols-outlined text-[16px]">school</span>
                                 Build safer habits
@@ -169,22 +212,26 @@
                 </div>
                 {% endif %}
 
-                <!-- Detection details + score row -->
+                <!-- ── Score + detection details ─────────────────────── -->
                 {% if result.level in ['danger', 'warning', 'safe'] %}
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
 
-                    <!-- Score card -->
+                    <!-- Score ring card -->
                     <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant shadow-sm p-5
-                                flex flex-col items-center justify-center text-center">
+                                flex flex-col items-center justify-center text-center card-lift">
                         <p class="text-xs font-semibold text-on-surface-variant uppercase tracking-wide mb-3">Threat Score</p>
                         <div class="relative w-28 h-28">
                             <svg class="w-full h-full -rotate-90" viewBox="0 0 100 100">
-                                <circle cx="50" cy="50" r="42" fill="none" stroke="#e1e2ec" stroke-width="10"/>
+                                <circle cx="50" cy="50" r="42" fill="none"
+                                        stroke="#e1e2ec" stroke-width="10"/>
                                 <circle cx="50" cy="50" r="42" fill="none"
                                         stroke="{% if result.level == 'danger' %}#ba1a1a{% elif result.level == 'warning' %}#924700{% else %}#006c49{% endif %}"
                                         stroke-dasharray="264"
                                         stroke-dashoffset="{{ (264 - (result.score / 100 * 264)) | int }}"
-                                        stroke-linecap="round" stroke-width="10"/>
+                                        stroke-linecap="round"
+                                        stroke-width="10"
+                                        data-ring-target="{{ result.score }}"
+                                        data-ring-total="264"/>
                             </svg>
                             <div class="absolute inset-0 flex flex-col items-center justify-center">
                                 <span class="font-headline text-3xl font-black
@@ -201,13 +248,14 @@
                         </p>
                     </div>
 
-                    <!-- Detection reasons (2 cols) -->
+                    <!-- Detection reasons -->
                     <div class="sm:col-span-2 space-y-2">
                         <p class="text-xs font-semibold text-on-surface-variant uppercase tracking-wide mb-2">Detection Details</p>
                         {% if result.reasons %}
                         {% for reason in result.reasons %}
                         <div class="flex items-start gap-2.5 p-3 rounded-xl bg-surface-container-lowest
-                                    border border-outline-variant text-sm">
+                                    border border-outline-variant text-sm reveal"
+                             style="transition-delay: {{ loop.index0 * 0.06 }}s">
                             <span class="material-symbols-outlined fill-icon flex-shrink-0 text-[18px] mt-0.5
                                          {% if result.level == 'danger' %}text-error
                                          {% elif result.level == 'warning' %}text-tertiary
@@ -220,7 +268,8 @@
                         </div>
                         {% endfor %}
                         {% else %}
-                        <div class="p-3 rounded-xl bg-surface-container-lowest border border-outline-variant text-sm text-on-surface-variant">
+                        <div class="p-3 rounded-xl bg-surface-container-lowest border border-outline-variant
+                                    text-sm text-on-surface-variant">
                             No specific signals detected.
                         </div>
                         {% endif %}
@@ -228,13 +277,18 @@
                 </div>
                 {% endif %}
 
-                <!-- Scanned URL display -->
+                <!-- Scanned URL chip -->
                 {% if scanned_url %}
                 <div class="bg-surface-container-low rounded-xl border border-outline-variant p-3
                             flex items-center gap-2 text-xs">
                     <span class="material-symbols-outlined text-outline text-[16px]">link</span>
                     <span class="text-on-surface-variant">Scanned:</span>
                     <span class="font-mono text-on-surface truncate">{{ scanned_url }}</span>
+                    <a href="{{ url_for('report') }}?url={{ scanned_url | urlencode }}"
+                       class="ml-auto flex-shrink-0 text-error text-[11px] font-semibold
+                              hover:underline flex items-center gap-1">
+                        <span class="material-symbols-outlined text-[13px]">flag</span>Report
+                    </a>
                 </div>
                 {% endif %}
 
@@ -251,27 +305,69 @@
                 </div>
 
             </div>
+
             {% else %}
-            <!-- Empty state -->
-            <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant p-10 text-center shadow-sm">
-                <span class="material-symbols-outlined fill-icon text-outline text-5xl mb-4 block">shield_with_heart</span>
-                <h3 class="font-semibold text-on-surface text-lg mb-2">Ready to scan</h3>
-                <p class="text-on-surface-variant text-sm max-w-xs mx-auto">
-                    Enter a URL above to check whether it looks safe before you visit it.
-                </p>
+            <!-- ── Empty / ready state ──────────────────────────────────── -->
+            <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant
+                        shadow-sm overflow-hidden reveal">
+
+                <!-- Visual placeholder strip -->
+                <div class="feature-img-strip img-placeholder-grid min-h-[180px] relative flex items-center justify-center">
+                    <!-- Central icon -->
+                    <div class="relative z-10 flex flex-col items-center gap-4 pointer-events-none select-none">
+                        <div class="w-20 h-20 rounded-full bg-surface-container-lowest/80 backdrop-blur-sm
+                                    border border-outline-variant/50 shadow-lg flex items-center justify-center shield-enter">
+                            <span class="material-symbols-outlined fill-icon text-primary" style="font-size:3rem;">shield_with_heart</span>
+                        </div>
+                    </div>
+                    <!-- Floating hint badges -->
+                    <div class="float-badge absolute top-6 left-8 flex items-center gap-1.5 px-2.5 py-1.5
+                                rounded-lg bg-surface-container-lowest/90 backdrop-blur-sm shadow
+                                border border-outline-variant/50 text-xs text-on-surface-variant">
+                        <span class="material-symbols-outlined fill-icon text-secondary text-[13px]">check_circle</span>
+                        Safe link
+                    </div>
+                    <div class="float-badge absolute bottom-6 right-8 flex items-center gap-1.5 px-2.5 py-1.5
+                                rounded-lg bg-surface-container-lowest/90 backdrop-blur-sm shadow
+                                border border-outline-variant/50 text-xs text-on-surface-variant">
+                        <span class="material-symbols-outlined fill-icon text-error text-[13px]">gpp_bad</span>
+                        Threat detected
+                    </div>
+                </div>
+
+                <!-- Text -->
+                <div class="p-8 text-center">
+                    <h3 class="font-bold text-on-surface text-lg mb-2">Ready to scan</h3>
+                    <p class="text-on-surface-variant text-sm max-w-xs mx-auto leading-relaxed">
+                        Enter any URL above to instantly check whether it looks safe before you visit it.
+                    </p>
+                    <!-- What we check -->
+                    <div class="mt-6 grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs text-on-surface-variant">
+                        {% for label, icon in [('Protocol', 'lock'), ('Domain', 'language'), ('Keywords', 'manage_search'), ('TLD Risk', 'public_off')] %}
+                        <div class="bg-surface-container-low rounded-xl p-3 border border-outline-variant flex flex-col items-center gap-1.5 card-lift">
+                            <span class="material-symbols-outlined fill-icon text-primary text-[20px]">{{ icon }}</span>
+                            <span class="font-medium text-on-surface">{{ label }}</span>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
             </div>
             {% endif %}
 
         </div>
 
-        <!-- Sidebar column -->
+        <!-- ── Sidebar ──────────────────────────────────────────────────── -->
         <div class="space-y-4">
 
             <!-- Recent scans -->
-            <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant shadow-sm overflow-hidden">
+            <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant
+                        shadow-sm overflow-hidden reveal">
                 <div class="flex items-center justify-between px-4 py-3 border-b border-outline-variant
                             bg-surface-container-low">
-                    <h3 class="text-sm font-semibold text-on-surface">Recent Scans</h3>
+                    <h3 class="text-sm font-semibold text-on-surface flex items-center gap-1.5">
+                        <span class="material-symbols-outlined text-outline text-[16px]">history</span>
+                        Recent Scans
+                    </h3>
                     <button onclick="clearScanHistory()"
                             class="text-xs text-outline hover:text-error transition-colors">Clear</button>
                 </div>
@@ -280,9 +376,45 @@
                 </div>
             </div>
 
+            <!-- Threat type legend -->
+            <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant
+                        shadow-sm p-4 space-y-3 reveal">
+                <h3 class="text-sm font-semibold text-on-surface">Result levels</h3>
+                <div class="space-y-2.5">
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-8 h-8 rounded-full bg-secondary-container flex items-center justify-center flex-shrink-0">
+                            <span class="material-symbols-outlined fill-icon text-secondary text-[15px]">check_circle</span>
+                        </div>
+                        <div>
+                            <p class="text-xs font-semibold text-on-surface">Safe</p>
+                            <p class="text-[11px] text-on-surface-variant">Score 0–24 · No major signals</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-8 h-8 rounded-full bg-tertiary-container flex items-center justify-center flex-shrink-0">
+                            <span class="material-symbols-outlined fill-icon text-on-tertiary text-[15px]">warning_amber</span>
+                        </div>
+                        <div>
+                            <p class="text-xs font-semibold text-on-surface">Suspicious</p>
+                            <p class="text-[11px] text-on-surface-variant">Score 25–59 · Review carefully</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-8 h-8 rounded-full bg-error-container flex items-center justify-center flex-shrink-0">
+                            <span class="material-symbols-outlined fill-icon text-error text-[15px]">gpp_bad</span>
+                        </div>
+                        <div>
+                            <p class="text-xs font-semibold text-on-surface">Danger</p>
+                            <p class="text-[11px] text-on-surface-variant">Score 60+ · Do not visit</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- Quick tips -->
-            <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant shadow-sm p-4 space-y-3">
-                <h3 class="text-sm font-semibold text-on-surface">What to look for</h3>
+            <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant
+                        shadow-sm p-4 space-y-3 reveal">
+                <h3 class="text-sm font-semibold text-on-surface">What we check</h3>
                 <div class="space-y-2 text-xs text-on-surface-variant">
                     <div class="flex items-start gap-2">
                         <span class="material-symbols-outlined fill-icon text-secondary text-[15px] mt-0.5">check_circle</span>
@@ -290,30 +422,54 @@
                     </div>
                     <div class="flex items-start gap-2">
                         <span class="material-symbols-outlined fill-icon text-secondary text-[15px] mt-0.5">check_circle</span>
-                        <span>Domain should match the real organisation</span>
+                        <span>Suspicious TLDs like <span class="font-mono">.tk</span>, <span class="font-mono">.xyz</span>, <span class="font-mono">.ru</span></span>
                     </div>
                     <div class="flex items-start gap-2">
-                        <span class="material-symbols-outlined fill-icon text-error text-[15px] mt-0.5">cancel</span>
-                        <span>Avoid links from unsolicited texts or emails</span>
+                        <span class="material-symbols-outlined fill-icon text-secondary text-[15px] mt-0.5">check_circle</span>
+                        <span>Brand names hidden in subdomains</span>
                     </div>
                     <div class="flex items-start gap-2">
-                        <span class="material-symbols-outlined fill-icon text-error text-[15px] mt-0.5">cancel</span>
-                        <span>Suspicious TLDs: <span class="font-mono">.tk .xyz .ru .pw</span></span>
+                        <span class="material-symbols-outlined fill-icon text-secondary text-[15px] mt-0.5">check_circle</span>
+                        <span>Phishing keywords like <span class="font-mono">verify</span>, <span class="font-mono">login</span></span>
                     </div>
                     <div class="flex items-start gap-2">
-                        <span class="material-symbols-outlined fill-icon text-error text-[15px] mt-0.5">cancel</span>
-                        <span>Shortened URLs hide the true destination</span>
+                        <span class="material-symbols-outlined fill-icon text-secondary text-[15px] mt-0.5">check_circle</span>
+                        <span>URL shorteners that hide destinations</span>
+                    </div>
+                    <div class="flex items-start gap-2">
+                        <span class="material-symbols-outlined fill-icon text-secondary text-[15px] mt-0.5">check_circle</span>
+                        <span>Raw IP addresses as domains</span>
                     </div>
                 </div>
-                <a href="{{ url_for('education') }}"
-                   class="inline-flex items-center gap-1 text-xs text-primary hover:underline font-medium mt-1">
-                    Learn more in the Education Hub
+                <a href="{{ url_for('education') }}#urls"
+                   class="flex items-center gap-1 text-xs text-primary font-semibold hover:underline mt-1">
+                    Learn more about URL risks
                     <span class="material-symbols-outlined text-[13px]">arrow_forward</span>
                 </a>
             </div>
 
+            <!-- Visual placeholder — "How to spot a scam" mini card -->
+            <div class="rounded-2xl border border-outline-variant shadow-sm overflow-hidden reveal">
+                <div class="feature-img-strip img-placeholder-grid min-h-[100px] flex items-center justify-center">
+                    <div class="relative z-10 flex flex-col items-center gap-2 pointer-events-none select-none">
+                        <span class="material-symbols-outlined fill-icon text-secondary text-4xl">school</span>
+                        <p class="text-xs font-semibold text-on-surface-variant uppercase tracking-wider">Education</p>
+                    </div>
+                </div>
+                <div class="p-4 bg-surface-container-lowest">
+                    <p class="text-sm font-semibold text-on-surface mb-1">Not sure what to look for?</p>
+                    <p class="text-xs text-on-surface-variant mb-3 leading-relaxed">
+                        The Education Hub explains phishing, malware, and suspicious URLs in plain English.
+                    </p>
+                    <a href="{{ url_for('education') }}"
+                       class="flex items-center gap-1.5 text-xs font-semibold text-primary hover:underline">
+                        <span class="material-symbols-outlined text-[14px]">school</span>
+                        Open Education Hub
+                    </a>
+                </div>
+            </div>
+
         </div>
     </div>
-
 </div>
 {% endblock %}

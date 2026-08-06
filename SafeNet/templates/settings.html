@@ -4,19 +4,39 @@
 {% block content %}
 <div class="max-w-2xl mx-auto space-y-6">
 
-    <div>
-        <h1 class="text-3xl font-bold text-on-surface font-headline mb-1">Settings</h1>
-        <p class="text-on-surface-variant">Manage your preferences and appearance.</p>
+    <!-- ══════════════════════════════════════════════════════════════════
+         PAGE HEADER BANNER
+         ══════════════════════════════════════════════════════════════════ -->
+    <div class="relative rounded-2xl overflow-hidden border border-outline-variant shadow-sm
+                min-h-[110px] flex items-center reveal">
+        <div class="absolute inset-0 bg-gradient-to-br from-surface-container-high via-surface-container-low
+                    to-primary-fixed/15 img-placeholder-grid pointer-events-none"></div>
+        <div class="deco-blob orb-drift   w-36 h-36 bg-primary-fixed  -top-8 -right-8 opacity-30"></div>
+        <div class="relative z-10 flex items-center gap-4 px-6 py-5 w-full">
+            <div class="w-11 h-11 rounded-2xl bg-surface-container flex items-center justify-center
+                        flex-shrink-0 shadow-sm border border-outline-variant">
+                <span class="material-symbols-outlined fill-icon text-on-surface-variant"
+                      style="font-size:1.4rem;">settings</span>
+            </div>
+            <div>
+                <h1 class="text-2xl font-bold text-on-surface font-headline">Settings</h1>
+                <p class="text-on-surface-variant text-sm mt-0.5">Manage your preferences and appearance.</p>
+            </div>
+        </div>
     </div>
 
-    <!-- Appearance -->
-    <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant shadow-sm overflow-hidden">
-        <div class="bg-surface-container-low px-6 py-4 border-b border-outline-variant">
+    <!-- ══════════════════════════════════════════════════════════════════
+         APPEARANCE
+         ══════════════════════════════════════════════════════════════════ -->
+    <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant shadow-sm
+                overflow-hidden reveal">
+        <div class="bg-surface-container-low px-6 py-4 border-b border-outline-variant flex items-center gap-2">
+            <span class="material-symbols-outlined fill-icon text-on-surface-variant text-[18px]">palette</span>
             <h2 class="font-semibold text-on-surface">Appearance</h2>
         </div>
-        <div class="p-6 space-y-4">
+        <div class="p-6 space-y-5">
 
-            <!-- Theme toggle -->
+            <!-- Theme toggle row -->
             <div class="flex items-center justify-between">
                 <div class="flex items-center gap-3">
                     <div class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center">
@@ -28,48 +48,78 @@
                     </div>
                 </div>
                 <button id="settings-theme-toggle" onclick="toggleTheme()"
-                        class="relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 bg-outline"
+                        class="relative inline-flex h-6 w-11 items-center rounded-full
+                               transition-colors focus:outline-none focus:ring-2 focus:ring-primary
+                               focus:ring-offset-2 bg-outline"
                         role="switch" aria-checked="false">
                     <span id="settings-thumb"
-                          class="inline-block h-4 w-4 rounded-full bg-white shadow transform transition-transform translate-x-1"></span>
+                          class="inline-block h-4 w-4 rounded-full bg-white shadow
+                                 transform transition-transform translate-x-1"></span>
                 </button>
             </div>
 
             <!-- Theme selector cards -->
-            <div class="grid grid-cols-2 gap-3 pt-2">
+            <div class="grid grid-cols-2 gap-3">
                 <button onclick="setTheme('light')"
-                        class="theme-option p-4 rounded-xl border-2 border-outline-variant bg-white text-left hover:border-primary transition-colors" data-theme="light">
-                    <div class="flex items-center gap-2 mb-2">
-                        <span class="material-symbols-outlined text-on-surface text-sm">light_mode</span>
+                        data-theme="light"
+                        class="theme-option p-4 rounded-xl border-2 border-outline-variant
+                               bg-white text-left hover:border-primary transition-colors card-lift">
+                    <div class="flex items-center gap-2 mb-3">
+                        <span class="material-symbols-outlined text-on-surface text-[18px]">light_mode</span>
                         <span class="text-sm font-semibold text-on-surface">Light</span>
                     </div>
-                    <div class="h-8 rounded-lg bg-surface-container border border-outline-variant/50"></div>
+                    <!-- Preview -->
+                    <div class="space-y-1.5">
+                        <div class="h-2.5 w-full rounded bg-[#e6e7f2]"></div>
+                        <div class="h-2.5 w-3/4 rounded bg-[#dce1f5]"></div>
+                        <div class="h-5 w-full rounded bg-[#0058be] opacity-80"></div>
+                    </div>
                 </button>
                 <button onclick="setTheme('dark')"
-                        class="theme-option p-4 rounded-xl border-2 border-outline-variant bg-gray-900 text-left hover:border-primary transition-colors" data-theme="dark">
-                    <div class="flex items-center gap-2 mb-2">
-                        <span class="material-symbols-outlined text-white text-sm">dark_mode</span>
+                        data-theme="dark"
+                        class="theme-option p-4 rounded-xl border-2 border-outline-variant
+                               bg-gray-900 text-left hover:border-primary transition-colors card-lift">
+                    <div class="flex items-center gap-2 mb-3">
+                        <span class="material-symbols-outlined text-white text-[18px]">dark_mode</span>
                         <span class="text-sm font-semibold text-white">Dark</span>
                     </div>
-                    <div class="h-8 rounded-lg bg-gray-700 border border-gray-600/50"></div>
+                    <!-- Preview -->
+                    <div class="space-y-1.5">
+                        <div class="h-2.5 w-full rounded bg-gray-700"></div>
+                        <div class="h-2.5 w-3/4 rounded bg-gray-600"></div>
+                        <div class="h-5 w-full rounded bg-blue-500 opacity-80"></div>
+                    </div>
                 </button>
             </div>
 
         </div>
     </div>
 
-    <!-- About -->
-    <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant shadow-sm overflow-hidden">
-        <div class="bg-surface-container-low px-6 py-4 border-b border-outline-variant">
+    <!-- ══════════════════════════════════════════════════════════════════
+         ABOUT SAFENET  — visual placeholder strip
+         ══════════════════════════════════════════════════════════════════ -->
+    <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant shadow-sm
+                overflow-hidden reveal">
+        <div class="bg-surface-container-low px-6 py-4 border-b border-outline-variant flex items-center gap-2">
+            <span class="material-symbols-outlined fill-icon text-on-surface-variant text-[18px]">shield</span>
             <h2 class="font-semibold text-on-surface">About SafeNet</h2>
         </div>
+
+        <!-- Visual banner -->
+        <div class="feature-img-strip img-placeholder-grid min-h-[80px] flex items-center px-6 gap-4">
+            <div class="relative z-10 w-12 h-12 rounded-full bg-primary-container flex items-center
+                        justify-center flex-shrink-0 shadow pointer-events-none">
+                <span class="material-symbols-outlined fill-icon text-primary text-[22px]">shield</span>
+            </div>
+            <div class="relative z-10 pointer-events-none select-none">
+                <p class="text-sm font-bold text-on-surface">SafeNet v1.0</p>
+                <p class="text-xs text-on-surface-variant">Digital Safety Web Application</p>
+            </div>
+        </div>
+
         <div class="p-6 space-y-4">
             <div class="flex items-start gap-4">
-                <div class="w-12 h-12 rounded-full bg-primary-container flex items-center justify-center flex-shrink-0">
-                    <span class="material-symbols-outlined fill-icon text-primary">shield</span>
-                </div>
                 <div>
-                    <h3 class="font-semibold text-on-surface">SafeNet v1.0</h3>
                     <p class="text-sm text-on-surface-variant mt-1 leading-relaxed">
                         SafeNet is a digital safety web application built with Python and Flask.
                         It helps users identify suspicious links, report scams, and learn about online safety.
@@ -80,49 +130,41 @@
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
-                <div class="bg-surface-container-low rounded-xl p-3 border border-outline-variant text-center">
-                    <p class="text-xs text-on-surface-variant mb-1">Backend</p>
-                    <p class="text-sm font-semibold text-on-surface">Python / Flask</p>
+            <div class="grid grid-cols-3 gap-3 reveal-stagger">
+                {% for label, value in [('Backend','Python / Flask'),('Frontend','HTML / Tailwind'),('Storage','JSON')] %}
+                <div class="bg-surface-container-low rounded-xl p-3 border border-outline-variant
+                            text-center card-lift">
+                    <p class="text-xs text-on-surface-variant mb-1">{{ label }}</p>
+                    <p class="text-sm font-semibold text-on-surface">{{ value }}</p>
                 </div>
-                <div class="bg-surface-container-low rounded-xl p-3 border border-outline-variant text-center">
-                    <p class="text-xs text-on-surface-variant mb-1">Frontend</p>
-                    <p class="text-sm font-semibold text-on-surface">HTML / Tailwind CSS</p>
-                </div>
-                <div class="bg-surface-container-low rounded-xl p-3 border border-outline-variant text-center">
-                    <p class="text-xs text-on-surface-variant mb-1">Storage</p>
-                    <p class="text-sm font-semibold text-on-surface">JSON</p>
-                </div>
+                {% endfor %}
             </div>
         </div>
     </div>
 
-    <!-- Data -->
-    <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant shadow-sm overflow-hidden">
-        <div class="bg-surface-container-low px-6 py-4 border-b border-outline-variant">
-            <h2 class="font-semibold text-on-surface">Data & Privacy</h2>
+    <!-- ══════════════════════════════════════════════════════════════════
+         DATA & PRIVACY
+         ══════════════════════════════════════════════════════════════════ -->
+    <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant shadow-sm
+                overflow-hidden reveal">
+        <div class="bg-surface-container-low px-6 py-4 border-b border-outline-variant flex items-center gap-2">
+            <span class="material-symbols-outlined fill-icon text-on-surface-variant text-[18px]">lock</span>
+            <h2 class="font-semibold text-on-surface">Data &amp; Privacy</h2>
         </div>
         <div class="p-6 space-y-3">
-            <div class="flex items-start gap-3">
-                <span class="material-symbols-outlined fill-icon text-secondary text-base mt-0.5">check_circle</span>
-                <p class="text-sm text-on-surface-variant">SafeNet does not collect any personally identifying information.</p>
+            {% for text in [
+                "SafeNet does not collect any personally identifying information.",
+                "Scam reports are stored locally and are never transmitted to external services.",
+                "The link scanner analyses URL patterns only — it never follows or visits the link.",
+                "Your theme preference is stored in your browser's local storage only."
+            ] %}
+            <div class="flex items-start gap-3 p-3 rounded-xl hover:bg-surface-container-low transition-colors">
+                <span class="material-symbols-outlined fill-icon text-secondary text-[18px] mt-0.5 flex-shrink-0">check_circle</span>
+                <p class="text-sm text-on-surface-variant">{{ text }}</p>
             </div>
-            <div class="flex items-start gap-3">
-                <span class="material-symbols-outlined fill-icon text-secondary text-base mt-0.5">check_circle</span>
-                <p class="text-sm text-on-surface-variant">Scam reports are stored locally and are never transmitted to external services.</p>
-            </div>
-            <div class="flex items-start gap-3">
-                <span class="material-symbols-outlined fill-icon text-secondary text-base mt-0.5">check_circle</span>
-                <p class="text-sm text-on-surface-variant">The link scanner analyses URL patterns only — it never follows or visits the link.</p>
-            </div>
-            <div class="flex items-start gap-3">
-                <span class="material-symbols-outlined fill-icon text-secondary text-base mt-0.5">check_circle</span>
-                <p class="text-sm text-on-surface-variant">Your theme preference is stored in your browser's local storage only.</p>
-            </div>
+            {% endfor %}
         </div>
     </div>
 
 </div>
-
-<!-- Theme sync handled by script.js — syncSettingsToggle() is called on every applyTheme() -->
 {% endblock %}

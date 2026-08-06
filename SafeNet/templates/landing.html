@@ -2,105 +2,475 @@
 {% block title %}SafeNet — Browse Smarter. Stay Safer.{% endblock %}
 
 {% block content %}
-<!-- Hero -->
-<section class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center py-8 lg:py-16">
-    <div class="flex flex-col gap-6">
-        <h1 class="text-5xl lg:text-6xl font-extrabold text-on-surface leading-tight font-headline tracking-tight">
-            Browse Smarter.<br/>
-            <span class="text-primary">Stay Safer.</span>
-        </h1>
-        <p class="text-lg text-on-surface-variant max-w-xl leading-relaxed">
+
+<!-- ══════════════════════════════════════════════════════════════════════════
+     HERO SECTION
+     ══════════════════════════════════════════════════════════════════════════ -->
+<section class="relative grid grid-cols-1 lg:grid-cols-2 gap-10 items-center py-8 lg:py-16 overflow-hidden">
+
+    <!-- Decorative background orbs -->
+    <div class="deco-blob orb-drift  w-80 h-80 bg-primary-fixed       -top-20 -left-20  opacity-30"></div>
+    <div class="deco-blob orb-drift-2 w-64 h-64 bg-secondary-container  bottom-0  right-0  opacity-25"></div>
+
+    <!-- Left: copy -->
+    <div class="flex flex-col gap-6 relative z-10">
+
+        <div class="reveal-left" style="transition-delay:0.05s">
+            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary-container
+                         text-on-primary-container text-xs font-bold uppercase tracking-wider mb-4">
+                <span class="material-symbols-outlined fill-icon text-[14px]">verified_user</span>
+                Trusted Digital Safety
+            </span>
+            <h1 class="text-5xl lg:text-6xl font-extrabold text-on-surface leading-tight font-headline tracking-tight">
+                Browse Smarter.<br/>
+                <span class="text-primary">Stay Safer.</span>
+            </h1>
+        </div>
+
+        <p class="text-lg text-on-surface-variant max-w-xl leading-relaxed reveal-left" style="transition-delay:0.12s">
             Protect yourself from malicious links, phishing scams, and digital threats.
             SafeNet is your composed guardian in an unpredictable digital world.
         </p>
 
         <!-- Quick scan bar -->
         <form action="{{ url_for('scanner') }}" method="POST"
-              class="mt-4 bg-surface-container-lowest p-2 rounded-xl border border-outline-variant shadow-sm flex flex-col sm:flex-row gap-2 max-w-2xl transition-all" id="hero-scan-form">
+              class="mt-2 bg-surface-container-lowest p-2 rounded-xl border border-outline-variant shadow-sm
+                     flex flex-col sm:flex-row gap-2 max-w-2xl transition-all reveal-left"
+              style="transition-delay:0.2s"
+              id="hero-scan-form">
             <div class="flex-grow flex items-center px-3 gap-2">
                 <span class="material-symbols-outlined text-outline text-[20px]">link</span>
                 <input name="url" type="text"
                        autocomplete="off" autocorrect="off" spellcheck="false"
-                       class="w-full bg-transparent border-none focus:outline-none focus:ring-0 text-on-surface placeholder:text-outline py-2 text-base"
+                       class="w-full bg-transparent border-none focus:outline-none focus:ring-0
+                              text-on-surface placeholder:text-outline py-2 text-base"
                        placeholder="Paste a link here to scan…" />
             </div>
             <button type="submit"
-                    class="bg-primary text-on-primary px-6 py-3 rounded-lg font-semibold hover:bg-surface-tint active:scale-95 transition-all shadow-md flex items-center justify-center gap-2 whitespace-nowrap">
+                    class="bg-primary text-on-primary px-6 py-3 rounded-lg font-semibold
+                           hover:bg-surface-tint active:scale-95 transition-all shadow-md
+                           flex items-center justify-center gap-2 whitespace-nowrap">
                 <span class="material-symbols-outlined text-[18px]">search</span>
                 Scan Link
             </button>
         </form>
 
-        <div class="flex items-center gap-4 text-sm text-on-surface-variant">
-            <span class="flex items-center gap-1">
-                <span class="material-symbols-outlined fill-icon text-secondary text-base">check_circle</span> Fast
+        <!-- Trust badges -->
+        <div class="flex items-center flex-wrap gap-5 text-sm text-on-surface-variant reveal-left" style="transition-delay:0.28s">
+            <span class="flex items-center gap-1.5">
+                <span class="material-symbols-outlined fill-icon text-secondary text-base">check_circle</span> Fast results
             </span>
-            <span class="flex items-center gap-1">
-                <span class="material-symbols-outlined fill-icon text-secondary text-base">check_circle</span> Private
+            <span class="flex items-center gap-1.5">
+                <span class="material-symbols-outlined fill-icon text-secondary text-base">check_circle</span> Private — we never visit the link
             </span>
-            <span class="flex items-center gap-1">
-                <span class="material-symbols-outlined fill-icon text-secondary text-base">check_circle</span> Free to try
+            <span class="flex items-center gap-1.5">
+                <span class="material-symbols-outlined fill-icon text-secondary text-base">check_circle</span> Free to use
             </span>
         </div>
     </div>
 
-    <!-- Hero visual -->
-    <div class="relative h-80 lg:h-[460px] w-full rounded-2xl overflow-hidden shadow-2xl border border-outline-variant bg-surface-container-low flex items-center justify-center">
-        <div class="absolute inset-0 bg-gradient-to-br from-surface-container-low to-primary-fixed/30"></div>
-        <div class="relative z-10 p-10 rounded-full bg-surface-container-lowest/80 backdrop-blur-md shadow-lg border border-outline-variant/50">
-            <span class="material-symbols-outlined fill-icon text-primary" style="font-size:6rem;">shield_lock</span>
+    <!-- Right: hero visual -->
+    <div class="relative z-10 reveal-right" style="transition-delay:0.1s">
+        <!-- Main visual container -->
+        <div class="relative h-80 lg:h-[460px] w-full rounded-2xl overflow-hidden shadow-2xl
+                    border border-outline-variant bg-surface-container-low
+                    flex items-center justify-center img-placeholder img-placeholder-grid">
+
+            <!-- Gradient overlay -->
+            <div class="absolute inset-0 bg-gradient-to-br from-primary-fixed/40 via-surface-container-low/60 to-secondary-container/30 pointer-events-none z-0"></div>
+
+            <!-- Central shield -->
+            <div class="relative z-10 p-10 rounded-full bg-surface-container-lowest/80
+                        backdrop-blur-md shadow-lg border border-outline-variant/50 shield-enter">
+                <span class="material-symbols-outlined fill-icon text-primary" style="font-size:6rem;">shield_lock</span>
+            </div>
+
+            <!-- Floating notification badges -->
+            <div class="float-badge absolute top-8 left-8 flex items-center gap-2
+                        px-3 py-2 rounded-xl bg-surface-container-lowest/90 backdrop-blur-sm
+                        shadow-lg border border-outline-variant/60 text-xs font-semibold text-on-surface">
+                <span class="material-symbols-outlined fill-icon text-secondary text-[16px]">verified_user</span>
+                Link safe
+            </div>
+
+            <div class="float-badge absolute top-12 right-8 flex items-center gap-2
+                        px-3 py-2 rounded-xl bg-surface-container-lowest/90 backdrop-blur-sm
+                        shadow-lg border border-outline-variant/60 text-xs font-semibold text-error">
+                <span class="material-symbols-outlined fill-icon text-[16px]">gpp_bad</span>
+                Threat blocked
+            </div>
+
+            <div class="float-badge absolute bottom-10 left-10 flex items-center gap-2
+                        px-3 py-2 rounded-xl bg-surface-container-lowest/90 backdrop-blur-sm
+                        shadow-lg border border-outline-variant/60 text-xs font-semibold text-tertiary">
+                <span class="material-symbols-outlined fill-icon text-[16px]">warning_amber</span>
+                Suspicious URL
+            </div>
+
+            <div class="float-badge absolute bottom-8 right-8 flex items-center gap-2
+                        px-3 py-2 rounded-xl bg-surface-container-lowest/90 backdrop-blur-sm
+                        shadow-lg border border-outline-variant/60 text-xs font-semibold text-primary">
+                <span class="material-symbols-outlined fill-icon text-[16px]">radar</span>
+                Scanning…
+            </div>
+
         </div>
-        <div class="absolute top-1/4 left-1/4 p-4 rounded-xl bg-surface-container-lowest shadow-md border border-outline-variant animate-pulse">
-            <span class="material-symbols-outlined fill-icon text-secondary">verified_user</span>
+
+        <!-- Small floating stat card -->
+        <div class="reveal-pop absolute -bottom-4 -left-4 bg-surface-container-lowest rounded-2xl
+                    border border-outline-variant shadow-xl p-4 flex items-center gap-3 card-lift"
+             style="transition-delay:0.35s">
+            <div class="w-10 h-10 rounded-full bg-secondary-container flex items-center justify-center flex-shrink-0">
+                <span class="material-symbols-outlined fill-icon text-secondary text-[18px]">shield</span>
+            </div>
+            <div>
+                <p class="text-sm font-bold text-on-surface">1M+ links scanned</p>
+                <p class="text-xs text-on-surface-variant">and counting</p>
+            </div>
         </div>
-        <div class="absolute bottom-1/3 right-1/4 p-4 rounded-xl bg-surface-container-lowest shadow-md border border-outline-variant">
-            <span class="material-symbols-outlined fill-icon text-tertiary">gpp_maybe</span>
+    </div>
+
+</section>
+
+
+<!-- ══════════════════════════════════════════════════════════════════════════
+     STATS BENTO
+     ══════════════════════════════════════════════════════════════════════════ -->
+<section class="bg-surface-container-low rounded-2xl py-12 px-6 border border-outline-variant mt-10 reveal">
+    <p class="text-center text-xs font-bold uppercase tracking-widest text-outline mb-8">By the numbers</p>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 reveal-stagger">
+
+        <div class="bg-surface-container-lowest p-8 rounded-2xl shadow-sm border border-outline-variant
+                    flex flex-col items-center text-center card-lift">
+            <div class="w-14 h-14 rounded-full bg-primary-container flex items-center justify-center mb-4">
+                <span class="material-symbols-outlined fill-icon text-primary text-3xl">block</span>
+            </div>
+            <h3 class="text-4xl font-extrabold text-on-surface mb-1">
+                <span data-counter data-target="1000000">1,000,000</span>+
+            </h3>
+            <p class="text-on-surface-variant font-medium text-sm">Scams Blocked</p>
+        </div>
+
+        <div class="bg-primary text-on-primary p-8 rounded-2xl shadow-md flex flex-col items-center text-center md:-translate-y-4 card-lift">
+            <div class="w-14 h-14 rounded-full bg-white/20 flex items-center justify-center mb-4">
+                <span class="material-symbols-outlined fill-icon text-on-primary text-3xl">my_location</span>
+            </div>
+            <h3 class="text-4xl font-extrabold mb-1">99.9%</h3>
+            <p class="text-primary-fixed-dim font-medium text-sm">Detection Accuracy</p>
+        </div>
+
+        <div class="bg-surface-container-lowest p-8 rounded-2xl shadow-sm border border-outline-variant
+                    flex flex-col items-center text-center card-lift">
+            <div class="w-14 h-14 rounded-full bg-secondary-container flex items-center justify-center mb-4">
+                <span class="material-symbols-outlined fill-icon text-secondary text-3xl">bolt</span>
+            </div>
+            <h3 class="text-4xl font-extrabold text-on-surface mb-1">&lt; 1s</h3>
+            <p class="text-on-surface-variant font-medium text-sm">Average Scan Time</p>
+        </div>
+
+    </div>
+</section>
+
+
+<!-- ══════════════════════════════════════════════════════════════════════════
+     FEATURE SHOWCASE
+     ══════════════════════════════════════════════════════════════════════════ -->
+<section class="mt-16 space-y-6">
+    <div class="text-center reveal">
+        <h2 class="text-3xl font-extrabold text-on-surface font-headline mb-3">Everything you need to stay safe</h2>
+        <p class="text-on-surface-variant max-w-xl mx-auto">
+            SafeNet brings scanning, reporting, and education together in one place.
+        </p>
+    </div>
+
+    <!-- Feature row 1: scanner (image left, text right) -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 items-center mt-10">
+
+        <!-- Image placeholder -->
+        <div class="feature-img-strip aspect-video-placeholder img-placeholder-grid reveal-left flex items-center justify-center">
+            <div class="relative z-10 flex flex-col items-center gap-3 pointer-events-none select-none">
+                <div class="w-16 h-16 rounded-2xl bg-primary-container/80 backdrop-blur-sm flex items-center justify-center shadow-lg">
+                    <span class="material-symbols-outlined fill-icon text-primary text-4xl">security_update_good</span>
+                </div>
+                <p class="text-xs font-semibold text-on-surface-variant uppercase tracking-wider">Link Scanner</p>
+            </div>
+            <!-- Decorative grid lines -->
+            <div class="absolute inset-0 flex flex-col justify-around pointer-events-none">
+                <div class="h-px bg-primary/10 w-full"></div>
+                <div class="h-px bg-primary/10 w-full"></div>
+            </div>
+        </div>
+
+        <!-- Text -->
+        <div class="space-y-4 reveal-right">
+            <div class="w-12 h-12 rounded-2xl bg-primary-container flex items-center justify-center">
+                <span class="material-symbols-outlined fill-icon text-primary">security_update_good</span>
+            </div>
+            <h3 class="text-2xl font-bold text-on-surface font-headline">Instant Link Scanning</h3>
+            <p class="text-on-surface-variant leading-relaxed">
+                Paste any URL and get an instant safety assessment. SafeNet checks for phishing patterns,
+                suspicious TLDs, subdomain spoofing, and over a dozen other risk signals — all without
+                ever visiting the link.
+            </p>
+            <ul class="space-y-2 text-sm text-on-surface-variant">
+                <li class="flex items-center gap-2">
+                    <span class="material-symbols-outlined fill-icon text-secondary text-[16px]">check_circle</span>
+                    Heuristic URL analysis
+                </li>
+                <li class="flex items-center gap-2">
+                    <span class="material-symbols-outlined fill-icon text-secondary text-[16px]">check_circle</span>
+                    Threat score with detailed breakdown
+                </li>
+                <li class="flex items-center gap-2">
+                    <span class="material-symbols-outlined fill-icon text-secondary text-[16px]">check_circle</span>
+                    History saved locally — never shared
+                </li>
+            </ul>
+            <a href="{{ url_for('scanner') }}"
+               class="inline-flex items-center gap-2 bg-primary text-on-primary px-5 py-2.5 rounded-xl
+                      font-semibold text-sm hover:bg-surface-tint transition-colors shadow-sm mt-2">
+                <span class="material-symbols-outlined text-[16px]">search</span>
+                Try the Scanner
+            </a>
+        </div>
+    </div>
+
+    <!-- Feature row 2: reports (text left, image right) -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 items-center mt-10">
+
+        <!-- Text -->
+        <div class="space-y-4 reveal-left lg:order-1">
+            <div class="w-12 h-12 rounded-2xl bg-error-container flex items-center justify-center">
+                <span class="material-symbols-outlined fill-icon text-error">flag</span>
+            </div>
+            <h3 class="text-2xl font-bold text-on-surface font-headline">Community Threat Reporting</h3>
+            <p class="text-on-surface-variant leading-relaxed">
+                Spotted a scam? Report it and add it to the community database so others
+                can be warned. Every report helps protect New Zealanders online.
+            </p>
+            <ul class="space-y-2 text-sm text-on-surface-variant">
+                <li class="flex items-center gap-2">
+                    <span class="material-symbols-outlined fill-icon text-secondary text-[16px]">check_circle</span>
+                    Phishing, malware, scam & more categories
+                </li>
+                <li class="flex items-center gap-2">
+                    <span class="material-symbols-outlined fill-icon text-secondary text-[16px]">check_circle</span>
+                    Instantly visible in the community feed
+                </li>
+                <li class="flex items-center gap-2">
+                    <span class="material-symbols-outlined fill-icon text-secondary text-[16px]">check_circle</span>
+                    No account required
+                </li>
+            </ul>
+            <a href="{{ url_for('report') }}"
+               class="inline-flex items-center gap-2 bg-error-container text-on-error-container
+                      px-5 py-2.5 rounded-xl font-semibold text-sm
+                      hover:bg-error/10 transition-colors mt-2 border border-error/20">
+                <span class="material-symbols-outlined text-[16px]">flag</span>
+                Report a Scam
+            </a>
+        </div>
+
+        <!-- Image placeholder -->
+        <div class="feature-img-strip aspect-video-placeholder img-placeholder-grid reveal-right lg:order-2 flex items-center justify-center">
+            <div class="relative z-10 flex flex-col items-center gap-3 pointer-events-none select-none">
+                <div class="w-16 h-16 rounded-2xl bg-error-container/80 backdrop-blur-sm flex items-center justify-center shadow-lg">
+                    <span class="material-symbols-outlined fill-icon text-error text-4xl">flag</span>
+                </div>
+                <p class="text-xs font-semibold text-on-surface-variant uppercase tracking-wider">Community Reports</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Feature row 3: education (image left, text right) -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 items-center mt-10">
+
+        <!-- Image placeholder -->
+        <div class="feature-img-strip aspect-video-placeholder img-placeholder-grid reveal-left flex items-center justify-center">
+            <div class="relative z-10 flex flex-col items-center gap-3 pointer-events-none select-none">
+                <div class="w-16 h-16 rounded-2xl bg-secondary-container/80 backdrop-blur-sm flex items-center justify-center shadow-lg">
+                    <span class="material-symbols-outlined fill-icon text-secondary text-4xl">school</span>
+                </div>
+                <p class="text-xs font-semibold text-on-surface-variant uppercase tracking-wider">Education Hub</p>
+            </div>
+        </div>
+
+        <!-- Text -->
+        <div class="space-y-4 reveal-right">
+            <div class="w-12 h-12 rounded-2xl bg-secondary-container flex items-center justify-center">
+                <span class="material-symbols-outlined fill-icon text-secondary">school</span>
+            </div>
+            <h3 class="text-2xl font-bold text-on-surface font-headline">Education Hub</h3>
+            <p class="text-on-surface-variant leading-relaxed">
+                Knowledge is the best defence. Learn to identify phishing emails, understand how malware
+                spreads, recognise scam patterns, and build secure password habits — all in plain English.
+            </p>
+            <ul class="space-y-2 text-sm text-on-surface-variant">
+                <li class="flex items-center gap-2">
+                    <span class="material-symbols-outlined fill-icon text-secondary text-[16px]">check_circle</span>
+                    Phishing, malware, scams, passwords & URLs
+                </li>
+                <li class="flex items-center gap-2">
+                    <span class="material-symbols-outlined fill-icon text-secondary text-[16px]">check_circle</span>
+                    Real NZ-focused examples
+                </li>
+                <li class="flex items-center gap-2">
+                    <span class="material-symbols-outlined fill-icon text-secondary text-[16px]">check_circle</span>
+                    Quick-reference glossary
+                </li>
+            </ul>
+            <a href="{{ url_for('education') }}"
+               class="inline-flex items-center gap-2 bg-secondary-container text-on-secondary-container
+                      px-5 py-2.5 rounded-xl font-semibold text-sm
+                      hover:opacity-90 transition-opacity mt-2">
+                <span class="material-symbols-outlined text-[16px]">school</span>
+                Open Education Hub
+            </a>
         </div>
     </div>
 </section>
 
-<!-- Stats bento -->
-<section class="bg-surface-container-low rounded-2xl py-12 px-6 border border-outline-variant mt-4">
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div class="bg-surface-container-lowest p-8 rounded-2xl shadow-sm border border-outline-variant flex flex-col items-center text-center">
-            <span class="material-symbols-outlined fill-icon text-primary text-4xl mb-4">block</span>
-            <h3 class="text-4xl font-extrabold text-on-surface mb-2">1M+</h3>
-            <p class="text-on-surface-variant font-medium">Scams Blocked</p>
+
+<!-- ══════════════════════════════════════════════════════════════════════════
+     HOW IT WORKS
+     ══════════════════════════════════════════════════════════════════════════ -->
+<section class="mt-16 reveal">
+    <div class="text-center mb-10">
+        <h2 class="text-3xl font-extrabold text-on-surface font-headline mb-3">How it works</h2>
+        <p class="text-on-surface-variant max-w-md mx-auto text-sm">Three steps between you and a safer internet.</p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 reveal-stagger">
+
+        <!-- Step 1 -->
+        <div class="relative bg-surface-container-lowest rounded-2xl border border-outline-variant
+                    shadow-sm p-6 card-lift step-line">
+            <div class="w-10 h-10 rounded-full bg-primary text-on-primary flex items-center
+                        justify-center font-black text-lg mb-4">1</div>
+            <h3 class="font-bold text-on-surface mb-2">Paste a link</h3>
+            <p class="text-sm text-on-surface-variant leading-relaxed">
+                Copy any URL you're unsure about — from an email, message, or website — and paste it into the SafeNet scanner.
+            </p>
         </div>
-        <div class="bg-primary text-on-primary p-8 rounded-2xl shadow-md flex flex-col items-center text-center md:-translate-y-4">
-            <span class="material-symbols-outlined fill-icon text-4xl mb-4">my_location</span>
-            <h3 class="text-4xl font-extrabold mb-2">99.9%</h3>
-            <p class="text-primary-fixed-dim font-medium">Detection Accuracy</p>
+
+        <!-- Step 2 -->
+        <div class="relative bg-surface-container-lowest rounded-2xl border border-outline-variant
+                    shadow-sm p-6 card-lift step-line">
+            <div class="w-10 h-10 rounded-full bg-primary text-on-primary flex items-center
+                        justify-center font-black text-lg mb-4">2</div>
+            <h3 class="font-bold text-on-surface mb-2">We analyse it</h3>
+            <p class="text-sm text-on-surface-variant leading-relaxed">
+                SafeNet checks the URL structure against a suite of heuristic rules — all without ever following the link or touching your device.
+            </p>
         </div>
-        <div class="bg-surface-container-lowest p-8 rounded-2xl shadow-sm border border-outline-variant flex flex-col items-center text-center">
-            <span class="material-symbols-outlined fill-icon text-secondary text-4xl mb-4">bolt</span>
-            <h3 class="text-4xl font-extrabold text-on-surface mb-2">&lt; 1s</h3>
-            <p class="text-on-surface-variant font-medium">Average Scan Time</p>
+
+        <!-- Step 3 -->
+        <div class="relative bg-surface-container-lowest rounded-2xl border border-outline-variant
+                    shadow-sm p-6 card-lift step-line">
+            <div class="w-10 h-10 rounded-full bg-primary text-on-primary flex items-center
+                        justify-center font-black text-lg mb-4">3</div>
+            <h3 class="font-bold text-on-surface mb-2">Get your result</h3>
+            <p class="text-sm text-on-surface-variant leading-relaxed">
+                Receive a clear Safe, Suspicious, or Danger result with a threat score and plain-English explanation of each signal found.
+            </p>
+        </div>
+
+    </div>
+</section>
+
+
+<!-- ══════════════════════════════════════════════════════════════════════════
+     TESTIMONIALS / SOCIAL PROOF STRIP
+     ══════════════════════════════════════════════════════════════════════════ -->
+<section class="mt-16 reveal">
+    <div class="text-center mb-8">
+        <h2 class="text-2xl font-bold text-on-surface font-headline mb-2">What users say</h2>
+        <p class="text-on-surface-variant text-sm">Placeholder testimonials — replace with real feedback.</p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-5 reveal-stagger">
+
+        {% for testimonial in [
+            ("Caught a phishing link my whole family nearly clicked on. The breakdown was super clear.",
+             "Sarah T.", "Auckland", "school"),
+            ("I use SafeNet before clicking anything from strangers on Facebook. Peace of mind.",
+             "James K.", "Wellington", "verified_user"),
+            ("Reported three scam texts in one sitting. Great that it goes into a community database.",
+             "Mere W.", "Christchurch", "flag")
+        ] %}
+        <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant shadow-sm p-6 card-lift">
+            <!-- Quote -->
+            <div class="text-3xl text-primary font-black leading-none mb-3 select-none">&ldquo;</div>
+            <p class="text-sm text-on-surface-variant leading-relaxed mb-5">{{ testimonial[0] }}</p>
+            <!-- Author -->
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-full bg-surface-container img-placeholder flex-shrink-0">
+                    <span class="material-symbols-outlined fill-icon text-outline text-[18px] z-10">person</span>
+                </div>
+                <div>
+                    <p class="text-sm font-semibold text-on-surface">{{ testimonial[1] }}</p>
+                    <p class="text-xs text-on-surface-variant">{{ testimonial[2] }}</p>
+                </div>
+                <span class="material-symbols-outlined fill-icon text-secondary ml-auto text-[20px]">{{ testimonial[3] }}</span>
+            </div>
+        </div>
+        {% endfor %}
+
+    </div>
+</section>
+
+
+<!-- ══════════════════════════════════════════════════════════════════════════
+     CTA BANNER
+     ══════════════════════════════════════════════════════════════════════════ -->
+<section class="mt-16 reveal">
+    <div class="relative bg-primary rounded-2xl overflow-hidden p-10 md:p-14 text-center shadow-lg">
+        <!-- Background orbs -->
+        <div class="deco-blob orb-drift  w-64 h-64 bg-white  -top-20 -left-20  opacity-10"></div>
+        <div class="deco-blob orb-drift-2 w-48 h-48 bg-white  -bottom-10 -right-10 opacity-10"></div>
+
+        <div class="relative z-10">
+            <span class="material-symbols-outlined fill-icon text-on-primary text-5xl mb-4 block">shield_lock</span>
+            <h2 class="text-3xl font-extrabold text-on-primary font-headline mb-3">
+                Ready to browse safer?
+            </h2>
+            <p class="text-primary-fixed-dim max-w-md mx-auto mb-8 leading-relaxed">
+                Get started in seconds. No account required to scan a link or browse the community reports.
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="{{ url_for('scanner') }}"
+                   class="bg-white text-primary px-8 py-3 rounded-xl font-bold hover:bg-primary-fixed
+                          transition-colors shadow-md flex items-center justify-center gap-2">
+                    <span class="material-symbols-outlined text-[18px]">search</span>
+                    Scan a Link Now
+                </a>
+                <a href="{{ url_for('login') }}"
+                   class="bg-transparent border-2 border-white/60 text-on-primary px-8 py-3 rounded-xl
+                          font-semibold hover:bg-white/10 transition-colors flex items-center justify-center gap-2">
+                    <span class="material-symbols-outlined text-[18px]">login</span>
+                    Sign In
+                </a>
+            </div>
         </div>
     </div>
 </section>
 
-<!-- CTA row -->
-<section class="flex flex-col sm:flex-row gap-4 justify-center items-center mt-10">
-    <a href="{{ url_for('login') }}"
-       class="bg-primary text-on-primary px-8 py-3 rounded-lg font-semibold hover:bg-surface-tint transition-colors shadow-md flex items-center gap-2">
-        <span class="material-symbols-outlined">login</span>
-        Sign In
-    </a>
-    <a href="{{ url_for('education') }}"
-       class="bg-surface-container-lowest border border-outline-variant text-on-surface px-8 py-3 rounded-lg font-semibold hover:bg-surface-container-high transition-colors flex items-center gap-2">
-        <span class="material-symbols-outlined">school</span>
-        Learn More
-    </a>
-</section>
 
-<!-- Footer -->
-<footer class="mt-16 pt-8 border-t border-outline-variant flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-on-surface-variant">
-    <span class="font-bold text-on-surface">© 2025 SafeNet Digital Safety</span>
+<!-- ══════════════════════════════════════════════════════════════════════════
+     FOOTER
+     ══════════════════════════════════════════════════════════════════════════ -->
+<footer class="mt-16 pt-8 border-t border-outline-variant
+               flex flex-col md:flex-row justify-between items-center gap-4
+               text-sm text-on-surface-variant reveal">
+    <div class="flex items-center gap-2">
+        <span class="material-symbols-outlined fill-icon text-primary text-[20px]">shield</span>
+        <span class="font-bold text-on-surface">© 2025 SafeNet Digital Safety</span>
+    </div>
     <div class="flex gap-6">
         <a href="#" class="hover:text-primary transition-colors">Privacy Policy</a>
         <a href="#" class="hover:text-primary transition-colors">Contact Support</a>
         <a href="#" class="hover:text-primary transition-colors">Terms of Service</a>
     </div>
 </footer>
+
 {% endblock %}

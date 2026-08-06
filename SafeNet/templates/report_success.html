@@ -2,47 +2,141 @@
 {% block title %}Report Submitted{% endblock %}
 
 {% block content %}
-<div class="max-w-2xl mx-auto flex flex-col items-center justify-center text-center py-16 space-y-6">
+<!-- Confetti trigger marker — picked up by script.js -->
+<div id="confetti-trigger" class="hidden"></div>
 
-    <div class="w-20 h-20 rounded-full bg-secondary-container flex items-center justify-center mb-2">
-        <span class="material-symbols-outlined fill-icon text-secondary" style="font-size:2.5rem;">check_circle</span>
+<div class="max-w-2xl mx-auto py-8 space-y-6">
+
+    <!-- ══════════════════════════════════════════════════════════════════
+         SUCCESS HERO
+         ══════════════════════════════════════════════════════════════════ -->
+    <div class="relative rounded-2xl overflow-hidden border border-outline-variant shadow-sm
+                text-center reveal-pop">
+
+        <!-- Visual background -->
+        <div class="absolute inset-0 bg-gradient-to-br from-secondary-container/60
+                    via-surface-container-low to-primary-fixed/20
+                    img-placeholder-grid pointer-events-none"></div>
+        <div class="deco-blob orb-drift   w-48 h-48 bg-secondary-container -top-10 -left-10  opacity-40"></div>
+        <div class="deco-blob orb-drift-2 w-36 h-36 bg-primary-fixed        bottom-0  right-0  opacity-30"></div>
+
+        <div class="relative z-10 px-8 py-12 flex flex-col items-center gap-4">
+            <!-- Animated checkmark ring -->
+            <div class="w-24 h-24 rounded-full bg-secondary-container border-4 border-secondary/40
+                        flex items-center justify-center shadow-xl shield-enter mb-2">
+                <span class="material-symbols-outlined fill-icon text-secondary"
+                      style="font-size:3rem;">check_circle</span>
+            </div>
+
+            <h1 class="text-3xl font-bold text-on-surface font-headline">Report Submitted!</h1>
+            <p class="text-on-surface-variant text-base max-w-sm leading-relaxed">
+                Thank you for helping keep the community safe. Your report has been saved
+                and will warn others about this threat.
+            </p>
+
+            <!-- Trust badge row -->
+            <div class="flex flex-wrap justify-center gap-4 text-xs text-on-surface-variant mt-2">
+                <span class="flex items-center gap-1.5 bg-surface-container-lowest/80 backdrop-blur-sm
+                             border border-outline-variant/50 rounded-full px-3 py-1.5">
+                    <span class="material-symbols-outlined fill-icon text-secondary text-[14px]">storage</span>
+                    Saved to database
+                </span>
+                <span class="flex items-center gap-1.5 bg-surface-container-lowest/80 backdrop-blur-sm
+                             border border-outline-variant/50 rounded-full px-3 py-1.5">
+                    <span class="material-symbols-outlined fill-icon text-primary text-[14px]">group</span>
+                    Visible to community
+                </span>
+                <span class="flex items-center gap-1.5 bg-surface-container-lowest/80 backdrop-blur-sm
+                             border border-outline-variant/50 rounded-full px-3 py-1.5">
+                    <span class="material-symbols-outlined fill-icon text-tertiary text-[14px]">verified</span>
+                    Report verified
+                </span>
+            </div>
+        </div>
     </div>
 
-    <h1 class="text-3xl font-bold text-on-surface font-headline">Report Submitted</h1>
-    <p class="text-on-surface-variant text-lg max-w-md">
-        Thank you for helping keep the community safe. Your report has been saved and will help others avoid this threat.
-    </p>
-
-    <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant shadow-sm p-6 w-full text-left space-y-3">
-        <h2 class="font-semibold text-on-surface mb-2">What happens next?</h2>
-        <div class="flex items-start gap-3">
-            <span class="material-symbols-outlined fill-icon text-primary text-base mt-0.5">storage</span>
-            <p class="text-sm text-on-surface-variant">Your report has been saved to the community reports database.</p>
-        </div>
-        <div class="flex items-start gap-3">
-            <span class="material-symbols-outlined fill-icon text-primary text-base mt-0.5">group</span>
-            <p class="text-sm text-on-surface-variant">Other users can now see this report and avoid the same scam.</p>
-        </div>
-        <div class="flex items-start gap-3">
-            <span class="material-symbols-outlined fill-icon text-primary text-base mt-0.5">school</span>
-            <p class="text-sm text-on-surface-variant">Visit the Education Hub to learn more about staying safe online.</p>
+    <!-- ══════════════════════════════════════════════════════════════════
+         WHAT HAPPENS NEXT
+         ══════════════════════════════════════════════════════════════════ -->
+    <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant shadow-sm
+                p-6 reveal">
+        <h2 class="font-semibold text-on-surface mb-5 flex items-center gap-2">
+            <span class="material-symbols-outlined fill-icon text-primary text-[20px]">info</span>
+            What happens next?
+        </h2>
+        <div class="space-y-4">
+            {% for icon, colour, title, body in [
+                ('storage', 'bg-primary-container text-primary',
+                 'Report saved',
+                 'Your report has been added to the community reports database immediately.'),
+                ('group', 'bg-secondary-container text-secondary',
+                 'Community protected',
+                 'Other users browsing Community Reports can now see and avoid this threat.'),
+                ('search', 'bg-surface-container text-on-surface-variant',
+                 'Link can be scanned',
+                 'Anyone can scan the URL you reported to get a full threat breakdown.'),
+                ('school', 'bg-tertiary-container text-on-tertiary',
+                 'Keep learning',
+                 'Visit the Education Hub to learn more about the type of threat you reported.')
+            ] %}
+            <div class="flex items-start gap-4 step-line">
+                <div class="w-10 h-10 rounded-full {{ colour }} flex items-center justify-center flex-shrink-0 shadow-sm">
+                    <span class="material-symbols-outlined fill-icon text-[18px]">{{ icon }}</span>
+                </div>
+                <div class="pt-1.5">
+                    <p class="text-sm font-semibold text-on-surface">{{ title }}</p>
+                    <p class="text-xs text-on-surface-variant leading-relaxed mt-0.5">{{ body }}</p>
+                </div>
+            </div>
+            {% endfor %}
         </div>
     </div>
 
-    <div class="flex flex-col sm:flex-row gap-3 pt-2">
+    <!-- ══════════════════════════════════════════════════════════════════
+         VISUAL PLACEHOLDER — impact strip
+         ══════════════════════════════════════════════════════════════════ -->
+    <div class="rounded-2xl border border-outline-variant shadow-sm overflow-hidden reveal">
+        <div class="feature-img-strip img-placeholder-grid min-h-[90px] flex items-center
+                    justify-between px-6 gap-4">
+            <div class="relative z-10 flex flex-col gap-0.5 pointer-events-none select-none">
+                <p class="text-xs font-bold uppercase tracking-widest text-outline">Community impact</p>
+                <p class="text-sm font-semibold text-on-surface">You're making a difference</p>
+            </div>
+            <!-- Mini stat bubbles -->
+            <div class="relative z-10 flex items-center gap-3 pointer-events-none select-none">
+                {% for val, label in [('1','Report filed'), ('+1','Protected today'), ('∞','Future users')] %}
+                <div class="flex flex-col items-center bg-surface-container-lowest/80 backdrop-blur-sm
+                            rounded-xl border border-outline-variant/50 px-3 py-2 shadow-sm">
+                    <span class="text-lg font-extrabold text-primary">{{ val }}</span>
+                    <span class="text-[10px] text-on-surface-variant whitespace-nowrap">{{ label }}</span>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════════════════
+         ACTION BUTTONS
+         ══════════════════════════════════════════════════════════════════ -->
+    <div class="flex flex-col sm:flex-row gap-3 pt-2 reveal-stagger">
         <a href="{{ url_for('reports') }}"
-           class="bg-primary text-on-primary px-6 py-3 rounded-lg font-semibold hover:bg-surface-tint transition-colors flex items-center gap-2 shadow-sm">
-            <span class="material-symbols-outlined text-sm">list_alt</span>
+           class="flex-1 bg-primary text-on-primary px-6 py-3 rounded-xl font-semibold text-sm
+                  hover:bg-surface-tint transition-colors flex items-center justify-center gap-2 shadow-sm">
+            <span class="material-symbols-outlined text-[18px]">list_alt</span>
             View All Reports
         </a>
         <a href="{{ url_for('report') }}"
-           class="bg-surface-container-lowest border border-outline-variant text-on-surface px-6 py-3 rounded-lg font-semibold hover:bg-surface-container-high transition-colors flex items-center gap-2">
-            <span class="material-symbols-outlined text-sm">flag</span>
+           class="flex-1 bg-surface-container-lowest border border-outline-variant text-on-surface
+                  px-6 py-3 rounded-xl font-semibold text-sm hover:bg-surface-container-high
+                  transition-colors flex items-center justify-center gap-2">
+            <span class="material-symbols-outlined text-[18px]">flag</span>
             Submit Another
         </a>
         <a href="{{ url_for('dashboard') }}"
-           class="bg-surface-container-lowest border border-outline-variant text-on-surface px-6 py-3 rounded-lg font-semibold hover:bg-surface-container-high transition-colors flex items-center gap-2">
-            <span class="material-symbols-outlined text-sm">dashboard</span>
+           class="flex-1 bg-surface-container-lowest border border-outline-variant text-on-surface
+                  px-6 py-3 rounded-xl font-semibold text-sm hover:bg-surface-container-high
+                  transition-colors flex items-center justify-center gap-2">
+            <span class="material-symbols-outlined text-[18px]">dashboard</span>
             Dashboard
         </a>
     </div>
