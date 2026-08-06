@@ -70,20 +70,14 @@
     </div>
 
     <!-- Right: hero visual -->
-    <div class="relative z-10 reveal-right" style="transition-delay:0.1s">
-        <!-- Main visual container -->
-        <div class="relative h-80 lg:h-[460px] w-full rounded-2xl overflow-hidden shadow-2xl
-                    border border-white/10
-                    flex items-center justify-center">
+    <div class="flex flex-col gap-3 relative z-10 reveal-right" style="transition-delay:0.1s">
 
-            <!-- Purple-to-dark gradient background — blends with page gradient -->
-            <div class="absolute inset-0 bg-gradient-to-br from-[#543B66]/70 via-[#2a1d33]/80 to-black/90 pointer-events-none"></div>
+        <!-- Main visual container — no overflow clipping so badges aren't cut -->
+        <div class="relative h-80 lg:h-[440px] w-full rounded-2xl shadow-2xl border border-white/10
+                    flex items-center justify-center overflow-hidden">
 
-            <!-- Subtle inner grid — purple-tinted, not white -->
-            <div class="absolute inset-0 pointer-events-none"
-                 style="background-image: linear-gradient(rgba(201,170,255,0.06) 1px, transparent 1px),
-                                          linear-gradient(90deg, rgba(201,170,255,0.06) 1px, transparent 1px);
-                        background-size: 32px 32px;"></div>
+            <!-- Background: pure gradient, no grid lines -->
+            <div class="absolute inset-0 bg-gradient-to-br from-[#543B66]/60 via-[#2a1d33]/75 to-black/90"></div>
 
             <!-- Central shield -->
             <div class="relative z-10 p-10 rounded-full bg-white/10
@@ -91,31 +85,33 @@
                 <span class="material-symbols-outlined fill-icon text-primary" style="font-size:6rem;">shield_lock</span>
             </div>
 
-            <!-- Floating notification badges -->
+            <!-- Top-left badge -->
             <div class="float-badge absolute top-8 left-8 flex items-center gap-2
-                        px-3 py-2 rounded-xl bg-black/40 backdrop-blur-sm
+                        px-3 py-2 rounded-xl bg-black/50 backdrop-blur-sm
                         shadow-lg border border-white/15 text-xs font-semibold text-white">
                 <span class="material-symbols-outlined fill-icon text-secondary text-[16px]">verified_user</span>
                 Link safe
             </div>
 
-            <div class="float-badge absolute top-12 right-8 flex items-center gap-2
-                        px-3 py-2 rounded-xl bg-black/40 backdrop-blur-sm
+            <!-- Top-right badge -->
+            <div class="float-badge absolute top-8 right-8 flex items-center gap-2
+                        px-3 py-2 rounded-xl bg-black/50 backdrop-blur-sm
                         shadow-lg border border-white/15 text-xs font-semibold text-red-300">
                 <span class="material-symbols-outlined fill-icon text-[16px] text-red-400">gpp_bad</span>
                 Threat blocked
             </div>
 
-            <!-- Suspicious URL badge — moved up so it doesn't overlap the stat card -->
-            <div class="float-badge absolute bottom-24 left-10 flex items-center gap-2
-                        px-3 py-2 rounded-xl bg-black/40 backdrop-blur-sm
+            <!-- Bottom-left badge -->
+            <div class="float-badge absolute bottom-8 left-8 flex items-center gap-2
+                        px-3 py-2 rounded-xl bg-black/50 backdrop-blur-sm
                         shadow-lg border border-white/15 text-xs font-semibold text-orange-300">
                 <span class="material-symbols-outlined fill-icon text-[16px] text-orange-400">warning_amber</span>
                 Suspicious URL
             </div>
 
+            <!-- Bottom-right badge -->
             <div class="float-badge absolute bottom-8 right-8 flex items-center gap-2
-                        px-3 py-2 rounded-xl bg-black/40 backdrop-blur-sm
+                        px-3 py-2 rounded-xl bg-black/50 backdrop-blur-sm
                         shadow-lg border border-white/15 text-xs font-semibold text-purple-300">
                 <span class="material-symbols-outlined fill-icon text-[16px] text-primary">radar</span>
                 Scanning…
@@ -123,18 +119,19 @@
 
         </div>
 
-        <!-- Small floating stat card — moved to bottom-right so it doesn't clash with badges -->
-        <div class="reveal-pop absolute -bottom-4 -right-4 bg-surface-container-lowest rounded-2xl
-                    border border-outline-variant shadow-xl p-4 flex items-center gap-3 card-lift"
+        <!-- Stat card — sits BELOW the hero box as a normal row, no overlap -->
+        <div class="reveal-pop self-end bg-surface-container-lowest/90 backdrop-blur-sm rounded-2xl
+                    border border-outline-variant shadow-xl px-4 py-3 flex items-center gap-3 card-lift"
              style="transition-delay:0.35s">
-            <div class="w-10 h-10 rounded-full bg-secondary-container flex items-center justify-center flex-shrink-0">
-                <span class="material-symbols-outlined fill-icon text-secondary text-[18px]">shield</span>
+            <div class="w-9 h-9 rounded-full bg-secondary-container flex items-center justify-center flex-shrink-0">
+                <span class="material-symbols-outlined fill-icon text-secondary text-[16px]">shield</span>
             </div>
             <div>
                 <p class="text-sm font-bold text-on-surface">1M+ links scanned</p>
                 <p class="text-xs text-on-surface-variant">and counting</p>
             </div>
         </div>
+
     </div>
 
 </section>
