@@ -101,43 +101,47 @@
     </script>
 
     <style>
-        /* ── Global gradient background — always on, both themes ────────── */
+        /* ── Global background — theme-aware ────────────────────────────── */
         body {
-            background: linear-gradient(160deg, #543B66 0%, #2a1d33 35%, #0d0810 100%) fixed;
+            /* Light mode: clean grey-white gradient */
+            background: linear-gradient(160deg, #f0eef5 0%, #e8e4f0 30%, #f5f4f8 70%, #ffffff 100%) fixed;
             background-attachment: fixed;
             min-height: 100vh;
         }
 
-        /* Light theme surface overrides — semi-transparent so gradient bleeds through */
+        /* Light theme surface overrides — solid enough for readability */
         .bg-background                 { background-color: transparent !important; }
-        .bg-surface                    { background-color: rgba(249,249,255,0.92) !important; }
-        .bg-surface-container-lowest   { background-color: rgba(255,255,255,0.93) !important; }
-        .bg-surface-container-low      { background-color: rgba(242,243,253,0.90) !important; }
-        .bg-surface-container          { background-color: rgba(236,237,247,0.90) !important; }
-        .bg-surface-container-high     { background-color: rgba(230,231,242,0.90) !important; }
-        .bg-surface-container-highest  { background-color: rgba(225,226,236,0.90) !important; }
+        .bg-surface                    { background-color: rgba(249,249,255,0.97) !important; }
+        .bg-surface-container-lowest   { background-color: rgba(255,255,255,0.98) !important; }
+        .bg-surface-container-low      { background-color: rgba(242,243,253,0.97) !important; }
+        .bg-surface-container          { background-color: rgba(236,237,247,0.97) !important; }
+        .bg-surface-container-high     { background-color: rgba(230,231,242,0.97) !important; }
+        .bg-surface-container-highest  { background-color: rgba(225,226,236,0.97) !important; }
 
         nav.sidebar {
-            background-color: rgba(242,243,253,0.92) !important;
+            background-color: rgba(248,247,252,0.97) !important;
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
         }
 
         header {
-            background-color: rgba(249,249,255,0.88) !important;
+            background-color: rgba(249,249,255,0.96) !important;
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
         }
 
-        /* Mobile bottom nav */
         nav.md\:hidden {
-            background-color: rgba(249,249,255,0.92) !important;
+            background-color: rgba(249,249,255,0.97) !important;
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
         }
 
-        /* ── Dark mode overrides ─────────────────────────────────────────── */
-        html.dark body                              { color: #e8e8f4; }
+        /* ── Dark mode: purple-to-black gradient ─────────────────────────── */
+        html.dark body {
+            background: linear-gradient(160deg, #543B66 0%, #2a1d33 35%, #0d0810 100%) fixed !important;
+            background-attachment: fixed !important;
+            color: #e8e8f4;
+        }
         html.dark .bg-background                   { background-color: transparent !important; }
         html.dark .bg-surface                      { background-color: rgba(26,27,35,0.88) !important; }
         html.dark .bg-surface-container-lowest     { background-color: rgba(20,21,32,0.90) !important; }
@@ -174,15 +178,14 @@
         html.dark .bg-error-container              { background-color: #690005; }
         html.dark .text-on-error-container         { color: #ffdad6; }
 
-        /* Sidebar + header dark */
         html.dark nav.sidebar {
-            background-color: rgba(26,27,35,0.90) !important;
+            background-color: rgba(26,27,35,0.92) !important;
             border-right: 1px solid #3a3c50;
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
         }
         html.dark header {
-            background-color: rgba(26,27,35,0.88) !important;
+            background-color: rgba(26,27,35,0.90) !important;
             border-color: #3a3c50;
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
@@ -191,7 +194,6 @@
             background-color: rgba(26,27,35,0.92) !important;
         }
 
-        /* Input/select dark */
         html.dark input, html.dark textarea, html.dark select {
             background-color: rgba(33,34,46,0.95);
             border-color: #3a3c50;
@@ -201,8 +203,8 @@
             color: #8a8d9e;
         }
 
-        /* ── Purple accent already set in Tailwind config — focus ring ─── */
-        :focus-visible       { outline-color: #543B66 !important; }
+        /* ── Focus ring ──────────────────────────────────────────────────── */
+        :focus-visible { outline-color: #543B66 !important; }
     </style>
 
     {% block extra_head %}{% endblock %}
