@@ -2,13 +2,14 @@ import os
 import json
 import re
 from datetime import datetime
-from urllib.parse import urlparse, urlencode
+from urllib.parse import urlparse, quote_plus
 from flask import Flask, render_template, request, redirect, url_for
 
 app = Flask(__name__, static_folder="Static", template_folder="templates")
 
 # Register urlencode as a Jinja2 filter so templates can use {{ value | urlencode }}
-app.jinja_env.filters["urlencode"] = urlencode
+# quote_plus correctly encodes a plain string value for use in a query parameter.
+app.jinja_env.filters["urlencode"] = lambda s: quote_plus(str(s))
 
 REPORTS_FILE = os.path.join(os.path.dirname(__file__), "reports.json")
 
