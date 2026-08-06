@@ -35,6 +35,15 @@
                         and community reports.
                     </p>
                 </div>
+                <!-- Sign up prompt on left panel -->
+                <a href="{{ url_for('signup') }}"
+                   class="flex items-center justify-center gap-2 w-full max-w-xs
+                          bg-surface-container-lowest/70 backdrop-blur-sm border border-outline-variant/50
+                          rounded-xl px-4 py-2.5 text-sm font-semibold text-on-surface
+                          hover:bg-surface-container-lowest transition-colors">
+                    <span class="material-symbols-outlined fill-icon text-secondary text-[18px]">person_add</span>
+                    New here? Create a free account
+                </a>
 
                 <!-- Feature list -->
                 <ul class="space-y-3 text-sm text-left w-full max-w-xs">
@@ -108,6 +117,7 @@
                             <span class="material-symbols-outlined text-outline text-[20px]">mail</span>
                         </div>
                         <input id="email" name="email" type="email" autocomplete="email" required
+                               value="{{ form.email if form else '' }}"
                                placeholder="you@example.com"
                                class="w-full pl-10 pr-4 py-3 text-sm border border-outline-variant
                                       rounded-xl bg-surface text-on-surface
@@ -165,7 +175,8 @@
             <div class="mt-6 pt-6 border-t border-surface-variant text-center">
                 <p class="text-sm text-on-surface-variant">
                     Don't have an account?
-                    <a href="#" class="text-primary hover:underline font-medium ml-1">Create one</a>
+                    <a href="{{ url_for('signup') }}"
+                       class="text-primary hover:underline font-medium ml-1">Create one</a>
                 </p>
             </div>
         </div>

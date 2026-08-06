@@ -1,0 +1,529 @@
+{% extends "base.html" %}
+{% block title %}My Profile{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto space-y-6">
+
+    {# ── URL feedback messages ── #}
+    {% set success = request.args.get('success') %}
+    {% set err_msg = request.args.get('error') %}
+
+    {% if success %}
+    <div class="p-4 rounded-xl bg-secondary-container border border-secondary/20
+                flex items-center gap-3 reveal-pop">
+        <span class="material-symbols-outlined fill-icon text-secondary flex-shrink-0">check_circle</span>
+        <p class="text-sm text-on-secondary-container font-medium">Changes saved successfully.</p>
+    </div>
+    {% endif %}
+
+    {% if err_msg %}
+    <div class="p-4 rounded-xl bg-error-container border border-error/20
+                flex items-center gap-3 reveal-pop">
+        <span class="material-symbols-outlined fill-icon text-error flex-shrink-0">error</span>
+        <p class="text-sm text-on-error-container font-medium">{{ err_msg | replace('+', ' ') }}</p>
+    </div>
+    {% endif %}
+
+    <!-- ══════════════════════════════════════════════════════════════════
+         PROFILE HEADER BANNER
+         ══════════════════════════════════════════════════════════════════ -->
+    <div class="relative rounded-2xl overflow-hidden border border-outline-variant shadow-sm reveal">
+
+        <!-- Background -->
+        <div class="absolute inset-0 bg-gradient-to-br from-primary/10 via-surface-container-low
+                    to-secondary-container/20 img-placeholder-grid pointer-events-none"></div>
+        <div class="deco-blob orb-drift    w-52 h-52 bg-primary-fixed      -top-12 -right-16 opacity-35"></div>
+        <div class="deco-blob orb-drift-2  w-36 h-36 bg-secondary-container  bottom-0  left-8  opacity-25"></div>
+
+        <div class="relative z-10 p-6 md:p-8 flex flex-col sm:flex-row items-center sm:items-end gap-6">
+
+            <!-- Large avatar -->
+            <div class="relative flex-shrink-0">
+                <div class="w-24 h-24 rounded-full bg-primary text-on-primary
+                            flex items-center justify-center shadow-xl border-4 border-surface
+                            text-4xl font-black select-none shield-enter">
+                    {{ user.name[0].upper() }}
+                </div>
+                <!-- Online dot -->
+                <span class="absolute bottom-1 right-1 w-4 h-4 rounded-full bg-secondary
+                             border-2 border-surface pulse-dot"></span>
+            </div>
+
+            <!-- Name + meta -->
+            <div class="flex-1 text-center sm:text-left">
+                <h1 class="text-2xl md:text-3xl font-bold text-on-surface font-headline">
+                    {{ user.name }}
+                </h1>
+                <p class="text-on-surface-variant text-sm mt-0.5">{{ user.email }}</p>
+                {% if user.bio %}
+                <p class="text-on-surface-variant text-sm mt-2 max-w-md leading-relaxed italic">
+                    "{{ user.bio }}"
+                </p>
+                {% endif %}
+                <div class="flex flex-wrap justify-center sm:justify-start gap-3 mt-3">
+                    <span class="flex items-center gap-1.5 text-xs text-on-surface-variant
+                                 bg-surface-container-lowest/80 backdrop-blur-sm rounded-full
+                                 px-3 py-1 border border-outline-variant/50">
+                        <span class="material-symbols-outlined fill-icon text-outline text-[14px]">calendar_today</span>
+                        Joined {{ user.joined }}
+                    </span>
+                    <span class="flex items-center gap-1.5 text-xs text-on-surface-variant
+                                 bg-surface-container-lowest/80 backdrop-blur-sm rounded-full
+                                 px-3 py-1 border border-outline-variant/50">
+                        <span class="material-symbols-outlined fill-icon text-secondary text-[14px]">verified_user</span>
+                        Verified member
+                    </span>
+                </div>
+            </div>
+
+            <!-- Quick actions -->
+            <div class="flex flex-col gap-2 flex-shrink-0">
+                <a href="{{ url_for('report') }}"
+                   class="flex items-center gap-2 bg-primary text-on-primary px-4 py-2.5
+                          rounded-xl font-semibold text-sm hover:bg-surface-tint
+                          transition-colors shadow-sm whitespace-nowrap">
+                    <span class="material-symbols-outlined text-[16px]">flag</span>
+                    Report a Scam
+                </a>
+                <a href="{{ url_for('scanner') }}"
+                   class="flex items-center gap-2 bg-surface-container-lowest/80 backdrop-blur-sm
+                          text-on-surface px-4 py-2.5 rounded-xl font-semibold text-sm
+                          border border-outline-variant/60 hover:bg-surface-container-lowest
+                          transition-colors whitespace-nowrap">
+                    <span class="material-symbols-outlined text-[16px]">search</span>
+                    Scan a Link
+                </a>
+            </div>
+
+        </div>
+    </div>
+
+
+    <!-- ══════════════════════════════════════════════════════════════════
+         STATS STRIP
+         ══════════════════════════════════════════════════════════════════ -->
+    <div class="grid grid-cols-3 gap-4 reveal-stagger">
+
+        <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant
+                    shadow-sm p-5 flex flex-col items-center text-center card-lift">
+            <div class="w-10 h-10 rounded-full bg-primary-container flex items-center
+                        justify-center mb-3">
+                <span class="material-symbols-outlined fill-icon text-primary text-[18px]">flag</span>
+            </div>
+            <p class="text-2xl font-bold text-on-surface">{{ user.reports or 0 }}</p>
+            <p class="text-xs text-on-surface-variant mt-0.5">Reports submitted</p>
+        </div>
+
+        <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant
+                    shadow-sm p-5 flex flex-col items-center text-center card-lift">
+            <div class="w-10 h-10 rounded-full bg-secondary-container flex items-center
+                        justify-center mb-3">
+                <span class="material-symbols-outlined fill-icon text-secondary text-[18px]">shield</span>
+            </div>
+            <p class="text-2xl font-bold text-on-surface">85</p>
+            <p class="text-xs text-on-surface-variant mt-0.5">Safety score</p>
+        </div>
+
+        <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant
+                    shadow-sm p-5 flex flex-col items-center text-center card-lift">
+            <div class="w-10 h-10 rounded-full bg-tertiary-container flex items-center
+                        justify-center mb-3">
+                <span class="material-symbols-outlined fill-icon text-on-tertiary text-[18px]">radar</span>
+            </div>
+            <p class="text-2xl font-bold text-on-surface">{{ total_reports }}</p>
+            <p class="text-xs text-on-surface-variant mt-0.5">Community reports</p>
+        </div>
+
+    </div>
+
+
+    <!-- ══════════════════════════════════════════════════════════════════
+         EDIT PROFILE INFO
+         ══════════════════════════════════════════════════════════════════ -->
+    <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant
+                shadow-sm overflow-hidden reveal">
+
+        <div class="bg-surface-container-low px-6 py-4 border-b border-outline-variant
+                    flex items-center gap-2">
+            <span class="material-symbols-outlined fill-icon text-on-surface-variant text-[18px]">
+                manage_accounts
+            </span>
+            <h2 class="font-semibold text-on-surface">Profile Information</h2>
+        </div>
+
+        <form method="POST" action="{{ url_for('profile_edit') }}" class="p-6 space-y-5">
+            <input type="hidden" name="action" value="info" />
+
+            <!-- Name -->
+            <div class="space-y-1.5">
+                <label for="name" class="block text-sm font-semibold text-on-surface">
+                    Display name <span class="text-error">*</span>
+                </label>
+                <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <span class="material-symbols-outlined text-outline text-[20px]">person</span>
+                    </div>
+                    <input id="name" name="name" type="text" required
+                           value="{{ user.name }}"
+                           class="w-full pl-10 pr-4 py-3 text-sm border border-outline-variant
+                                  rounded-xl bg-surface text-on-surface
+                                  focus:outline-none focus:ring-2 focus:ring-primary
+                                  focus:border-transparent transition-all" />
+                </div>
+            </div>
+
+            <!-- Email -->
+            <div class="space-y-1.5">
+                <label for="email" class="block text-sm font-semibold text-on-surface">
+                    Email address <span class="text-error">*</span>
+                </label>
+                <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <span class="material-symbols-outlined text-outline text-[20px]">mail</span>
+                    </div>
+                    <input id="email" name="email" type="email" required
+                           value="{{ user.email }}"
+                           class="w-full pl-10 pr-4 py-3 text-sm border border-outline-variant
+                                  rounded-xl bg-surface text-on-surface
+                                  focus:outline-none focus:ring-2 focus:ring-primary
+                                  focus:border-transparent transition-all" />
+                </div>
+            </div>
+
+            <!-- Bio -->
+            <div class="space-y-1.5">
+                <label for="bio" class="block text-sm font-semibold text-on-surface">
+                    Bio
+                    <span class="text-on-surface-variant font-normal">(optional)</span>
+                </label>
+                <textarea id="bio" name="bio" rows="3" maxlength="200"
+                          placeholder="A short sentence about yourself…"
+                          class="w-full px-3 py-3 text-sm border border-outline-variant rounded-xl
+                                 bg-surface text-on-surface resize-none
+                                 focus:outline-none focus:ring-2 focus:ring-primary
+                                 focus:border-transparent transition-all">{{ user.bio or '' }}</textarea>
+                <p class="text-xs text-on-surface-variant text-right">Max 200 characters</p>
+            </div>
+
+            <div class="flex justify-end pt-2">
+                <button type="submit"
+                        class="bg-primary text-on-primary px-6 py-2.5 rounded-xl font-semibold
+                               text-sm shadow-sm hover:bg-surface-tint active:scale-95
+                               transition-all flex items-center gap-2">
+                    <span class="material-symbols-outlined text-[16px]">save</span>
+                    Save Changes
+                </button>
+            </div>
+        </form>
+    </div>
+
+
+    <!-- ══════════════════════════════════════════════════════════════════
+         CHANGE PASSWORD
+         ══════════════════════════════════════════════════════════════════ -->
+    <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant
+                shadow-sm overflow-hidden reveal">
+
+        <div class="bg-surface-container-low px-6 py-4 border-b border-outline-variant
+                    flex items-center gap-2">
+            <span class="material-symbols-outlined fill-icon text-on-surface-variant text-[18px]">lock</span>
+            <h2 class="font-semibold text-on-surface">Change Password</h2>
+        </div>
+
+        <form method="POST" action="{{ url_for('profile_edit') }}" class="p-6 space-y-5">
+            <input type="hidden" name="action" value="password" />
+
+            <!-- Current password -->
+            <div class="space-y-1.5">
+                <label for="current_password" class="block text-sm font-semibold text-on-surface">
+                    Current password <span class="text-error">*</span>
+                </label>
+                <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <span class="material-symbols-outlined text-outline text-[20px]">lock</span>
+                    </div>
+                    <input id="current_password" name="current_password" type="password" required
+                           placeholder="Your current password"
+                           class="w-full pl-10 pr-10 py-3 text-sm border border-outline-variant
+                                  rounded-xl bg-surface text-on-surface
+                                  focus:outline-none focus:ring-2 focus:ring-primary
+                                  focus:border-transparent transition-all" />
+                    <button type="button" onclick="togglePwd('current_password','cur-icon')"
+                            class="absolute inset-y-0 right-0 pr-3 flex items-center
+                                   text-on-surface-variant hover:text-on-surface transition-colors">
+                        <span id="cur-icon" class="material-symbols-outlined text-[20px]">visibility</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- New password -->
+            <div class="space-y-1.5">
+                <label for="new_password" class="block text-sm font-semibold text-on-surface">
+                    New password <span class="text-error">*</span>
+                </label>
+                <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <span class="material-symbols-outlined text-outline text-[20px]">lock_reset</span>
+                    </div>
+                    <input id="new_password" name="new_password" type="password" required
+                           placeholder="Minimum 8 characters"
+                           class="w-full pl-10 pr-10 py-3 text-sm border border-outline-variant
+                                  rounded-xl bg-surface text-on-surface
+                                  focus:outline-none focus:ring-2 focus:ring-primary
+                                  focus:border-transparent transition-all" />
+                    <button type="button" onclick="togglePwd('new_password','new-icon')"
+                            class="absolute inset-y-0 right-0 pr-3 flex items-center
+                                   text-on-surface-variant hover:text-on-surface transition-colors">
+                        <span id="new-icon" class="material-symbols-outlined text-[20px]">visibility</span>
+                    </button>
+                </div>
+                <!-- Strength meter -->
+                <div class="flex gap-1 pt-1">
+                    <div class="h-1 flex-1 rounded-full bg-surface-container" id="psb1"></div>
+                    <div class="h-1 flex-1 rounded-full bg-surface-container" id="psb2"></div>
+                    <div class="h-1 flex-1 rounded-full bg-surface-container" id="psb3"></div>
+                    <div class="h-1 flex-1 rounded-full bg-surface-container" id="psb4"></div>
+                </div>
+                <p id="p-strength-label" class="text-[11px] text-on-surface-variant"></p>
+            </div>
+
+            <!-- Confirm new password -->
+            <div class="space-y-1.5">
+                <label for="confirm_password" class="block text-sm font-semibold text-on-surface">
+                    Confirm new password <span class="text-error">*</span>
+                </label>
+                <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <span class="material-symbols-outlined text-outline text-[20px]">lock_reset</span>
+                    </div>
+                    <input id="confirm_password" name="confirm_password" type="password" required
+                           placeholder="Repeat new password"
+                           class="w-full pl-10 pr-10 py-3 text-sm border border-outline-variant
+                                  rounded-xl bg-surface text-on-surface
+                                  focus:outline-none focus:ring-2 focus:ring-primary
+                                  focus:border-transparent transition-all" />
+                    <button type="button" onclick="togglePwd('confirm_password','conf-icon')"
+                            class="absolute inset-y-0 right-0 pr-3 flex items-center
+                                   text-on-surface-variant hover:text-on-surface transition-colors">
+                        <span id="conf-icon" class="material-symbols-outlined text-[20px]">visibility</span>
+                    </button>
+                </div>
+                <p id="p-match-label" class="text-[11px] hidden"></p>
+            </div>
+
+            <div class="flex justify-end pt-2">
+                <button type="submit"
+                        class="bg-surface-container-highest text-on-surface px-6 py-2.5 rounded-xl
+                               font-semibold text-sm border border-outline-variant
+                               hover:bg-surface-container-high active:scale-95 transition-all
+                               flex items-center gap-2">
+                    <span class="material-symbols-outlined text-[16px]">lock_reset</span>
+                    Update Password
+                </button>
+            </div>
+        </form>
+    </div>
+
+
+    <!-- ══════════════════════════════════════════════════════════════════
+         MY RECENT REPORTS
+         ══════════════════════════════════════════════════════════════════ -->
+    <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant
+                shadow-sm overflow-hidden reveal">
+
+        <div class="bg-surface-container-low px-6 py-4 border-b border-outline-variant
+                    flex items-center justify-between">
+            <div class="flex items-center gap-2">
+                <span class="material-symbols-outlined fill-icon text-on-surface-variant text-[18px]">
+                    list_alt
+                </span>
+                <h2 class="font-semibold text-on-surface">My Reports</h2>
+            </div>
+            <a href="{{ url_for('reports') }}"
+               class="text-primary text-xs font-medium hover:underline flex items-center gap-1">
+                View all <span class="material-symbols-outlined text-xs">arrow_forward</span>
+            </a>
+        </div>
+
+        {% if user_reports %}
+        <div class="divide-y divide-outline-variant/50">
+            {% for r in user_reports[:5] %}
+            <div class="px-6 py-4 flex items-start gap-4 hover:bg-surface-container-low transition-colors">
+                <!-- Icon -->
+                <div class="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0
+                    {% if r.threat_type == 'phishing' %}bg-error-container text-error
+                    {% elif r.threat_type == 'malware' %}bg-tertiary-container text-on-tertiary
+                    {% elif r.threat_type == 'scam' %}bg-primary-container text-on-primary-container
+                    {% else %}bg-surface-container text-on-surface-variant{% endif %}">
+                    <span class="material-symbols-outlined fill-icon text-[16px]">
+                        {% if r.threat_type == 'phishing' %}phishing
+                        {% elif r.threat_type == 'malware' %}bug_report
+                        {% elif r.threat_type == 'scam' %}sms_failed
+                        {% else %}flag{% endif %}
+                    </span>
+                </div>
+                <!-- Content -->
+                <div class="flex-1 min-w-0">
+                    <div class="flex items-center gap-2 mb-1">
+                        <span class="text-xs font-bold uppercase tracking-wide
+                            {% if r.threat_type == 'phishing' %}text-error
+                            {% elif r.threat_type == 'malware' %}text-on-tertiary
+                            {% elif r.threat_type == 'scam' %}text-primary
+                            {% else %}text-on-surface-variant{% endif %}">
+                            {{ r.threat_type or 'other' }}
+                        </span>
+                        {% if r.timestamp %}
+                        <span class="text-[11px] text-outline">· {{ r.timestamp }}</span>
+                        {% endif %}
+                    </div>
+                    {% if r.url_content %}
+                    <p class="text-sm font-mono text-on-surface truncate">{{ r.url_content }}</p>
+                    {% endif %}
+                    {% if r.description %}
+                    <p class="text-xs text-on-surface-variant mt-0.5 line-clamp-1">{{ r.description }}</p>
+                    {% endif %}
+                </div>
+                {% if r.url_content and r.url_content.startswith('http') %}
+                <a href="{{ url_for('scanner') }}?url={{ r.url_content | urlencode }}"
+                   class="flex-shrink-0 text-xs text-primary font-semibold
+                          hover:underline flex items-center gap-1">
+                    <span class="material-symbols-outlined text-[14px]">search</span>
+                    Scan
+                </a>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="p-8 text-center">
+            <div class="w-14 h-14 rounded-full bg-surface-container mx-auto mb-3
+                        flex items-center justify-center">
+                <span class="material-symbols-outlined text-outline text-2xl">inbox</span>
+            </div>
+            <p class="text-sm font-medium text-on-surface mb-1">No reports yet</p>
+            <p class="text-xs text-on-surface-variant mb-4">
+                Reports you submit will appear here.
+            </p>
+            <a href="{{ url_for('report') }}"
+               class="inline-flex items-center gap-2 bg-primary text-on-primary
+                      px-5 py-2.5 rounded-xl font-semibold text-sm hover:bg-surface-tint
+                      transition-colors shadow-sm">
+                <span class="material-symbols-outlined text-[16px]">flag</span>
+                Submit your first report
+            </a>
+        </div>
+        {% endif %}
+    </div>
+
+
+    <!-- ══════════════════════════════════════════════════════════════════
+         DANGER ZONE
+         ══════════════════════════════════════════════════════════════════ -->
+    <div class="bg-surface-container-lowest rounded-2xl border border-error/30
+                shadow-sm overflow-hidden reveal">
+
+        <div class="bg-error-container/30 px-6 py-4 border-b border-error/20
+                    flex items-center gap-2">
+            <span class="material-symbols-outlined fill-icon text-error text-[18px]">warning</span>
+            <h2 class="font-semibold text-on-surface">Account Actions</h2>
+        </div>
+
+        <div class="p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+                <p class="text-sm font-semibold text-on-surface">Sign out of SafeNet</p>
+                <p class="text-xs text-on-surface-variant mt-0.5">
+                    You will be returned to the home page and your session will end.
+                </p>
+            </div>
+            <a href="{{ url_for('logout') }}"
+               class="flex-shrink-0 flex items-center gap-2 bg-error text-on-error
+                      px-5 py-2.5 rounded-xl font-semibold text-sm
+                      hover:opacity-90 active:scale-95 transition-all shadow-sm">
+                <span class="material-symbols-outlined text-[16px]">logout</span>
+                Sign Out
+            </a>
+        </div>
+    </div>
+
+</div>
+
+
+<script>
+// ── Password visibility toggles ───────────────────────────────────────────────
+function togglePwd(inputId, iconId) {
+    const input = document.getElementById(inputId);
+    const icon  = document.getElementById(iconId);
+    if (!input || !icon) return;
+    if (input.type === 'password') {
+        input.type = 'text';
+        icon.textContent = 'visibility_off';
+    } else {
+        input.type = 'password';
+        icon.textContent = 'visibility';
+    }
+}
+
+// ── New password strength meter ───────────────────────────────────────────────
+const newPwdInput  = document.getElementById('new_password');
+const confPwdInput = document.getElementById('confirm_password');
+const pBars        = ['psb1','psb2','psb3','psb4'].map(id => document.getElementById(id));
+const pStrengthLbl = document.getElementById('p-strength-label');
+const pMatchLbl    = document.getElementById('p-match-label');
+
+const pLevels = [
+    { label: '',       colour: 'bg-surface-container' },
+    { label: 'Weak',   colour: 'bg-error' },
+    { label: 'Fair',   colour: 'bg-tertiary' },
+    { label: 'Good',   colour: 'bg-primary' },
+    { label: 'Strong', colour: 'bg-secondary' },
+];
+
+function calcStrength(pw) {
+    let s = 0;
+    if (pw.length >= 8)  s++;
+    if (pw.length >= 12) s++;
+    if (/[A-Z]/.test(pw) && /[a-z]/.test(pw)) s++;
+    if (/[^A-Za-z0-9]/.test(pw) || /\d/.test(pw)) s++;
+    return Math.min(s, 4);
+}
+
+if (newPwdInput) {
+    newPwdInput.addEventListener('input', function () {
+        const strength = calcStrength(this.value);
+        const level    = pLevels[strength];
+        pBars.forEach((bar, i) => {
+            bar.className = 'h-1 flex-1 rounded-full transition-colors ' +
+                (i < strength ? level.colour : 'bg-surface-container');
+        });
+        pStrengthLbl.textContent = this.value.length ? level.label : '';
+        pStrengthLbl.className   = 'text-[11px] transition-colors ' +
+            (strength <= 1 ? 'text-error' : strength === 2 ? 'text-tertiary' :
+             strength === 3 ? 'text-primary' : 'text-secondary');
+        checkPMatch();
+    });
+}
+
+if (confPwdInput) {
+    confPwdInput.addEventListener('input', checkPMatch);
+}
+
+function checkPMatch() {
+    if (!confPwdInput.value) { pMatchLbl.classList.add('hidden'); return; }
+    const match = newPwdInput.value === confPwdInput.value;
+    pMatchLbl.classList.remove('hidden');
+    pMatchLbl.textContent = match ? '✓ Passwords match' : '✗ Passwords do not match';
+    pMatchLbl.className   = 'text-[11px] ' + (match ? 'text-secondary' : 'text-error');
+}
+
+// ── Auto-dismiss success toast after 4s ───────────────────────────────────────
+const successBanner = document.querySelector('.bg-secondary-container.border-secondary\\/20');
+if (successBanner) {
+    setTimeout(() => {
+        successBanner.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
+        successBanner.style.opacity = '0';
+        successBanner.style.transform = 'translateY(-8px)';
+        setTimeout(() => successBanner.remove(), 400);
+    }, 4000);
+}
+</script>
+{% endblock %}

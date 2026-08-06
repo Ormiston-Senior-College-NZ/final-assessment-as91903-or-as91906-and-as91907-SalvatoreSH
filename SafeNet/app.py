@@ -1,19 +1,69 @@
 import os
 import json
 import re
+import uuid
 from datetime import datetime
 from urllib.parse import urlparse, quote_plus
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, session, flash
 
 app = Flask(__name__, static_folder="Static", template_folder="templates")
 
-# Register urlencode as a Jinja2 filter so templates can use {{ value | urlencode }}
-# quote_plus correctly encodes a plain string value for use in a query parameter.
+# Secret key for sessions — in production use a real random secret
+app.secret_key = os.environ.get("SAFENET_SECRET", "safenet-dev-secret-change-in-prod")
+
+# Register urlencode as a Jinja2 filter
 app.jinja_env.filters["urlencode"] = lambda s: quote_plus(str(s))
 
 REPORTS_FILE = os.path.join(os.path.dirname(__file__), "reports.json")
+USERS_FILE   = os.path.join(os.path.dirname(__file__), "users.json")
 
-# ─── Daily tips (rotates by day of year) ─────────────────────────────────────
+
+# ─── Password hashing (werkzeug ships with Flask) ─────────────────────────────
+
+from werkzeug.security import generate_password_hash, check_password_hash
+
+
+# ─── User store helpers ───────────────────────────────────────────────────────
+
+def load_users():
+    if not os.path.exists(USERS_FILE):
+        with open(USERS_FILE, "w") as f:
+            json.dump([], f)
+    with open(USERS_FILE, "r") as f:
+        try:
+            return json.load(f)
+        except (json.JSONDecodeError, ValueError):
+            return []
+
+
+def save_users(users):
+    with open(USERS_FILE, "w") as f:
+        json.dump(users, f, indent=4)
+
+
+def find_user_by_email(email):
+    return next((u for u in load_users() if u["email"].lower() == email.lower()), None)
+
+
+def find_user_by_id(uid):
+    return next((u for u in load_users() if u["id"] == uid), None)
+
+
+def current_user():
+    """Return the logged-in user dict, or None."""
+    uid = session.get("user_id")
+    if not uid:
+        return None
+    return find_user_by_id(uid)
+
+
+# Make current_user available in every template automatically
+@app.context_processor
+def inject_user():
+    return {"current_user": current_user()}
+
+
+# ─── Daily tips ───────────────────────────────────────────────────────────────
 
 TIPS = [
     "Use unique, complex passwords for every account and consider a password manager.",
@@ -37,7 +87,7 @@ def get_daily_tip():
     return TIPS[idx]
 
 
-# ─── Helpers ──────────────────────────────────────────────────────────────────
+# ─── Report store helpers ─────────────────────────────────────────────────────
 
 def load_reports():
     if not os.path.exists(REPORTS_FILE):
@@ -55,21 +105,21 @@ def save_reports(reports):
         json.dump(reports, f, indent=4)
 
 
+# ─── URL analyser ─────────────────────────────────────────────────────────────
+
 def analyse_url(url):
     """
     Heuristic URL scanner.
     Returns: { level: 'safe'|'warning'|'danger'|'error', score: int, reasons: [str], title: str }
     """
-    reasons = []
-    score   = 0
+    reasons   = []
+    score     = 0
     url_lower = url.lower()
 
-    # ── Protocol ──────────────────────────────────────────────────────────
     if url_lower.startswith("http://"):
         reasons.append("Uses unencrypted HTTP — the connection is not secure.")
         score += 20
 
-    # ── Suspicious TLDs ───────────────────────────────────────────────────
     BAD_TLDS = [
         ".tk", ".ml", ".ga", ".cf", ".gq", ".xyz", ".top", ".click",
         ".loan", ".work", ".zip", ".ru", ".su", ".pw", ".cc", ".biz"
@@ -80,12 +130,10 @@ def analyse_url(url):
             score += 25
             break
 
-    # ── IP address as domain ───────────────────────────────────────────────
     if re.match(r"https?://(\d{1,3}\.){3}\d{1,3}", url):
         reasons.append("Uses a raw IP address as the domain — a common phishing technique.")
         score += 35
 
-    # ── Subdomain spoofing ─────────────────────────────────────────────────
     TRUSTED_BRANDS = [
         "paypal", "anz", "bnz", "westpac", "kiwibank", "asb", "nzpost",
         "google", "microsoft", "apple", "amazon", "facebook", "instagram",
@@ -109,7 +157,6 @@ def analyse_url(url):
     except Exception:
         pass
 
-    # ── Suspicious keywords ────────────────────────────────────────────────
     BAD_KEYWORDS = [
         "login", "verify", "secure", "update", "confirm", "account",
         "banking", "password", "credential", "signin", "free-prize",
@@ -118,15 +165,12 @@ def analyse_url(url):
     ]
     matched_kw = [kw for kw in BAD_KEYWORDS if kw in url_lower]
     if len(matched_kw) >= 2:
-        reasons.append(
-            f"Multiple suspicious keywords detected in the URL: {', '.join(matched_kw[:4])}."
-        )
+        reasons.append(f"Multiple suspicious keywords detected in the URL: {', '.join(matched_kw[:4])}.")
         score += 20
     elif len(matched_kw) == 1:
         reasons.append(f"Suspicious keyword detected in the URL: '{matched_kw[0]}'.")
         score += 10
 
-    # ── URL shorteners ─────────────────────────────────────────────────────
     SHORTENERS = ["bit.ly", "tinyurl.com", "t.co", "goo.gl", "ow.ly",
                   "short.link", "rb.gy", "cutt.ly", "is.gd"]
     for s in SHORTENERS:
@@ -138,7 +182,6 @@ def analyse_url(url):
             score += 15
             break
 
-    # ── Excessive subdomains ───────────────────────────────────────────────
     try:
         parts = urlparse(url).hostname.split(".")
         if len(parts) > 4:
@@ -150,61 +193,188 @@ def analyse_url(url):
     except Exception:
         pass
 
-    # ── Very long URL ──────────────────────────────────────────────────────
     if len(url) > 150:
         reasons.append("URL is unusually long — sometimes used to obscure the true destination.")
         score += 10
 
-    # ── Clamp and level ────────────────────────────────────────────────────
     score = min(score, 100)
 
     if score >= 60:
-        return {
-            "level":   "danger",
-            "score":   score,
-            "title":   "Dangerous — do not visit this site.",
-            "reasons": reasons or ["This URL matches multiple high-risk patterns."],
-        }
+        return {"level": "danger",  "score": score, "title": "Dangerous — do not visit this site.",
+                "reasons": reasons or ["This URL matches multiple high-risk patterns."]}
     elif score >= 25:
-        return {
-            "level":   "warning",
-            "score":   score,
-            "title":   "Suspicious — proceed with extreme caution.",
-            "reasons": reasons or ["This URL has characteristics associated with suspicious sites."],
-        }
+        return {"level": "warning", "score": score, "title": "Suspicious — proceed with extreme caution.",
+                "reasons": reasons or ["This URL has characteristics associated with suspicious sites."]}
     else:
-        return {
-            "level":   "safe",
-            "score":   score,
-            "title":   "No threats detected.",
-            "reasons": reasons or ["This URL passed all safety checks."],
-        }
+        return {"level": "safe",    "score": score, "title": "No threats detected.",
+                "reasons": reasons or ["This URL passed all safety checks."]}
 
 
-# ─── Routes ───────────────────────────────────────────────────────────────────
+# ═════════════════════════════════════════════════════════════════════════════
+#  ROUTES
+# ═════════════════════════════════════════════════════════════════════════════
 
 @app.route("/")
 def home():
     return render_template("landing.html")
 
 
+# ─── Auth: Sign Up ────────────────────────────────────────────────────────────
+
+@app.route("/signup", methods=["GET", "POST"])
+def signup():
+    if current_user():
+        return redirect(url_for("dashboard"))
+
+    error = None
+    form  = {}
+
+    if request.method == "POST":
+        name     = request.form.get("name",     "").strip()
+        email    = request.form.get("email",    "").strip()
+        password = request.form.get("password", "").strip()
+        confirm  = request.form.get("confirm",  "").strip()
+        form     = {"name": name, "email": email}
+
+        if not name:
+            error = "Please enter your name."
+        elif not email or "@" not in email:
+            error = "Please enter a valid email address."
+        elif len(password) < 8:
+            error = "Password must be at least 8 characters."
+        elif password != confirm:
+            error = "Passwords do not match."
+        elif find_user_by_email(email):
+            error = "An account with that email already exists."
+        else:
+            users = load_users()
+            new_user = {
+                "id":         str(uuid.uuid4()),
+                "name":       name,
+                "email":      email,
+                "password":   generate_password_hash(password),
+                "bio":        "",
+                "joined":     datetime.now().strftime("%Y-%m-%d"),
+                "reports":    0,
+            }
+            users.append(new_user)
+            save_users(users)
+            session["user_id"] = new_user["id"]
+            return redirect(url_for("dashboard"))
+
+    return render_template("signup.html", error=error, form=form)
+
+
+# ─── Auth: Sign In ────────────────────────────────────────────────────────────
+
 @app.route("/login", methods=["GET", "POST"])
 def login():
-    error = None
-    if request.method == "POST":
-        email    = request.form.get("email", "").strip()
-        password = request.form.get("password", "").strip()
-        if email and password:
-            return redirect(url_for("dashboard"))
-        error = "Please enter both an email address and a password."
-    return render_template("login.html", error=error)
+    if current_user():
+        return redirect(url_for("dashboard"))
 
+    error = None
+    form  = {}
+
+    if request.method == "POST":
+        email    = request.form.get("email",    "").strip()
+        password = request.form.get("password", "").strip()
+        form     = {"email": email}
+
+        if not email or not password:
+            error = "Please enter both an email address and a password."
+        else:
+            user = find_user_by_email(email)
+            if user and check_password_hash(user["password"], password):
+                session["user_id"] = user["id"]
+                return redirect(url_for("dashboard"))
+            else:
+                error = "Incorrect email or password."
+
+    return render_template("login.html", error=error, form=form)
+
+
+# ─── Auth: Logout ─────────────────────────────────────────────────────────────
+
+@app.route("/logout")
+def logout():
+    session.pop("user_id", None)
+    return redirect(url_for("home"))
+
+
+# ─── Profile: View ────────────────────────────────────────────────────────────
+
+@app.route("/profile")
+def profile():
+    user = current_user()
+    if not user:
+        return redirect(url_for("login"))
+
+    all_reports = load_reports()
+    # Count reports submitted by this user (tracked by user_id field on each report)
+    user_reports = [r for r in all_reports if r.get("user_id") == user["id"]]
+
+    return render_template("profile.html", user=user, user_reports=user_reports,
+                           total_reports=len(all_reports))
+
+
+# ─── Profile: Edit ────────────────────────────────────────────────────────────
+
+@app.route("/profile/edit", methods=["POST"])
+def profile_edit():
+    user = current_user()
+    if not user:
+        return redirect(url_for("login"))
+
+    action = request.form.get("action", "info")
+    users  = load_users()
+    idx    = next((i for i, u in enumerate(users) if u["id"] == user["id"]), None)
+    if idx is None:
+        return redirect(url_for("profile"))
+
+    if action == "info":
+        name  = request.form.get("name",  "").strip()
+        bio   = request.form.get("bio",   "").strip()
+        email = request.form.get("email", "").strip()
+
+        if not name:
+            return redirect(url_for("profile") + "?error=Name+cannot+be+empty.")
+        if not email or "@" not in email:
+            return redirect(url_for("profile") + "?error=Please+enter+a+valid+email.")
+
+        # Check email uniqueness (allow same user keeping their email)
+        conflict = find_user_by_email(email)
+        if conflict and conflict["id"] != user["id"]:
+            return redirect(url_for("profile") + "?error=That+email+is+already+in+use.")
+
+        users[idx]["name"]  = name
+        users[idx]["bio"]   = bio
+        users[idx]["email"] = email
+
+    elif action == "password":
+        current_pw  = request.form.get("current_password", "").strip()
+        new_pw      = request.form.get("new_password",     "").strip()
+        confirm_pw  = request.form.get("confirm_password", "").strip()
+
+        if not check_password_hash(users[idx]["password"], current_pw):
+            return redirect(url_for("profile") + "?error=Current+password+is+incorrect.")
+        if len(new_pw) < 8:
+            return redirect(url_for("profile") + "?error=New+password+must+be+at+least+8+characters.")
+        if new_pw != confirm_pw:
+            return redirect(url_for("profile") + "?error=New+passwords+do+not+match.")
+
+        users[idx]["password"] = generate_password_hash(new_pw)
+
+    save_users(users)
+    return redirect(url_for("profile") + "?success=1")
+
+
+# ─── Dashboard ────────────────────────────────────────────────────────────────
 
 @app.route("/dashboard")
 def dashboard():
     reports = load_reports()
     recent  = sorted(
-        [r for r in reports if r.get("threat_type")],  # skip legacy/blank entries
+        [r for r in reports if r.get("threat_type")],
         key=lambda r: r.get("timestamp", ""),
         reverse=True
     )[:4]
@@ -216,6 +386,8 @@ def dashboard():
     )
 
 
+# ─── Scanner ──────────────────────────────────────────────────────────────────
+
 @app.route("/scanner", methods=["GET", "POST"])
 def scanner():
     result      = None
@@ -225,50 +397,38 @@ def scanner():
         url = request.form.get("url", "").strip()
 
         if not url:
-            result = {
-                "level": "error",
-                "title": "Please enter a URL to scan.",
-                "reasons": ["The input field was empty. Enter a full URL starting with http:// or https://"],
-                "score": 0,
-            }
+            result = {"level": "error", "title": "Please enter a URL to scan.",
+                      "reasons": ["The input field was empty. Enter a full URL starting with http:// or https://"],
+                      "score": 0}
         elif not url.startswith(("http://", "https://")):
-            result = {
-                "level": "error",
-                "title": "Invalid URL format.",
-                "reasons": ["Please enter a URL beginning with http:// or https://  —  e.g. https://example.com"],
-                "score": 0,
-            }
+            result = {"level": "error", "title": "Invalid URL format.",
+                      "reasons": ["Please enter a URL beginning with http:// or https://  —  e.g. https://example.com"],
+                      "score": 0}
         else:
             try:
                 result      = analyse_url(url)
                 scanned_url = url
-            except Exception as e:
-                result = {
-                    "level": "error",
-                    "title": "Something went wrong analysing that URL.",
-                    "reasons": ["The URL could not be analysed. Please check the format and try again."],
-                    "score": 0,
-                }
+            except Exception:
+                result = {"level": "error", "title": "Something went wrong analysing that URL.",
+                          "reasons": ["The URL could not be analysed. Please check the format and try again."],
+                          "score": 0}
 
     return render_template("scanner.html", result=result, scanned_url=scanned_url)
 
 
+# ─── Report ───────────────────────────────────────────────────────────────────
+
 @app.route("/report", methods=["GET", "POST"])
 def report():
-    error         = None
-    form_values   = {}
+    error       = None
+    form_values = {}
 
     if request.method == "POST":
         threat_type = request.form.get("threat_type", "").strip()
-        url_content = request.form.get("url_content",  "").strip()
-        description = request.form.get("description",  "").strip()
+        url_content = request.form.get("url_content", "").strip()
+        description = request.form.get("description", "").strip()
 
-        # Preserve form values on error
-        form_values = {
-            "threat_type": threat_type,
-            "url_content": url_content,
-            "description": description,
-        }
+        form_values = {"threat_type": threat_type, "url_content": url_content, "description": description}
 
         if not threat_type:
             error = "Please select a threat type."
@@ -280,17 +440,29 @@ def report():
             error = "Description must be 500 characters or fewer."
         else:
             reports = load_reports()
+            user    = current_user()
             new_report = {
                 "threat_type": threat_type,
                 "url_content": url_content,
                 "description": description,
                 "timestamp":   datetime.now().strftime("%Y-%m-%d %H:%M"),
+                "user_id":     user["id"] if user else None,
+                "user_name":   user["name"] if user else "Anonymous",
             }
             reports.append(new_report)
             save_reports(reports)
+
+            # Increment user's report counter
+            if user:
+                users = load_users()
+                for u in users:
+                    if u["id"] == user["id"]:
+                        u["reports"] = u.get("reports", 0) + 1
+                        break
+                save_users(users)
+
             return redirect(url_for("report_success"))
 
-    # Pre-fill URL from query string if coming from scanner
     if not form_values.get("url_content"):
         form_values["url_content"] = request.args.get("url", "")
 
@@ -302,26 +474,31 @@ def report_success():
     return render_template("report_success.html")
 
 
+# ─── Reports list ─────────────────────────────────────────────────────────────
+
 @app.route("/reports")
 def reports():
     all_reports = load_reports()
-    # Filter out legacy entries that have no threat_type (old schema)
     valid = [r for r in all_reports if r.get("threat_type") or r.get("url_content")]
     valid = sorted(valid, key=lambda r: r.get("timestamp", ""), reverse=True)
     return render_template("reports.html", reports=valid)
 
+
+# ─── Education ────────────────────────────────────────────────────────────────
 
 @app.route("/education")
 def education():
     return render_template("education.html")
 
 
+# ─── Settings ────────────────────────────────────────────────────────────────
+
 @app.route("/settings")
 def settings():
     return render_template("settings.html")
 
 
-# ─── Error handlers ───────────────────────────────────────────────────────────
+# ─── Error handlers ──────────────────────────────────────────────────────────
 
 @app.errorhandler(404)
 def page_not_found(e):

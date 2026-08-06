@@ -165,11 +165,27 @@
             <span class="material-symbols-outlined fill-icon text-primary" style="font-size:1.6rem;">shield</span>
             <span class="text-lg font-black text-primary font-headline tracking-tight">SafeNet</span>
         </div>
-        <button onclick="toggleTheme()"
-                class="p-2 rounded-full hover:bg-surface-container-high transition-colors"
-                aria-label="Toggle theme">
-            <span id="mobile-theme-icon" class="material-symbols-outlined text-on-surface-variant">dark_mode</span>
-        </button>
+        <div class="flex items-center gap-1">
+            <button onclick="toggleTheme()"
+                    class="p-2 rounded-full hover:bg-surface-container-high transition-colors"
+                    aria-label="Toggle theme">
+                <span id="mobile-theme-icon" class="material-symbols-outlined text-on-surface-variant">dark_mode</span>
+            </button>
+            {% if current_user %}
+            <a href="{{ url_for('profile') }}"
+               class="w-8 h-8 rounded-full bg-primary text-on-primary flex items-center justify-center
+                      text-xs font-bold select-none hover:opacity-90 transition-opacity ml-1"
+               aria-label="Profile">
+                {{ current_user.name[0].upper() }}
+            </a>
+            {% else %}
+            <a href="{{ url_for('login') }}"
+               class="p-2 rounded-full hover:bg-surface-container-high transition-colors"
+               aria-label="Sign in">
+                <span class="material-symbols-outlined text-on-surface-variant">login</span>
+            </a>
+            {% endif %}
+        </div>
     </header>
 
     <div class="flex">
@@ -244,20 +260,63 @@
                 </li>
             </ul>
 
-            <!-- Bottom: settings + theme -->
+            <!-- Bottom: profile + settings + theme -->
             <div class="px-3 py-3 border-t border-outline-variant space-y-0.5">
-                <a href="{{ url_for('settings') }}"
+
+                {% if current_user %}
+                <!-- Logged-in user avatar strip -->
+                <a href="{{ url_for('profile') }}"
                    class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-all duration-150
-                          {% if request.path == '/settings' %}bg-secondary-container text-on-secondary-container font-semibold{% else %}text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface{% endif %}">
-                    <span class="material-symbols-outlined text-[20px] {% if request.path == '/settings' %}fill-icon{% endif %}">settings</span>
-                    Settings
+                          {% if request.path == '/profile' %}bg-secondary-container text-on-secondary-container font-semibold{% else %}text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface{% endif %}">
+                    <!-- Avatar initials circle -->
+                    <div class="w-7 h-7 rounded-full bg-primary text-on-primary flex items-center justify-center
+                                text-xs font-bold flex-shrink-0 select-none">
+                        {{ current_user.name[0].upper() }}
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <p class="text-sm font-semibold text-on-surface truncate leading-tight">{{ current_user.name }}</p>
+                        <p class="text-[11px] text-on-surface-variant truncate leading-tight">{{ current_user.email }}</p>
+                    </div>
+                    <span class="material-symbols-outlined text-outline text-[16px] flex-shrink-0">chevron_right</span>
                 </a>
-                <button onclick="toggleTheme()"
-                        class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-on-surface-variant
-                               hover:bg-surface-container-high hover:text-on-surface transition-all duration-150">
-                    <span id="desktop-theme-icon" class="material-symbols-outlined text-[20px]">dark_mode</span>
-                    <span id="desktop-theme-label">Dark Mode</span>
-                </button>
+                {% else %}
+                <!-- Guest: sign in / sign up -->
+                <a href="{{ url_for('login') }}"
+                   class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-all duration-150
+                          {% if request.path == '/login' %}bg-secondary-container text-on-secondary-container font-semibold{% else %}text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface{% endif %}">
+                    <span class="material-symbols-outlined text-[20px] {% if request.path == '/login' %}fill-icon{% endif %}">login</span>
+                    Sign In
+                </a>
+                <a href="{{ url_for('signup') }}"
+                   class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-all duration-150
+                          {% if request.path == '/signup' %}bg-primary text-on-primary font-semibold{% else %}text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface{% endif %}">
+                    <span class="material-symbols-outlined text-[20px] {% if request.path == '/signup' %}fill-icon{% endif %}">person_add</span>
+                    Create Account
+                </a>
+                {% endif %}
+
+                <div class="pt-0.5 space-y-0.5">
+                    <a href="{{ url_for('settings') }}"
+                       class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-all duration-150
+                              {% if request.path == '/settings' %}bg-secondary-container text-on-secondary-container font-semibold{% else %}text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface{% endif %}">
+                        <span class="material-symbols-outlined text-[20px] {% if request.path == '/settings' %}fill-icon{% endif %}">settings</span>
+                        Settings
+                    </a>
+                    <button onclick="toggleTheme()"
+                            class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-on-surface-variant
+                                   hover:bg-surface-container-high hover:text-on-surface transition-all duration-150">
+                        <span id="desktop-theme-icon" class="material-symbols-outlined text-[20px]">dark_mode</span>
+                        <span id="desktop-theme-label">Dark Mode</span>
+                    </button>
+                    {% if current_user %}
+                    <a href="{{ url_for('logout') }}"
+                       class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm
+                              text-error hover:bg-error-container/40 transition-all duration-150">
+                        <span class="material-symbols-outlined text-[20px]">logout</span>
+                        Sign Out
+                    </a>
+                    {% endif %}
+                </div>
             </div>
         </nav>
 
@@ -297,12 +356,24 @@
             <span class="material-symbols-outlined text-[22px] {% if request.path == '/education' %}fill-icon{% endif %}">school</span>
             <span class="text-[9px] font-medium">Learn</span>
         </a>
-        <a href="{{ url_for('settings') }}"
+        {% if current_user %}
+        <a href="{{ url_for('profile') }}"
            class="flex flex-col items-center justify-center gap-0.5 px-3 py-1 rounded-xl transition-colors
-                  {% if request.path == '/settings' %}text-primary{% else %}text-on-surface-variant{% endif %}">
-            <span class="material-symbols-outlined text-[22px] {% if request.path == '/settings' %}fill-icon{% endif %}">settings</span>
-            <span class="text-[9px] font-medium">Settings</span>
+                  {% if request.path == '/profile' %}text-primary{% else %}text-on-surface-variant{% endif %}">
+            <div class="w-6 h-6 rounded-full bg-primary text-on-primary flex items-center justify-center
+                        text-[10px] font-bold select-none">
+                {{ current_user.name[0].upper() }}
+            </div>
+            <span class="text-[9px] font-medium">Profile</span>
         </a>
+        {% else %}
+        <a href="{{ url_for('login') }}"
+           class="flex flex-col items-center justify-center gap-0.5 px-3 py-1 rounded-xl transition-colors
+                  {% if request.path in ['/login', '/signup'] %}text-primary{% else %}text-on-surface-variant{% endif %}">
+            <span class="material-symbols-outlined text-[22px] {% if request.path in ['/login', '/signup'] %}fill-icon{% endif %}">login</span>
+            <span class="text-[9px] font-medium">Sign In</span>
+        </a>
+        {% endif %}
     </nav>
 
     <script src="{{ url_for('static', filename='script.js') }}"></script>
