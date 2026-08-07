@@ -9,10 +9,9 @@
          ══════════════════════════════════════════════════════════════════ -->
     <div class="relative rounded-2xl overflow-hidden border border-outline-variant shadow-sm
                 min-h-[140px] flex items-center reveal">
-        <div class="absolute inset-0 bg-gradient-to-br from-secondary-container/40 via-surface-container-low
-                    to-primary-fixed/20 img-placeholder-grid pointer-events-none"></div>
-        <div class="deco-blob orb-drift   w-48 h-48 bg-secondary-container -top-10 -right-16 opacity-40"></div>
-        <div class="deco-blob orb-drift-2 w-32 h-32 bg-primary-fixed       bottom-0  left-32 opacity-30"></div>
+        <div class="absolute inset-0 bg-gradient-to-br from-secondary/8 via-transparent to-primary/5 pointer-events-none"></div>
+        <div class="deco-blob orb-drift   w-48 h-48 bg-secondary  -top-10 -right-16 opacity-10"></div>
+        <div class="deco-blob orb-drift-2 w-32 h-32 bg-primary     bottom-0  left-32 opacity-8"></div>
         <div class="relative z-10 flex items-center gap-5 px-6 py-6 w-full">
             <div class="w-14 h-14 rounded-2xl bg-secondary-container flex items-center justify-center
                         flex-shrink-0 shadow-sm">
@@ -79,7 +78,7 @@
 
         <!-- Visual header with image placeholder -->
         <div class="relative bg-primary-container overflow-hidden">
-            <div class="absolute inset-0 img-placeholder-grid opacity-30 pointer-events-none"></div>
+            <div class="absolute inset-0 opacity-30 pointer-events-none"></div>
             <div class="deco-blob orb-drift w-32 h-32 bg-primary -top-8 -right-8 opacity-20"></div>
             <div class="relative z-10 p-6 flex items-center gap-4">
                 <div class="w-14 h-14 rounded-2xl bg-primary text-on-primary flex items-center
@@ -108,7 +107,7 @@
             </p>
 
             <!-- Image placeholder strip -->
-            <div class="feature-img-strip img-placeholder-grid rounded-xl min-h-[100px] flex items-center justify-center">
+            <div class="feature-img-strip rounded-xl min-h-[100px] flex items-center justify-center">
                 <div class="relative z-10 flex items-center gap-6 pointer-events-none select-none">
                     <div class="flex flex-col items-center gap-1">
                         <span class="material-symbols-outlined fill-icon text-error text-3xl">mail</span>
@@ -181,7 +180,7 @@
 
         <!-- Visual header -->
         <div class="relative bg-tertiary-container overflow-hidden">
-            <div class="absolute inset-0 img-placeholder-grid opacity-30 pointer-events-none"></div>
+            <div class="absolute inset-0 opacity-30 pointer-events-none"></div>
             <div class="deco-blob orb-drift-2 w-28 h-28 bg-tertiary -bottom-6 -left-6 opacity-20"></div>
             <div class="relative z-10 p-6 flex items-center gap-4">
                 <div class="w-14 h-14 rounded-2xl bg-tertiary text-on-tertiary flex items-center
@@ -217,7 +216,7 @@
                 ] %}
                 <div class="bg-surface-container-low rounded-xl border border-outline-variant overflow-hidden card-lift">
                     <!-- Mini visual placeholder header -->
-                    <div class="img-placeholder img-placeholder-grid h-20 rounded-none flex items-center justify-center">
+                    <div class="img-placeholder h-20 rounded-none flex items-center justify-center">
                         <span class="material-symbols-outlined fill-icon {{ colour }} text-4xl z-10">{{ icon }}</span>
                     </div>
                     <div class="p-4 text-center">
@@ -254,7 +253,7 @@
 
         <!-- Visual header -->
         <div class="relative bg-secondary-container overflow-hidden">
-            <div class="absolute inset-0 img-placeholder-grid opacity-25 pointer-events-none"></div>
+            <div class="absolute inset-0 opacity-25 pointer-events-none"></div>
             <div class="deco-blob orb-drift w-28 h-28 bg-secondary -top-6 -right-6 opacity-20"></div>
             <div class="relative z-10 p-6 flex items-center gap-4">
                 <div class="w-14 h-14 rounded-2xl bg-secondary text-on-secondary flex items-center
@@ -282,7 +281,7 @@
             </p>
 
             <!-- Visual scam type strip -->
-            <div class="feature-img-strip img-placeholder-grid rounded-xl min-h-[90px] flex items-center justify-center">
+            <div class="feature-img-strip rounded-xl min-h-[90px] flex items-center justify-center">
                 <div class="relative z-10 flex flex-wrap items-center justify-center gap-4 pointer-events-none select-none px-4">
                     {% for label, icon in [('Prize Scam','emoji_events'),('Investment Fraud','trending_up'),('Romance Scam','favorite'),('Tech Support','support_agent'),('Gov Impersonation','account_balance')] %}
                     <div class="flex flex-col items-center gap-1">
@@ -326,7 +325,7 @@
              class="bg-surface-container-lowest rounded-2xl border border-outline-variant shadow-sm overflow-hidden reveal">
 
         <div class="relative bg-surface-container-high border-b border-outline-variant overflow-hidden">
-            <div class="absolute inset-0 img-placeholder-grid opacity-20 pointer-events-none"></div>
+            <div class="absolute inset-0 opacity-20 pointer-events-none"></div>
             <div class="relative z-10 p-6 flex items-center gap-4">
                 <div class="w-14 h-14 rounded-2xl bg-surface-variant text-on-surface flex items-center
                             justify-center flex-shrink-0 shadow-sm">
@@ -348,7 +347,7 @@
                 <div class="flex flex-col gap-3">
                     <div class="w-8 h-8 rounded-full bg-error-container text-error flex items-center justify-center text-sm font-bold">✗</div>
                     <h4 class="font-semibold text-on-surface text-sm">Weak Password</h4>
-                    <div class="img-placeholder img-placeholder-grid h-12 rounded-lg flex items-center justify-center">
+                    <div class="img-placeholder h-12 rounded-lg flex items-center justify-center">
                         <p class="font-mono text-sm text-error z-10">password123</p>
                     </div>
                     <p class="text-xs text-on-surface-variant">Dictionary word + simple numbers. Cracked in seconds.</p>
@@ -356,7 +355,7 @@
                 <div class="flex flex-col gap-3">
                     <div class="w-8 h-8 rounded-full bg-tertiary-container text-on-tertiary flex items-center justify-center text-sm font-bold">~</div>
                     <h4 class="font-semibold text-on-surface text-sm">Moderate Password</h4>
-                    <div class="img-placeholder img-placeholder-grid h-12 rounded-lg flex items-center justify-center">
+                    <div class="img-placeholder h-12 rounded-lg flex items-center justify-center">
                         <p class="font-mono text-sm text-tertiary z-10">S@feNet2024</p>
                     </div>
                     <p class="text-xs text-on-surface-variant">Better, but based on a recognisable word.</p>
@@ -364,7 +363,7 @@
                 <div class="flex flex-col gap-3">
                     <div class="w-8 h-8 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center text-sm font-bold">✓</div>
                     <h4 class="font-semibold text-on-surface text-sm">Strong Password</h4>
-                    <div class="img-placeholder img-placeholder-grid h-12 rounded-lg flex items-center justify-center">
+                    <div class="img-placeholder h-12 rounded-lg flex items-center justify-center">
                         <p class="font-mono text-sm text-secondary z-10">k#9Lp!mXqR2$vT</p>
                     </div>
                     <p class="text-xs text-on-surface-variant">Random mix. Use a password manager to store it.</p>
@@ -388,7 +387,7 @@
              class="bg-surface-container-lowest rounded-2xl border border-outline-variant shadow-sm overflow-hidden reveal">
 
         <div class="relative bg-surface-container-high border-b border-outline-variant overflow-hidden">
-            <div class="absolute inset-0 img-placeholder-grid opacity-20 pointer-events-none"></div>
+            <div class="absolute inset-0 opacity-20 pointer-events-none"></div>
             <div class="relative z-10 p-6 flex items-center gap-4">
                 <div class="w-14 h-14 rounded-2xl bg-surface-variant text-on-surface flex items-center
                             justify-center flex-shrink-0 shadow-sm">
@@ -407,7 +406,7 @@
 
         <div class="p-6 space-y-5">
             <!-- URL anatomy visual placeholder -->
-            <div class="feature-img-strip img-placeholder-grid rounded-xl min-h-[80px] flex items-center justify-center px-6">
+            <div class="feature-img-strip rounded-xl min-h-[80px] flex items-center justify-center px-6">
                 <div class="relative z-10 font-mono text-sm flex flex-wrap gap-0 items-center pointer-events-none select-none">
                     <span class="bg-error/20 text-error px-1 rounded">http://</span>
                     <span class="bg-tertiary/20 text-on-tertiary px-1 rounded">paypal</span>

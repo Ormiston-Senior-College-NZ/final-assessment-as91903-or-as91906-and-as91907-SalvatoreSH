@@ -2,28 +2,74 @@ import os
 import json
 import re
 import uuid
+import time
 from datetime import datetime
 from urllib.parse import urlparse, quote_plus
-from flask import Flask, render_template, request, redirect, url_for, session, flash
+from functools import wraps
+from flask import (Flask, render_template, request, redirect,
+                   url_for, session, flash, jsonify)
 
 app = Flask(__name__, static_folder="Static", template_folder="templates")
-
-# Secret key for sessions — in production use a real random secret
 app.secret_key = os.environ.get("SAFENET_SECRET", "safenet-dev-secret-change-in-prod")
-
-# Register urlencode as a Jinja2 filter
 app.jinja_env.filters["urlencode"] = lambda s: quote_plus(str(s))
 
 REPORTS_FILE = os.path.join(os.path.dirname(__file__), "reports.json")
 USERS_FILE   = os.path.join(os.path.dirname(__file__), "users.json")
 
-
-# ─── Password hashing (werkzeug ships with Flask) ─────────────────────────────
-
 from werkzeug.security import generate_password_hash, check_password_hash
 
 
-# ─── User store helpers ───────────────────────────────────────────────────────
+# ═══════════════════════════════════════════════════════════════════════════
+#  RATE LIMITING  (in-memory, per IP)
+# ═══════════════════════════════════════════════════════════════════════════
+
+_rate_store: dict = {}   # { "action:ip": [timestamp, ...] }
+
+def _rate_key(action: str) -> str:
+    ip = request.headers.get("X-Forwarded-For", request.remote_addr or "unknown").split(",")[0].strip()
+    return f"{action}:{ip}"
+
+def rate_limited(action: str, limit: int, window: int):
+    """
+    Decorator — allows at most `limit` calls per `window` seconds per IP.
+    Returns a 429 JSON response when exceeded.
+    """
+    def decorator(fn):
+        @wraps(fn)
+        def wrapper(*args, **kwargs):
+            if request.method not in ("POST",):
+                return fn(*args, **kwargs)
+            key  = _rate_key(action)
+            now  = time.time()
+            hits = [t for t in _rate_store.get(key, []) if now - t < window]
+            if len(hits) >= limit:
+                retry = int(window - (now - hits[0])) + 1
+                # For regular form POSTs return a rendered error page
+                return render_template(
+                    "404.html",
+                    code=429,
+                    message=f"Too many requests. Please wait {retry} seconds before trying again."
+                ), 429
+            hits.append(now)
+            _rate_store[key] = hits
+            return fn(*args, **kwargs)
+        return wrapper
+    return decorator
+
+
+# ═══════════════════════════════════════════════════════════════════════════
+#  AUTH HELPERS
+# ═══════════════════════════════════════════════════════════════════════════
+
+def login_required(fn):
+    """Redirect to login page if user is not authenticated."""
+    @wraps(fn)
+    def wrapper(*args, **kwargs):
+        if not current_user():
+            return redirect(url_for("login") + "?next=" + request.path)
+        return fn(*args, **kwargs)
+    return wrapper
+
 
 def load_users():
     if not os.path.exists(USERS_FILE):
@@ -50,20 +96,40 @@ def find_user_by_id(uid):
 
 
 def current_user():
-    """Return the logged-in user dict, or None."""
     uid = session.get("user_id")
     if not uid:
         return None
     return find_user_by_id(uid)
 
 
-# Make current_user available in every template automatically
 @app.context_processor
 def inject_user():
     return {"current_user": current_user()}
 
 
-# ─── Daily tips ───────────────────────────────────────────────────────────────
+# ═══════════════════════════════════════════════════════════════════════════
+#  REPORT HELPERS
+# ═══════════════════════════════════════════════════════════════════════════
+
+def load_reports():
+    if not os.path.exists(REPORTS_FILE):
+        with open(REPORTS_FILE, "w") as f:
+            json.dump([], f)
+    with open(REPORTS_FILE, "r") as f:
+        try:
+            return json.load(f)
+        except (json.JSONDecodeError, ValueError):
+            return []
+
+
+def save_reports(reports):
+    with open(REPORTS_FILE, "w") as f:
+        json.dump(reports, f, indent=4)
+
+
+# ═══════════════════════════════════════════════════════════════════════════
+#  DAILY TIPS
+# ═══════════════════════════════════════════════════════════════════════════
 
 TIPS = [
     "Use unique, complex passwords for every account and consider a password manager.",
@@ -83,47 +149,24 @@ TIPS = [
 ]
 
 def get_daily_tip():
-    idx = datetime.now().timetuple().tm_yday % len(TIPS)
-    return TIPS[idx]
+    return TIPS[datetime.now().timetuple().tm_yday % len(TIPS)]
 
 
-# ─── Report store helpers ─────────────────────────────────────────────────────
-
-def load_reports():
-    if not os.path.exists(REPORTS_FILE):
-        with open(REPORTS_FILE, "w") as f:
-            json.dump([], f)
-    with open(REPORTS_FILE, "r") as f:
-        try:
-            return json.load(f)
-        except (json.JSONDecodeError, ValueError):
-            return []
-
-
-def save_reports(reports):
-    with open(REPORTS_FILE, "w") as f:
-        json.dump(reports, f, indent=4)
-
-
-# ─── URL analyser ─────────────────────────────────────────────────────────────
+# ═══════════════════════════════════════════════════════════════════════════
+#  URL ANALYSER
+# ═══════════════════════════════════════════════════════════════════════════
 
 def analyse_url(url):
-    """
-    Heuristic URL scanner.
-    Returns: { level: 'safe'|'warning'|'danger'|'error', score: int, reasons: [str], title: str }
-    """
-    reasons   = []
-    score     = 0
+    reasons = []
+    score   = 0
     url_lower = url.lower()
 
     if url_lower.startswith("http://"):
         reasons.append("Uses unencrypted HTTP — the connection is not secure.")
         score += 20
 
-    BAD_TLDS = [
-        ".tk", ".ml", ".ga", ".cf", ".gq", ".xyz", ".top", ".click",
-        ".loan", ".work", ".zip", ".ru", ".su", ".pw", ".cc", ".biz"
-    ]
+    BAD_TLDS = [".tk",".ml",".ga",".cf",".gq",".xyz",".top",".click",
+                ".loan",".work",".zip",".ru",".su",".pw",".cc",".biz"]
     for tld in BAD_TLDS:
         if tld in url_lower:
             reasons.append(f"Uses a high-risk domain extension ({tld}) commonly associated with scam sites.")
@@ -135,10 +178,10 @@ def analyse_url(url):
         score += 35
 
     TRUSTED_BRANDS = [
-        "paypal", "anz", "bnz", "westpac", "kiwibank", "asb", "nzpost",
-        "google", "microsoft", "apple", "amazon", "facebook", "instagram",
-        "netflix", "discord", "steam", "myir", "ird", "govt", "acc",
-        "inland-revenue", "nzta", "msd", "servicenow",
+        "paypal","anz","bnz","westpac","kiwibank","asb","nzpost",
+        "google","microsoft","apple","amazon","facebook","instagram",
+        "netflix","discord","steam","myir","ird","govt","acc",
+        "inland-revenue","nzta","msd","servicenow",
     ]
     try:
         parsed   = urlparse(url)
@@ -150,7 +193,7 @@ def analyse_url(url):
                 if brand in subdomain:
                     reasons.append(
                         f"Subdomain spoofing — '{brand}' appears as a subdomain of an unrelated domain. "
-                        f"Attackers use this to mimic trusted organisations."
+                        "Attackers use this to mimic trusted organisations."
                     )
                     score += 40
                     break
@@ -158,10 +201,10 @@ def analyse_url(url):
         pass
 
     BAD_KEYWORDS = [
-        "login", "verify", "secure", "update", "confirm", "account",
-        "banking", "password", "credential", "signin", "free-prize",
-        "win-prize", "claim-now", "urgent", "suspended", "unusual-activity",
-        "alert", "locked", "reactivate",
+        "login","verify","secure","update","confirm","account",
+        "banking","password","credential","signin","free-prize",
+        "win-prize","claim-now","urgent","suspended","unusual-activity",
+        "alert","locked","reactivate",
     ]
     matched_kw = [kw for kw in BAD_KEYWORDS if kw in url_lower]
     if len(matched_kw) >= 2:
@@ -171,8 +214,8 @@ def analyse_url(url):
         reasons.append(f"Suspicious keyword detected in the URL: '{matched_kw[0]}'.")
         score += 10
 
-    SHORTENERS = ["bit.ly", "tinyurl.com", "t.co", "goo.gl", "ow.ly",
-                  "short.link", "rb.gy", "cutt.ly", "is.gd"]
+    SHORTENERS = ["bit.ly","tinyurl.com","t.co","goo.gl","ow.ly",
+                  "short.link","rb.gy","cutt.ly","is.gd"]
     for s in SHORTENERS:
         if s in url_lower:
             reasons.append(
@@ -200,28 +243,32 @@ def analyse_url(url):
     score = min(score, 100)
 
     if score >= 60:
-        return {"level": "danger",  "score": score, "title": "Dangerous — do not visit this site.",
+        return {"level": "danger",  "score": score,
+                "title": "Dangerous — do not visit this site.",
                 "reasons": reasons or ["This URL matches multiple high-risk patterns."]}
     elif score >= 25:
-        return {"level": "warning", "score": score, "title": "Suspicious — proceed with extreme caution.",
+        return {"level": "warning", "score": score,
+                "title": "Suspicious — proceed with extreme caution.",
                 "reasons": reasons or ["This URL has characteristics associated with suspicious sites."]}
     else:
-        return {"level": "safe",    "score": score, "title": "No threats detected.",
+        return {"level": "safe",    "score": score,
+                "title": "No threats detected.",
                 "reasons": reasons or ["This URL passed all safety checks."]}
 
 
-# ═════════════════════════════════════════════════════════════════════════════
-#  ROUTES
-# ═════════════════════════════════════════════════════════════════════════════
+# ═══════════════════════════════════════════════════════════════════════════
+#  ROUTES — PUBLIC
+# ═══════════════════════════════════════════════════════════════════════════
 
 @app.route("/")
 def home():
     return render_template("landing.html")
 
 
-# ─── Auth: Sign Up ────────────────────────────────────────────────────────────
+# ─── Sign Up ──────────────────────────────────────────────────────────────
 
 @app.route("/signup", methods=["GET", "POST"])
+@rate_limited("signup", limit=5, window=300)
 def signup():
     if current_user():
         return redirect(url_for("dashboard"))
@@ -249,13 +296,13 @@ def signup():
         else:
             users = load_users()
             new_user = {
-                "id":         str(uuid.uuid4()),
-                "name":       name,
-                "email":      email,
-                "password":   generate_password_hash(password),
-                "bio":        "",
-                "joined":     datetime.now().strftime("%Y-%m-%d"),
-                "reports":    0,
+                "id":      str(uuid.uuid4()),
+                "name":    name,
+                "email":   email,
+                "password": generate_password_hash(password),
+                "bio":     "",
+                "joined":  datetime.now().strftime("%Y-%m-%d"),
+                "reports": 0,
             }
             users.append(new_user)
             save_users(users)
@@ -265,9 +312,10 @@ def signup():
     return render_template("signup.html", error=error, form=form)
 
 
-# ─── Auth: Sign In ────────────────────────────────────────────────────────────
+# ─── Login ────────────────────────────────────────────────────────────────
 
 @app.route("/login", methods=["GET", "POST"])
+@rate_limited("login", limit=10, window=300)
 def login():
     if current_user():
         return redirect(url_for("dashboard"))
@@ -286,14 +334,15 @@ def login():
             user = find_user_by_email(email)
             if user and check_password_hash(user["password"], password):
                 session["user_id"] = user["id"]
-                return redirect(url_for("dashboard"))
+                next_url = request.args.get("next") or url_for("dashboard")
+                return redirect(next_url)
             else:
                 error = "Incorrect email or password."
 
     return render_template("login.html", error=error, form=form)
 
 
-# ─── Auth: Logout ─────────────────────────────────────────────────────────────
+# ─── Logout ───────────────────────────────────────────────────────────────
 
 @app.route("/logout")
 def logout():
@@ -301,76 +350,14 @@ def logout():
     return redirect(url_for("home"))
 
 
-# ─── Profile: View ────────────────────────────────────────────────────────────
+# ═══════════════════════════════════════════════════════════════════════════
+#  ROUTES — PROTECTED (login required)
+# ═══════════════════════════════════════════════════════════════════════════
 
-@app.route("/profile")
-def profile():
-    user = current_user()
-    if not user:
-        return redirect(url_for("login"))
-
-    all_reports = load_reports()
-    # Count reports submitted by this user (tracked by user_id field on each report)
-    user_reports = [r for r in all_reports if r.get("user_id") == user["id"]]
-
-    return render_template("profile.html", user=user, user_reports=user_reports,
-                           total_reports=len(all_reports))
-
-
-# ─── Profile: Edit ────────────────────────────────────────────────────────────
-
-@app.route("/profile/edit", methods=["POST"])
-def profile_edit():
-    user = current_user()
-    if not user:
-        return redirect(url_for("login"))
-
-    action = request.form.get("action", "info")
-    users  = load_users()
-    idx    = next((i for i, u in enumerate(users) if u["id"] == user["id"]), None)
-    if idx is None:
-        return redirect(url_for("profile"))
-
-    if action == "info":
-        name  = request.form.get("name",  "").strip()
-        bio   = request.form.get("bio",   "").strip()
-        email = request.form.get("email", "").strip()
-
-        if not name:
-            return redirect(url_for("profile") + "?error=Name+cannot+be+empty.")
-        if not email or "@" not in email:
-            return redirect(url_for("profile") + "?error=Please+enter+a+valid+email.")
-
-        # Check email uniqueness (allow same user keeping their email)
-        conflict = find_user_by_email(email)
-        if conflict and conflict["id"] != user["id"]:
-            return redirect(url_for("profile") + "?error=That+email+is+already+in+use.")
-
-        users[idx]["name"]  = name
-        users[idx]["bio"]   = bio
-        users[idx]["email"] = email
-
-    elif action == "password":
-        current_pw  = request.form.get("current_password", "").strip()
-        new_pw      = request.form.get("new_password",     "").strip()
-        confirm_pw  = request.form.get("confirm_password", "").strip()
-
-        if not check_password_hash(users[idx]["password"], current_pw):
-            return redirect(url_for("profile") + "?error=Current+password+is+incorrect.")
-        if len(new_pw) < 8:
-            return redirect(url_for("profile") + "?error=New+password+must+be+at+least+8+characters.")
-        if new_pw != confirm_pw:
-            return redirect(url_for("profile") + "?error=New+passwords+do+not+match.")
-
-        users[idx]["password"] = generate_password_hash(new_pw)
-
-    save_users(users)
-    return redirect(url_for("profile") + "?success=1")
-
-
-# ─── Dashboard ────────────────────────────────────────────────────────────────
+# ─── Dashboard ────────────────────────────────────────────────────────────
 
 @app.route("/dashboard")
+@login_required
 def dashboard():
     reports = load_reports()
     recent  = sorted(
@@ -386,9 +373,76 @@ def dashboard():
     )
 
 
-# ─── Scanner ──────────────────────────────────────────────────────────────────
+# ─── Profile ──────────────────────────────────────────────────────────────
+
+@app.route("/profile")
+@login_required
+def profile():
+    user = current_user()
+    all_reports  = load_reports()
+    user_reports = [r for r in all_reports if r.get("user_id") == user["id"]]
+    return render_template("profile.html", user=user, user_reports=user_reports,
+                           total_reports=len(all_reports))
+
+
+@app.route("/profile/edit", methods=["POST"])
+@login_required
+def profile_edit():
+    user   = current_user()
+    users  = load_users()
+    idx    = next((i for i, u in enumerate(users) if u["id"] == user["id"]), None)
+    if idx is None:
+        return redirect(url_for("profile"))
+
+    action = request.form.get("action", "info")
+
+    if action == "info":
+        name  = request.form.get("name",  "").strip()
+        bio   = request.form.get("bio",   "").strip()
+        email = request.form.get("email", "").strip()
+        if not name:
+            return redirect(url_for("profile") + "?error=Name+cannot+be+empty.")
+        if not email or "@" not in email:
+            return redirect(url_for("profile") + "?error=Please+enter+a+valid+email.")
+        conflict = find_user_by_email(email)
+        if conflict and conflict["id"] != user["id"]:
+            return redirect(url_for("profile") + "?error=That+email+is+already+in+use.")
+        users[idx]["name"]  = name
+        users[idx]["bio"]   = bio
+        users[idx]["email"] = email
+
+    elif action == "password":
+        current_pw = request.form.get("current_password", "").strip()
+        new_pw     = request.form.get("new_password",     "").strip()
+        confirm_pw = request.form.get("confirm_password", "").strip()
+        if not check_password_hash(users[idx]["password"], current_pw):
+            return redirect(url_for("profile") + "?error=Current+password+is+incorrect.")
+        if len(new_pw) < 8:
+            return redirect(url_for("profile") + "?error=New+password+must+be+at+least+8+characters.")
+        if new_pw != confirm_pw:
+            return redirect(url_for("profile") + "?error=New+passwords+do+not+match.")
+        users[idx]["password"] = generate_password_hash(new_pw)
+
+    save_users(users)
+    return redirect(url_for("profile") + "?success=1")
+
+
+# ─── Settings ─────────────────────────────────────────────────────────────
+
+@app.route("/settings")
+@login_required
+def settings():
+    return render_template("settings.html")
+
+
+# ═══════════════════════════════════════════════════════════════════════════
+#  ROUTES — SEMI-PUBLIC (work with or without login)
+# ═══════════════════════════════════════════════════════════════════════════
+
+# ─── Scanner ──────────────────────────────────────────────────────────────
 
 @app.route("/scanner", methods=["GET", "POST"])
+@rate_limited("scan", limit=30, window=60)
 def scanner():
     result      = None
     scanned_url = None
@@ -408,6 +462,8 @@ def scanner():
             try:
                 result      = analyse_url(url)
                 scanned_url = url
+                # Persist scan in user's history if logged in
+                _save_server_scan_history(url, result)
             except Exception:
                 result = {"level": "error", "title": "Something went wrong analysing that URL.",
                           "reasons": ["The URL could not be analysed. Please check the format and try again."],
@@ -416,9 +472,45 @@ def scanner():
     return render_template("scanner.html", result=result, scanned_url=scanned_url)
 
 
-# ─── Report ───────────────────────────────────────────────────────────────────
+def _save_server_scan_history(url: str, result: dict):
+    """Append scan to the logged-in user's history (server-side)."""
+    user = current_user()
+    if not user:
+        return
+    users = load_users()
+    for u in users:
+        if u["id"] == user["id"]:
+            history = u.get("scan_history", [])
+            # Remove duplicate
+            history = [h for h in history if h.get("url") != url]
+            history.insert(0, {
+                "url":       url,
+                "level":     result.get("level"),
+                "score":     result.get("score"),
+                "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M"),
+            })
+            u["scan_history"] = history[:20]   # keep last 20
+            break
+    save_users(users)
+
+
+@app.route("/api/scan-history")
+def api_scan_history():
+    """Return server-side scan history for logged-in user (used to merge with localStorage)."""
+    user = current_user()
+    if not user:
+        return jsonify([])
+    users = load_users()
+    for u in users:
+        if u["id"] == user["id"]:
+            return jsonify(u.get("scan_history", []))
+    return jsonify([])
+
+
+# ─── Report ───────────────────────────────────────────────────────────────
 
 @app.route("/report", methods=["GET", "POST"])
+@rate_limited("report", limit=10, window=300)
 def report():
     error       = None
     form_values = {}
@@ -427,41 +519,56 @@ def report():
         threat_type = request.form.get("threat_type", "").strip()
         url_content = request.form.get("url_content", "").strip()
         description = request.form.get("description", "").strip()
+        form_values = {"threat_type": threat_type,
+                       "url_content": url_content,
+                       "description": description}
 
-        form_values = {"threat_type": threat_type, "url_content": url_content, "description": description}
-
+        # ── Validation ───────────────────────────────────────────────────
         if not threat_type:
             error = "Please select a threat type."
+        elif threat_type not in ("phishing", "scam", "malware", "other"):
+            error = "Invalid threat type selected."
         elif not url_content:
             error = "Please enter the suspicious URL or message content."
+        elif len(url_content) > 2000:
+            error = "URL / content field must be 2000 characters or fewer."
         elif len(description) < 20:
             error = "Please describe the threat in at least 20 characters."
         elif len(description) > 500:
             error = "Description must be 500 characters or fewer."
         else:
-            reports = load_reports()
-            user    = current_user()
-            new_report = {
-                "threat_type": threat_type,
-                "url_content": url_content,
-                "description": description,
-                "timestamp":   datetime.now().strftime("%Y-%m-%d %H:%M"),
-                "user_id":     user["id"] if user else None,
-                "user_name":   user["name"] if user else "Anonymous",
-            }
-            reports.append(new_report)
-            save_reports(reports)
+            # ── Spam / duplicate check ────────────────────────────────────
+            reports   = load_reports()
+            duplicate = any(
+                r.get("url_content", "").lower() == url_content.lower()
+                for r in reports[-50:]   # check last 50 only
+            )
+            if duplicate:
+                error = "This URL or content has already been reported. Thank you!"
+            else:
+                user = current_user()
+                new_report = {
+                    "id":          str(uuid.uuid4()),
+                    "threat_type": threat_type,
+                    "url_content": url_content,
+                    "description": description,
+                    "timestamp":   datetime.now().strftime("%Y-%m-%d %H:%M"),
+                    "user_id":     user["id"]   if user else None,
+                    "user_name":   user["name"] if user else "Anonymous",
+                    "flagged":     False,
+                }
+                reports.append(new_report)
+                save_reports(reports)
 
-            # Increment user's report counter
-            if user:
-                users = load_users()
-                for u in users:
-                    if u["id"] == user["id"]:
-                        u["reports"] = u.get("reports", 0) + 1
-                        break
-                save_users(users)
+                if user:
+                    users = load_users()
+                    for u in users:
+                        if u["id"] == user["id"]:
+                            u["reports"] = u.get("reports", 0) + 1
+                            break
+                    save_users(users)
 
-            return redirect(url_for("report_success"))
+                return redirect(url_for("report_success"))
 
     if not form_values.get("url_content"):
         form_values["url_content"] = request.args.get("url", "")
@@ -474,40 +581,60 @@ def report_success():
     return render_template("report_success.html")
 
 
-# ─── Reports list ─────────────────────────────────────────────────────────────
+# ─── Reports list (with search & filter) ─────────────────────────────────
 
 @app.route("/reports")
 def reports():
     all_reports = load_reports()
     valid = [r for r in all_reports if r.get("threat_type") or r.get("url_content")]
     valid = sorted(valid, key=lambda r: r.get("timestamp", ""), reverse=True)
-    return render_template("reports.html", reports=valid)
+
+    # ── Filter by type ────────────────────────────────────────────────────
+    filter_type = request.args.get("type", "").strip().lower()
+    if filter_type and filter_type != "all":
+        valid = [r for r in valid if r.get("threat_type", "").lower() == filter_type]
+
+    # ── Search ────────────────────────────────────────────────────────────
+    query = request.args.get("q", "").strip().lower()
+    if query:
+        valid = [
+            r for r in valid
+            if query in r.get("url_content",  "").lower()
+            or query in r.get("description",  "").lower()
+            or query in r.get("threat_type",  "").lower()
+        ]
+
+    return render_template("reports.html",
+                           reports=valid,
+                           filter_type=filter_type,
+                           query=request.args.get("q", ""))
 
 
-# ─── Education ────────────────────────────────────────────────────────────────
+# ─── Education ────────────────────────────────────────────────────────────
 
 @app.route("/education")
 def education():
     return render_template("education.html")
 
 
-# ─── Settings ────────────────────────────────────────────────────────────────
-
-@app.route("/settings")
-def settings():
-    return render_template("settings.html")
-
-
-# ─── Error handlers ──────────────────────────────────────────────────────────
+# ═══════════════════════════════════════════════════════════════════════════
+#  ERROR HANDLERS
+# ═══════════════════════════════════════════════════════════════════════════
 
 @app.errorhandler(404)
 def page_not_found(e):
-    return render_template("404.html"), 404
-
+    return render_template("404.html", code=404,
+                           message="That page doesn't exist."), 404
 
 @app.errorhandler(500)
 def server_error(e):
-    return render_template("404.html", code=500), 500
+    return render_template("404.html", code=500,
+                           message="Something went wrong on our end. Please try again."), 500
+
+@app.errorhandler(429)
+def too_many_requests(e):
+    return render_template("404.html", code=429,
+                           message="Too many requests. Please slow down and try again shortly."), 429
 
 
 if __name__ == "__main__":

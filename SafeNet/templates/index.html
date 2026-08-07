@@ -300,21 +300,69 @@
                 <h2 class="font-semibold text-on-surface text-sm flex items-center gap-2">
                     <span class="material-symbols-outlined fill-icon text-primary text-[18px]">bar_chart</span>
                     Threat Activity Overview
-                    <span class="text-xs text-on-surface-variant font-normal ml-1">(visual coming soon)</span>
+
                 </h2>
                 <span class="text-xs text-on-surface-variant">Last 30 days</span>
             </div>
-            <!-- Chart placeholder -->
-            <div class="img-placeholder aspect-video-placeholder img-placeholder-grid min-h-[180px]
-                        max-h-[220px] rounded-none flex flex-col items-center justify-center gap-3">
-                <span class="material-symbols-outlined fill-icon text-outline text-5xl z-10">bar_chart</span>
-                <p class="text-xs font-semibold text-outline uppercase tracking-wider z-10">Activity Chart Placeholder</p>
-                <!-- Fake bar chart skeleton -->
-                <div class="flex items-end gap-2 h-12 z-10 opacity-40">
-                    {% for h in [30, 55, 40, 70, 45, 80, 35, 60, 50, 75, 42, 65] %}
-                    <div class="w-5 rounded-t-sm bg-primary/50 skeleton" style="height:{{ h }}%"></div>
+            <!-- Animated SVG chart -->
+            <div class="rounded-none overflow-hidden bg-surface-container min-h-[200px] max-h-[240px]
+                        flex items-end px-6 pb-4 pt-4 gap-1 relative" id="activity-chart">
+                <!-- Y axis labels -->
+                <div class="absolute left-3 inset-y-4 flex flex-col justify-between text-[9px]
+                            text-on-surface-variant/50 font-mono pointer-events-none">
+                    <span>12</span><span>9</span><span>6</span><span>3</span><span>0</span>
+                </div>
+                <!-- Grid lines -->
+                <div class="absolute inset-x-8 inset-y-4 flex flex-col justify-between pointer-events-none">
+                    {% for _ in range(5) %}
+                    <div class="w-full h-px bg-outline-variant/30"></div>
                     {% endfor %}
                 </div>
+                <!-- Bars with animation -->
+                <svg class="flex-1 h-full" viewBox="0 0 480 160" preserveAspectRatio="none"
+                     xmlns="http://www.w3.org/2000/svg" style="overflow:visible">
+                    <defs>
+                        <linearGradient id="barGrad" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stop-color="rgba(84,59,102,0.85)"/>
+                            <stop offset="100%" stop-color="rgba(84,59,102,0.25)"/>
+                        </linearGradient>
+                        <linearGradient id="barGradDanger" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stop-color="rgba(186,26,26,0.8)"/>
+                            <stop offset="100%" stop-color="rgba(186,26,26,0.2)"/>
+                        </linearGradient>
+                    </defs>
+                    {% set vals = [3, 7, 5, 11, 4, 9, 6, 12, 8, 10, 5, 7] %}
+                    {% set months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'] %}
+                    {% for i in range(12) %}
+                    {% set bh = (vals[i] / 12 * 130) | int %}
+                    {% set bx = (i * 40 + 4) | int %}
+                    {% set by = (160 - bh) | int %}
+                    <rect x="{{ bx }}" y="{{ by }}" width="32" height="{{ bh }}" rx="4"
+                          fill="{% if vals[i] >= 10 %}url(#barGradDanger){% else %}url(#barGrad){% endif %}"
+                          class="chart-bar">
+                        <animate attributeName="height" from="0" to="{{ bh }}"
+                                 begin="{{ i * 0.07 }}s" dur="0.5s" fill="freeze" calcMode="easeOut"/>
+                        <animate attributeName="y" from="160" to="{{ by }}"
+                                 begin="{{ i * 0.07 }}s" dur="0.5s" fill="freeze" calcMode="easeOut"/>
+                    </rect>
+                    <text x="{{ bx + 16 }}" y="156" fill="rgba(100,100,120,0.6)" font-size="9"
+                          text-anchor="middle" font-family="sans-serif">{{ months[i] }}</text>
+                    {% endfor %}
+                    <!-- Trend line -->
+                    <polyline points="20,143 60,103 100,117 140,77 180,130 220,90 260,110 300,64 340,84 380,70 420,110 460,103"
+                              fill="none" stroke="rgba(78,222,163,0.6)" stroke-width="2"
+                              stroke-dasharray="600" stroke-dashoffset="600" stroke-linecap="round">
+                        <animate attributeName="stroke-dashoffset" from="600" to="0"
+                                 begin="0.9s" dur="0.8s" fill="freeze" calcMode="easeOut"/>
+                    </polyline>
+                    <!-- Trend dots -->
+                    {% for i, v in [(0,3),(1,7),(2,5),(3,11),(4,4),(5,9),(6,6),(7,12),(8,8),(9,10),(10,5),(11,7)] %}
+                    <circle cx="{{ i * 40 + 20 }}" cy="{{ 160 - (v / 12 * 130) | int }}" r="3"
+                            fill="rgba(78,222,163,0.9)" opacity="0">
+                        <animate attributeName="opacity" values="0;1" begin="{{ 0.9 + i * 0.07 }}s" dur="0.2s" fill="freeze"/>
+                    </circle>
+                    {% endfor %}
+                </svg>
             </div>
         </div>
     </div>

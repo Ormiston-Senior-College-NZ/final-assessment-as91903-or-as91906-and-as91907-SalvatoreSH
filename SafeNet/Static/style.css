@@ -743,3 +743,43 @@ html.dark .gradient-border {
         padding-bottom: 5rem !important;
     }
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   HERO SCAN RINGS
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.hero-scan-ring {
+    transform-origin: center;
+    animation: heroRingSpin 8s linear infinite;
+}
+
+.hero-scan-ring-2 {
+    transform-origin: center;
+    animation: heroRingSpin 12s linear infinite reverse;
+}
+
+@keyframes heroRingSpin {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   CHART BARS
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.chart-bar {
+    transition: opacity 0.15s ease;
+    cursor: default;
+}
+
+.chart-bar:hover {
+    opacity: 0.75;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ANIMATED SVG ENTRANCE (feature illustrations)
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.feature-img-strip svg {
+    opacity: 1;
+}
