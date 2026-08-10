@@ -1,53 +1,117 @@
 import os
-import json
 import re
 import uuid
 import time
+import sqlite3
 from datetime import datetime
 from urllib.parse import urlparse, quote_plus
 from functools import wraps
+from contextlib import contextmanager
 from flask import (Flask, render_template, request, redirect,
-                   url_for, session, flash, jsonify)
+                   url_for, session, jsonify)
+from werkzeug.security import generate_password_hash, check_password_hash
+
+# ═══════════════════════════════════════════════════════════════════════════
+#  APP SETUP
+# ═══════════════════════════════════════════════════════════════════════════
 
 app = Flask(__name__, static_folder="Static", template_folder="templates")
 app.secret_key = os.environ.get("SAFENET_SECRET", "safenet-dev-secret-change-in-prod")
 app.jinja_env.filters["urlencode"] = lambda s: quote_plus(str(s))
 
-REPORTS_FILE = os.path.join(os.path.dirname(__file__), "reports.json")
-USERS_FILE   = os.path.join(os.path.dirname(__file__), "users.json")
+DB_PATH = os.path.join(os.path.dirname(__file__), "safenet.db")
 
-from werkzeug.security import generate_password_hash, check_password_hash
+
+# ═══════════════════════════════════════════════════════════════════════════
+#  DATABASE
+# ═══════════════════════════════════════════════════════════════════════════
+
+@contextmanager
+def get_db():
+    """Yield a connected, row_factory-enabled SQLite connection."""
+    conn = sqlite3.connect(DB_PATH)
+    conn.row_factory = sqlite3.Row          # access columns by name
+    conn.execute("PRAGMA journal_mode=WAL") # safe concurrent writes
+    conn.execute("PRAGMA foreign_keys=ON")
+    try:
+        yield conn
+        conn.commit()
+    except Exception:
+        conn.rollback()
+        raise
+    finally:
+        conn.close()
+
+
+def init_db():
+    """Create tables if they don't exist yet."""
+    with get_db() as db:
+        db.executescript("""
+            CREATE TABLE IF NOT EXISTS users (
+                id           TEXT PRIMARY KEY,
+                name         TEXT NOT NULL,
+                email        TEXT NOT NULL UNIQUE COLLATE NOCASE,
+                password     TEXT NOT NULL,
+                bio          TEXT DEFAULT '',
+                joined       TEXT NOT NULL,
+                report_count INTEGER DEFAULT 0
+            );
+
+            CREATE TABLE IF NOT EXISTS reports (
+                id           TEXT PRIMARY KEY,
+                threat_type  TEXT NOT NULL,
+                url_content  TEXT NOT NULL,
+                description  TEXT NOT NULL,
+                timestamp    TEXT NOT NULL,
+                user_id      TEXT,
+                user_name    TEXT DEFAULT 'Anonymous',
+                flagged      INTEGER DEFAULT 0,
+                FOREIGN KEY (user_id) REFERENCES users(id)
+            );
+
+            CREATE TABLE IF NOT EXISTS scan_history (
+                id         INTEGER PRIMARY KEY AUTOINCREMENT,
+                user_id    TEXT NOT NULL,
+                url        TEXT NOT NULL,
+                level      TEXT NOT NULL,
+                score      INTEGER NOT NULL,
+                scanned_at TEXT NOT NULL,
+                FOREIGN KEY (user_id) REFERENCES users(id)
+            );
+
+            CREATE INDEX IF NOT EXISTS idx_reports_type      ON reports(threat_type);
+            CREATE INDEX IF NOT EXISTS idx_reports_timestamp ON reports(timestamp);
+            CREATE INDEX IF NOT EXISTS idx_scan_history_user ON scan_history(user_id);
+        """)
 
 
 # ═══════════════════════════════════════════════════════════════════════════
 #  RATE LIMITING  (in-memory, per IP)
 # ═══════════════════════════════════════════════════════════════════════════
 
-_rate_store: dict = {}   # { "action:ip": [timestamp, ...] }
+_rate_store: dict = {}
+
 
 def _rate_key(action: str) -> str:
-    ip = request.headers.get("X-Forwarded-For", request.remote_addr or "unknown").split(",")[0].strip()
+    ip = request.headers.get(
+        "X-Forwarded-For", request.remote_addr or "unknown"
+    ).split(",")[0].strip()
     return f"{action}:{ip}"
 
+
 def rate_limited(action: str, limit: int, window: int):
-    """
-    Decorator — allows at most `limit` calls per `window` seconds per IP.
-    Returns a 429 JSON response when exceeded.
-    """
     def decorator(fn):
         @wraps(fn)
         def wrapper(*args, **kwargs):
-            if request.method not in ("POST",):
+            if request.method != "POST":
                 return fn(*args, **kwargs)
             key  = _rate_key(action)
             now  = time.time()
             hits = [t for t in _rate_store.get(key, []) if now - t < window]
             if len(hits) >= limit:
                 retry = int(window - (now - hits[0])) + 1
-                # For regular form POSTs return a rendered error page
                 return render_template(
-                    "404.html",
-                    code=429,
+                    "404.html", code=429,
                     message=f"Too many requests. Please wait {retry} seconds before trying again."
                 ), 429
             hits.append(now)
@@ -62,7 +126,6 @@ def rate_limited(action: str, limit: int, window: int):
 # ═══════════════════════════════════════════════════════════════════════════
 
 def login_required(fn):
-    """Redirect to login page if user is not authenticated."""
     @wraps(fn)
     def wrapper(*args, **kwargs):
         if not current_user():
@@ -71,60 +134,30 @@ def login_required(fn):
     return wrapper
 
 
-def load_users():
-    if not os.path.exists(USERS_FILE):
-        with open(USERS_FILE, "w") as f:
-            json.dump([], f)
-    with open(USERS_FILE, "r") as f:
-        try:
-            return json.load(f)
-        except (json.JSONDecodeError, ValueError):
-            return []
+def find_user_by_email(email: str):
+    with get_db() as db:
+        row = db.execute(
+            "SELECT * FROM users WHERE email = ?", (email.lower(),)
+        ).fetchone()
+    return dict(row) if row else None
 
 
-def save_users(users):
-    with open(USERS_FILE, "w") as f:
-        json.dump(users, f, indent=4)
-
-
-def find_user_by_email(email):
-    return next((u for u in load_users() if u["email"].lower() == email.lower()), None)
-
-
-def find_user_by_id(uid):
-    return next((u for u in load_users() if u["id"] == uid), None)
+def find_user_by_id(uid: str):
+    with get_db() as db:
+        row = db.execute(
+            "SELECT * FROM users WHERE id = ?", (uid,)
+        ).fetchone()
+    return dict(row) if row else None
 
 
 def current_user():
     uid = session.get("user_id")
-    if not uid:
-        return None
-    return find_user_by_id(uid)
+    return find_user_by_id(uid) if uid else None
 
 
 @app.context_processor
 def inject_user():
     return {"current_user": current_user()}
-
-
-# ═══════════════════════════════════════════════════════════════════════════
-#  REPORT HELPERS
-# ═══════════════════════════════════════════════════════════════════════════
-
-def load_reports():
-    if not os.path.exists(REPORTS_FILE):
-        with open(REPORTS_FILE, "w") as f:
-            json.dump([], f)
-    with open(REPORTS_FILE, "r") as f:
-        try:
-            return json.load(f)
-        except (json.JSONDecodeError, ValueError):
-            return []
-
-
-def save_reports(reports):
-    with open(REPORTS_FILE, "w") as f:
-        json.dump(reports, f, indent=4)
 
 
 # ═══════════════════════════════════════════════════════════════════════════
@@ -144,9 +177,10 @@ TIPS = [
     "Check the sender's full email address carefully, not just the display name.",
     "Public Wi-Fi is not secure — avoid banking or shopping on public networks.",
     "Report scams to CERT NZ (cert.govt.nz) to help protect other New Zealanders.",
-    "A padlock icon in the browser bar means the connection is encrypted, not that the site is safe.",
-    "If you're unsure about a call from a company, hang up and call them back on their official number.",
+    "A padlock icon means the connection is encrypted, not that the site is safe.",
+    "If unsure about a call, hang up and call the company back on their official number.",
 ]
+
 
 def get_daily_tip():
     return TIPS[datetime.now().timetuple().tm_yday % len(TIPS)]
@@ -156,9 +190,9 @@ def get_daily_tip():
 #  URL ANALYSER
 # ═══════════════════════════════════════════════════════════════════════════
 
-def analyse_url(url):
-    reasons = []
-    score   = 0
+def analyse_url(url: str) -> dict:
+    reasons   = []
+    score     = 0
     url_lower = url.lower()
 
     if url_lower.startswith("http://"):
@@ -169,7 +203,9 @@ def analyse_url(url):
                 ".loan",".work",".zip",".ru",".su",".pw",".cc",".biz"]
     for tld in BAD_TLDS:
         if tld in url_lower:
-            reasons.append(f"Uses a high-risk domain extension ({tld}) commonly associated with scam sites.")
+            reasons.append(
+                f"Uses a high-risk domain extension ({tld}) commonly associated with scam sites."
+            )
             score += 25
             break
 
@@ -192,8 +228,7 @@ def analyse_url(url):
             for brand in TRUSTED_BRANDS:
                 if brand in subdomain:
                     reasons.append(
-                        f"Subdomain spoofing — '{brand}' appears as a subdomain of an unrelated domain. "
-                        "Attackers use this to mimic trusted organisations."
+                        f"Subdomain spoofing — '{brand}' appears as a subdomain of an unrelated domain."
                     )
                     score += 40
                     break
@@ -201,17 +236,18 @@ def analyse_url(url):
         pass
 
     BAD_KEYWORDS = [
-        "login","verify","secure","update","confirm","account",
-        "banking","password","credential","signin","free-prize",
-        "win-prize","claim-now","urgent","suspended","unusual-activity",
-        "alert","locked","reactivate",
+        "login","verify","secure","update","confirm","account","banking",
+        "password","credential","signin","free-prize","win-prize","claim-now",
+        "urgent","suspended","unusual-activity","alert","locked","reactivate",
     ]
     matched_kw = [kw for kw in BAD_KEYWORDS if kw in url_lower]
     if len(matched_kw) >= 2:
-        reasons.append(f"Multiple suspicious keywords detected in the URL: {', '.join(matched_kw[:4])}.")
+        reasons.append(
+            f"Multiple suspicious keywords in the URL: {', '.join(matched_kw[:4])}."
+        )
         score += 20
-    elif len(matched_kw) == 1:
-        reasons.append(f"Suspicious keyword detected in the URL: '{matched_kw[0]}'.")
+    elif matched_kw:
+        reasons.append(f"Suspicious keyword in the URL: '{matched_kw[0]}'.")
         score += 10
 
     SHORTENERS = ["bit.ly","tinyurl.com","t.co","goo.gl","ow.ly",
@@ -226,18 +262,16 @@ def analyse_url(url):
             break
 
     try:
-        parts = urlparse(url).hostname.split(".")
-        if len(parts) > 4:
+        if len(urlparse(url).hostname.split(".")) > 4:
             reasons.append(
-                "Unusually deep subdomain chain — attackers use this to bury the real domain "
-                "and make a URL appear legitimate."
+                "Unusually deep subdomain chain — used to bury the real domain."
             )
             score += 15
     except Exception:
         pass
 
     if len(url) > 150:
-        reasons.append("URL is unusually long — sometimes used to obscure the true destination.")
+        reasons.append("URL is unusually long — sometimes used to obscure the destination.")
         score += 10
 
     score = min(score, 100)
@@ -265,8 +299,6 @@ def home():
     return render_template("landing.html")
 
 
-# ─── Sign Up ──────────────────────────────────────────────────────────────
-
 @app.route("/signup", methods=["GET", "POST"])
 @rate_limited("signup", limit=5, window=300)
 def signup():
@@ -278,7 +310,7 @@ def signup():
 
     if request.method == "POST":
         name     = request.form.get("name",     "").strip()
-        email    = request.form.get("email",    "").strip()
+        email    = request.form.get("email",    "").strip().lower()
         password = request.form.get("password", "").strip()
         confirm  = request.form.get("confirm",  "").strip()
         form     = {"name": name, "email": email}
@@ -294,25 +326,20 @@ def signup():
         elif find_user_by_email(email):
             error = "An account with that email already exists."
         else:
-            users = load_users()
-            new_user = {
-                "id":      str(uuid.uuid4()),
-                "name":    name,
-                "email":   email,
-                "password": generate_password_hash(password),
-                "bio":     "",
-                "joined":  datetime.now().strftime("%Y-%m-%d"),
-                "reports": 0,
-            }
-            users.append(new_user)
-            save_users(users)
-            session["user_id"] = new_user["id"]
+            uid = str(uuid.uuid4())
+            with get_db() as db:
+                db.execute(
+                    """INSERT INTO users (id, name, email, password, bio, joined, report_count)
+                       VALUES (?, ?, ?, ?, '', ?, 0)""",
+                    (uid, name, email,
+                     generate_password_hash(password),
+                     datetime.now().strftime("%Y-%m-%d"))
+                )
+            session["user_id"] = uid
             return redirect(url_for("dashboard"))
 
     return render_template("signup.html", error=error, form=form)
 
-
-# ─── Login ────────────────────────────────────────────────────────────────
 
 @app.route("/login", methods=["GET", "POST"])
 @rate_limited("login", limit=10, window=300)
@@ -324,12 +351,12 @@ def login():
     form  = {}
 
     if request.method == "POST":
-        email    = request.form.get("email",    "").strip()
+        email    = request.form.get("email",    "").strip().lower()
         password = request.form.get("password", "").strip()
         form     = {"email": email}
 
         if not email or not password:
-            error = "Please enter both an email address and a password."
+            error = "Please enter both your email address and password."
         else:
             user = find_user_by_email(email)
             if user and check_password_hash(user["password"], password):
@@ -342,8 +369,6 @@ def login():
     return render_template("login.html", error=error, form=form)
 
 
-# ─── Logout ───────────────────────────────────────────────────────────────
-
 @app.route("/logout")
 def logout():
     session.pop("user_id", None)
@@ -351,83 +376,102 @@ def logout():
 
 
 # ═══════════════════════════════════════════════════════════════════════════
-#  ROUTES — PROTECTED (login required)
+#  ROUTES — PROTECTED
 # ═══════════════════════════════════════════════════════════════════════════
-
-# ─── Dashboard ────────────────────────────────────────────────────────────
 
 @app.route("/dashboard")
 @login_required
 def dashboard():
-    reports = load_reports()
-    recent  = sorted(
-        [r for r in reports if r.get("threat_type")],
-        key=lambda r: r.get("timestamp", ""),
-        reverse=True
-    )[:4]
+    with get_db() as db:
+        total_reports = db.execute("SELECT COUNT(*) FROM reports").fetchone()[0]
+        recent_reports = [
+            dict(r) for r in db.execute(
+                "SELECT * FROM reports ORDER BY timestamp DESC LIMIT 4"
+            ).fetchall()
+        ]
     return render_template(
         "index.html",
-        recent_reports=recent,
-        total_reports=len(reports),
+        recent_reports=recent_reports,
+        total_reports=total_reports,
         tip=get_daily_tip(),
     )
 
-
-# ─── Profile ──────────────────────────────────────────────────────────────
 
 @app.route("/profile")
 @login_required
 def profile():
     user = current_user()
-    all_reports  = load_reports()
-    user_reports = [r for r in all_reports if r.get("user_id") == user["id"]]
-    return render_template("profile.html", user=user, user_reports=user_reports,
-                           total_reports=len(all_reports))
+    with get_db() as db:
+        user_reports = [
+            dict(r) for r in db.execute(
+                "SELECT * FROM reports WHERE user_id = ? ORDER BY timestamp DESC",
+                (user["id"],)
+            ).fetchall()
+        ]
+        total_reports = db.execute("SELECT COUNT(*) FROM reports").fetchone()[0]
+        scan_history  = [
+            dict(r) for r in db.execute(
+                """SELECT url, level, score, scanned_at
+                   FROM scan_history WHERE user_id = ?
+                   ORDER BY scanned_at DESC LIMIT 10""",
+                (user["id"],)
+            ).fetchall()
+        ]
+    return render_template(
+        "profile.html",
+        user=user,
+        user_reports=user_reports,
+        total_reports=total_reports,
+        scan_history=scan_history,
+    )
 
 
 @app.route("/profile/edit", methods=["POST"])
 @login_required
 def profile_edit():
     user   = current_user()
-    users  = load_users()
-    idx    = next((i for i, u in enumerate(users) if u["id"] == user["id"]), None)
-    if idx is None:
-        return redirect(url_for("profile"))
-
     action = request.form.get("action", "info")
 
     if action == "info":
         name  = request.form.get("name",  "").strip()
         bio   = request.form.get("bio",   "").strip()
-        email = request.form.get("email", "").strip()
+        email = request.form.get("email", "").strip().lower()
+
         if not name:
             return redirect(url_for("profile") + "?error=Name+cannot+be+empty.")
         if not email or "@" not in email:
             return redirect(url_for("profile") + "?error=Please+enter+a+valid+email.")
+
         conflict = find_user_by_email(email)
         if conflict and conflict["id"] != user["id"]:
             return redirect(url_for("profile") + "?error=That+email+is+already+in+use.")
-        users[idx]["name"]  = name
-        users[idx]["bio"]   = bio
-        users[idx]["email"] = email
+
+        with get_db() as db:
+            db.execute(
+                "UPDATE users SET name=?, bio=?, email=? WHERE id=?",
+                (name, bio, email, user["id"])
+            )
 
     elif action == "password":
         current_pw = request.form.get("current_password", "").strip()
         new_pw     = request.form.get("new_password",     "").strip()
         confirm_pw = request.form.get("confirm_password", "").strip()
-        if not check_password_hash(users[idx]["password"], current_pw):
+
+        if not check_password_hash(user["password"], current_pw):
             return redirect(url_for("profile") + "?error=Current+password+is+incorrect.")
         if len(new_pw) < 8:
             return redirect(url_for("profile") + "?error=New+password+must+be+at+least+8+characters.")
         if new_pw != confirm_pw:
             return redirect(url_for("profile") + "?error=New+passwords+do+not+match.")
-        users[idx]["password"] = generate_password_hash(new_pw)
 
-    save_users(users)
+        with get_db() as db:
+            db.execute(
+                "UPDATE users SET password=? WHERE id=?",
+                (generate_password_hash(new_pw), user["id"])
+            )
+
     return redirect(url_for("profile") + "?success=1")
 
-
-# ─── Settings ─────────────────────────────────────────────────────────────
 
 @app.route("/settings")
 @login_required
@@ -436,10 +480,8 @@ def settings():
 
 
 # ═══════════════════════════════════════════════════════════════════════════
-#  ROUTES — SEMI-PUBLIC (work with or without login)
+#  ROUTES — SEMI-PUBLIC
 # ═══════════════════════════════════════════════════════════════════════════
-
-# ─── Scanner ──────────────────────────────────────────────────────────────
 
 @app.route("/scanner", methods=["GET", "POST"])
 @rate_limited("scan", limit=30, window=60)
@@ -451,63 +493,69 @@ def scanner():
         url = request.form.get("url", "").strip()
 
         if not url:
-            result = {"level": "error", "title": "Please enter a URL to scan.",
-                      "reasons": ["The input field was empty. Enter a full URL starting with http:// or https://"],
-                      "score": 0}
+            result = {"level": "error", "score": 0,
+                      "title": "Please enter a URL to scan.",
+                      "reasons": ["The input was empty. Enter a full URL starting with http:// or https://"]}
         elif not url.startswith(("http://", "https://")):
-            result = {"level": "error", "title": "Invalid URL format.",
-                      "reasons": ["Please enter a URL beginning with http:// or https://  —  e.g. https://example.com"],
-                      "score": 0}
+            result = {"level": "error", "score": 0,
+                      "title": "Invalid URL format.",
+                      "reasons": ["Please enter a URL beginning with http:// or https://"]}
         else:
             try:
                 result      = analyse_url(url)
                 scanned_url = url
-                # Persist scan in user's history if logged in
-                _save_server_scan_history(url, result)
+                _save_scan_history(url, result)
             except Exception:
-                result = {"level": "error", "title": "Something went wrong analysing that URL.",
-                          "reasons": ["The URL could not be analysed. Please check the format and try again."],
-                          "score": 0}
+                result = {"level": "error", "score": 0,
+                          "title": "Something went wrong analysing that URL.",
+                          "reasons": ["Check the format and try again."]}
 
     return render_template("scanner.html", result=result, scanned_url=scanned_url)
 
 
-def _save_server_scan_history(url: str, result: dict):
-    """Append scan to the logged-in user's history (server-side)."""
+def _save_scan_history(url: str, result: dict):
     user = current_user()
     if not user:
         return
-    users = load_users()
-    for u in users:
-        if u["id"] == user["id"]:
-            history = u.get("scan_history", [])
-            # Remove duplicate
-            history = [h for h in history if h.get("url") != url]
-            history.insert(0, {
-                "url":       url,
-                "level":     result.get("level"),
-                "score":     result.get("score"),
-                "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M"),
-            })
-            u["scan_history"] = history[:20]   # keep last 20
-            break
-    save_users(users)
+    with get_db() as db:
+        # Remove previous entry for the same URL from this user
+        db.execute(
+            "DELETE FROM scan_history WHERE user_id=? AND url=?",
+            (user["id"], url)
+        )
+        # Insert fresh entry
+        db.execute(
+            """INSERT INTO scan_history (user_id, url, level, score, scanned_at)
+               VALUES (?, ?, ?, ?, ?)""",
+            (user["id"], url,
+             result.get("level"), result.get("score"),
+             datetime.now().strftime("%Y-%m-%d %H:%M"))
+        )
+        # Keep only last 20 per user
+        db.execute(
+            """DELETE FROM scan_history
+               WHERE user_id=? AND id NOT IN (
+                   SELECT id FROM scan_history
+                   WHERE user_id=? ORDER BY scanned_at DESC LIMIT 20
+               )""",
+            (user["id"], user["id"])
+        )
 
 
 @app.route("/api/scan-history")
 def api_scan_history():
-    """Return server-side scan history for logged-in user (used to merge with localStorage)."""
     user = current_user()
     if not user:
         return jsonify([])
-    users = load_users()
-    for u in users:
-        if u["id"] == user["id"]:
-            return jsonify(u.get("scan_history", []))
-    return jsonify([])
+    with get_db() as db:
+        rows = db.execute(
+            """SELECT url, level, score, scanned_at as timestamp
+               FROM scan_history WHERE user_id=?
+               ORDER BY scanned_at DESC LIMIT 20""",
+            (user["id"],)
+        ).fetchall()
+    return jsonify([dict(r) for r in rows])
 
-
-# ─── Report ───────────────────────────────────────────────────────────────
 
 @app.route("/report", methods=["GET", "POST"])
 @rate_limited("report", limit=10, window=300)
@@ -523,7 +571,6 @@ def report():
                        "url_content": url_content,
                        "description": description}
 
-        # ── Validation ───────────────────────────────────────────────────
         if not threat_type:
             error = "Please select a threat type."
         elif threat_type not in ("phishing", "scam", "malware", "other"):
@@ -531,43 +578,42 @@ def report():
         elif not url_content:
             error = "Please enter the suspicious URL or message content."
         elif len(url_content) > 2000:
-            error = "URL / content field must be 2000 characters or fewer."
+            error = "URL / content must be 2000 characters or fewer."
         elif len(description) < 20:
             error = "Please describe the threat in at least 20 characters."
         elif len(description) > 500:
             error = "Description must be 500 characters or fewer."
         else:
-            # ── Spam / duplicate check ────────────────────────────────────
-            reports   = load_reports()
-            duplicate = any(
-                r.get("url_content", "").lower() == url_content.lower()
-                for r in reports[-50:]   # check last 50 only
-            )
-            if duplicate:
+            # Duplicate check
+            with get_db() as db:
+                dup = db.execute(
+                    """SELECT id FROM reports
+                       WHERE LOWER(url_content)=LOWER(?)
+                       ORDER BY timestamp DESC LIMIT 1""",
+                    (url_content,)
+                ).fetchone()
+
+            if dup:
                 error = "This URL or content has already been reported. Thank you!"
             else:
                 user = current_user()
-                new_report = {
-                    "id":          str(uuid.uuid4()),
-                    "threat_type": threat_type,
-                    "url_content": url_content,
-                    "description": description,
-                    "timestamp":   datetime.now().strftime("%Y-%m-%d %H:%M"),
-                    "user_id":     user["id"]   if user else None,
-                    "user_name":   user["name"] if user else "Anonymous",
-                    "flagged":     False,
-                }
-                reports.append(new_report)
-                save_reports(reports)
-
-                if user:
-                    users = load_users()
-                    for u in users:
-                        if u["id"] == user["id"]:
-                            u["reports"] = u.get("reports", 0) + 1
-                            break
-                    save_users(users)
-
+                rid  = str(uuid.uuid4())
+                with get_db() as db:
+                    db.execute(
+                        """INSERT INTO reports
+                           (id, threat_type, url_content, description,
+                            timestamp, user_id, user_name, flagged)
+                           VALUES (?,?,?,?,?,?,?,0)""",
+                        (rid, threat_type, url_content, description,
+                         datetime.now().strftime("%Y-%m-%d %H:%M"),
+                         user["id"]   if user else None,
+                         user["name"] if user else "Anonymous")
+                    )
+                    if user:
+                        db.execute(
+                            "UPDATE users SET report_count = report_count + 1 WHERE id=?",
+                            (user["id"],)
+                        )
                 return redirect(url_for("report_success"))
 
     if not form_values.get("url_content"):
@@ -581,36 +627,39 @@ def report_success():
     return render_template("report_success.html")
 
 
-# ─── Reports list (with search & filter) ─────────────────────────────────
-
 @app.route("/reports")
 def reports():
-    all_reports = load_reports()
-    valid = [r for r in all_reports if r.get("threat_type") or r.get("url_content")]
-    valid = sorted(valid, key=lambda r: r.get("timestamp", ""), reverse=True)
-
-    # ── Filter by type ────────────────────────────────────────────────────
     filter_type = request.args.get("type", "").strip().lower()
+    query       = request.args.get("q",    "").strip()
+
+    sql    = "SELECT * FROM reports WHERE 1=1"
+    params = []
+
     if filter_type and filter_type != "all":
-        valid = [r for r in valid if r.get("threat_type", "").lower() == filter_type]
+        sql    += " AND LOWER(threat_type) = ?"
+        params.append(filter_type)
 
-    # ── Search ────────────────────────────────────────────────────────────
-    query = request.args.get("q", "").strip().lower()
     if query:
-        valid = [
-            r for r in valid
-            if query in r.get("url_content",  "").lower()
-            or query in r.get("description",  "").lower()
-            or query in r.get("threat_type",  "").lower()
-        ]
+        sql    += """ AND (
+                        LOWER(url_content)  LIKE ?
+                     OR LOWER(description)  LIKE ?
+                     OR LOWER(threat_type)  LIKE ?
+                  )"""
+        q = f"%{query.lower()}%"
+        params.extend([q, q, q])
 
-    return render_template("reports.html",
-                           reports=valid,
-                           filter_type=filter_type,
-                           query=request.args.get("q", ""))
+    sql += " ORDER BY timestamp DESC"
 
+    with get_db() as db:
+        rows = [dict(r) for r in db.execute(sql, params).fetchall()]
 
-# ─── Education ────────────────────────────────────────────────────────────
+    return render_template(
+        "reports.html",
+        reports=rows,
+        filter_type=filter_type,
+        query=query,
+    )
+
 
 @app.route("/education")
 def education():
@@ -634,8 +683,13 @@ def server_error(e):
 @app.errorhandler(429)
 def too_many_requests(e):
     return render_template("404.html", code=429,
-                           message="Too many requests. Please slow down and try again shortly."), 429
+                           message="Too many requests. Please slow down and try again."), 429
 
+
+# ═══════════════════════════════════════════════════════════════════════════
+#  ENTRY POINT
+# ═══════════════════════════════════════════════════════════════════════════
 
 if __name__ == "__main__":
+    init_db()   # create tables on first run
     app.run(debug=True)

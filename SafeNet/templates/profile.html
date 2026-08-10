@@ -110,7 +110,7 @@
                         justify-center mb-3">
                 <span class="material-symbols-outlined fill-icon text-primary text-[18px]">flag</span>
             </div>
-            <p class="text-2xl font-bold text-on-surface">{{ user.reports or 0 }}</p>
+            <p class="text-2xl font-bold text-on-surface">{{ user.report_count or 0 }}</p>
             <p class="text-xs text-on-surface-variant mt-0.5">Reports submitted</p>
         </div>
 
@@ -410,6 +410,73 @@
                       transition-colors shadow-sm">
                 <span class="material-symbols-outlined text-[16px]">flag</span>
                 Submit your first report
+            </a>
+        </div>
+        {% endif %}
+    </div>
+
+
+    <!-- ══════════════════════════════════════════════════════════════════
+         SCAN HISTORY
+         ══════════════════════════════════════════════════════════════════ -->
+    <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant
+                shadow-sm overflow-hidden reveal">
+
+        <div class="bg-surface-container-low px-6 py-4 border-b border-outline-variant
+                    flex items-center justify-between">
+            <div class="flex items-center gap-2">
+                <span class="material-symbols-outlined fill-icon text-on-surface-variant text-[18px]">history</span>
+                <h2 class="font-semibold text-on-surface">Recent Scans</h2>
+            </div>
+            <a href="{{ url_for('scanner') }}" class="text-primary text-xs font-medium hover:underline flex items-center gap-1">
+                Scan a link <span class="material-symbols-outlined text-xs">arrow_forward</span>
+            </a>
+        </div>
+
+        {% if scan_history %}
+        <div class="divide-y divide-outline-variant/50">
+            {% for s in scan_history %}
+            <div class="px-6 py-3 flex items-center gap-4 hover:bg-surface-container-low transition-colors">
+                <!-- Level dot -->
+                <div class="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0
+                    {% if s.level == 'safe' %}bg-secondary-container text-secondary
+                    {% elif s.level == 'warning' %}bg-tertiary-container text-on-tertiary
+                    {% else %}bg-error-container text-error{% endif %}">
+                    <span class="material-symbols-outlined fill-icon text-[14px]">
+                        {% if s.level == 'safe' %}check_circle
+                        {% elif s.level == 'warning' %}warning
+                        {% else %}gpp_bad{% endif %}
+                    </span>
+                </div>
+                <!-- URL -->
+                <div class="flex-1 min-w-0">
+                    <p class="text-sm font-mono text-on-surface truncate">{{ s.url }}</p>
+                    <p class="text-[11px] text-outline mt-0.5">{{ s.scanned_at }} &middot; Score: {{ s.score }}/100</p>
+                </div>
+                <!-- Rescan -->
+                <a href="{{ url_for('scanner') }}?url={{ s.url | urlencode }}"
+                   class="flex-shrink-0 text-xs text-primary font-semibold hover:underline
+                          flex items-center gap-1">
+                    <span class="material-symbols-outlined text-[13px]">refresh</span>
+                    Rescan
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="p-8 text-center">
+            <div class="w-14 h-14 rounded-full bg-surface-container mx-auto mb-3
+                        flex items-center justify-center">
+                <span class="material-symbols-outlined text-outline text-2xl">manage_search</span>
+            </div>
+            <p class="text-sm font-medium text-on-surface mb-1">No scans yet</p>
+            <p class="text-xs text-on-surface-variant mb-4">Links you scan will appear here.</p>
+            <a href="{{ url_for('scanner') }}"
+               class="inline-flex items-center gap-2 bg-primary text-on-primary
+                      px-5 py-2.5 rounded-xl font-semibold text-sm hover:bg-surface-tint
+                      transition-colors shadow-sm">
+                <span class="material-symbols-outlined text-[16px]">search</span>
+                Scan your first link
             </a>
         </div>
         {% endif %}
