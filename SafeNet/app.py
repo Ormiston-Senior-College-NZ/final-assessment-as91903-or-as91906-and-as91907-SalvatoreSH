@@ -22,10 +22,6 @@ app.jinja_env.filters["urlencode"] = lambda s: quote_plus(str(s))
 DB_PATH = os.path.join(os.path.dirname(__file__), "safenet.db")
 
 
-# ═══════════════════════════════════════════════════════════════════════════
-#  DATABASE
-# ═══════════════════════════════════════════════════════════════════════════
-
 @contextmanager
 def get_db():
     """Yield a connected, row_factory-enabled SQLite connection."""
@@ -84,11 +80,6 @@ def init_db():
             CREATE INDEX IF NOT EXISTS idx_scan_history_user ON scan_history(user_id);
         """)
 
-
-# ═══════════════════════════════════════════════════════════════════════════
-#  RATE LIMITING  (in-memory, per IP)
-# ═══════════════════════════════════════════════════════════════════════════
-
 _rate_store: dict = {}
 
 
@@ -119,11 +110,6 @@ def rate_limited(action: str, limit: int, window: int):
             return fn(*args, **kwargs)
         return wrapper
     return decorator
-
-
-# ═══════════════════════════════════════════════════════════════════════════
-#  AUTH HELPERS
-# ═══════════════════════════════════════════════════════════════════════════
 
 def login_required(fn):
     @wraps(fn)
@@ -159,11 +145,6 @@ def current_user():
 def inject_user():
     return {"current_user": current_user()}
 
-
-# ═══════════════════════════════════════════════════════════════════════════
-#  DAILY TIPS
-# ═══════════════════════════════════════════════════════════════════════════
-
 TIPS = [
     "Use unique, complex passwords for every account and consider a password manager.",
     "Always check a URL before clicking — hover over links to see the real destination.",
@@ -184,11 +165,6 @@ TIPS = [
 
 def get_daily_tip():
     return TIPS[datetime.now().timetuple().tm_yday % len(TIPS)]
-
-
-# ═══════════════════════════════════════════════════════════════════════════
-#  URL ANALYSER
-# ═══════════════════════════════════════════════════════════════════════════
 
 def analyse_url(url: str) -> dict:
     reasons   = []
@@ -289,11 +265,6 @@ def analyse_url(url: str) -> dict:
                 "title": "No threats detected.",
                 "reasons": reasons or ["This URL passed all safety checks."]}
 
-
-# ═══════════════════════════════════════════════════════════════════════════
-#  ROUTES — PUBLIC
-# ═══════════════════════════════════════════════════════════════════════════
-
 @app.route("/")
 def home():
     return render_template("landing.html")
@@ -373,11 +344,6 @@ def login():
 def logout():
     session.pop("user_id", None)
     return redirect(url_for("home"))
-
-
-# ═══════════════════════════════════════════════════════════════════════════
-#  ROUTES — PROTECTED
-# ═══════════════════════════════════════════════════════════════════════════
 
 @app.route("/dashboard")
 @login_required
@@ -477,11 +443,6 @@ def profile_edit():
 @login_required
 def settings():
     return render_template("settings.html")
-
-
-# ═══════════════════════════════════════════════════════════════════════════
-#  ROUTES — SEMI-PUBLIC
-# ═══════════════════════════════════════════════════════════════════════════
 
 @app.route("/scanner", methods=["GET", "POST"])
 @rate_limited("scan", limit=30, window=60)
@@ -666,10 +627,6 @@ def education():
     return render_template("education.html")
 
 
-# ═══════════════════════════════════════════════════════════════════════════
-#  ERROR HANDLERS
-# ═══════════════════════════════════════════════════════════════════════════
-
 @app.errorhandler(404)
 def page_not_found(e):
     return render_template("404.html", code=404,
@@ -685,10 +642,6 @@ def too_many_requests(e):
     return render_template("404.html", code=429,
                            message="Too many requests. Please slow down and try again."), 429
 
-
-# ═══════════════════════════════════════════════════════════════════════════
-#  ENTRY POINT
-# ═══════════════════════════════════════════════════════════════════════════
 
 if __name__ == "__main__":
     init_db()   # create tables on first run
